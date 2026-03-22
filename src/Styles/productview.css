@@ -1,0 +1,149 @@
+.sizediv{
+    @apply label  h-8 cursor-pointer border-[1px] rounded-lg transition duration-700 ease-in-out hover:scale-105  ;
+}
+.colordiv{
+    @apply label w-12 h-8 cursor-pointer border-[1px] rounded-lg transition duration-700 ease-in-out hover:scale-105 flex items-center justify-center ;
+}
+.prodiv{
+    @apply text-sm  font-semibold label min-w-6 h-6 cursor-pointer border-[1px] flex items-center justify-center ;
+}
+.sizediv{
+    @apply label w-12 h-8 cursor-pointer border-[1px] rounded-lg transition duration-700 ease-in-out hover:scale-105 flex items-center justify-center ;
+}
+.selectdiv{
+    @apply label w-20 h-8 cursor-pointer border-[1px] rounded-lg p-0 m-0 transition duration-700 ease-in-out hover:scale-105 flex items-center justify-center ;
+}
+.pricediv{
+    @apply mb-4 h-[60px] w-[140px] bg-black text-white border-[1px] rounded-lg flex flex-row items-start p-1 ;
+}
+
+
+.flin{
+    @apply file-input file-input-bordered file-input-sm w-[200px] max-w-xs ;
+    
+}
+.hdr{
+    @apply text-[40px] bg-[#010103] text-white pl-4 ;
+    
+}
+/* this part is all for labeling  */
+.lbl{
+    @apply form-control w-[200px] max-w-xs ;
+}
+.lbl div{
+    @apply label ;
+}
+.lbl div span{
+    @apply label-text ;
+}
+.lbl div input{
+    @apply input input-bordered input-sm w-[200px] max-w-xs ;
+}
+.lbl select{
+    @apply input input-bordered input-sm w-[200px] max-w-xs ;
+}
+/* input[type="text"]{
+    @apply input input-bordered input-sm w-[200px] max-w-xs;
+}
+input[type="number"]{
+    @apply input input-bordered input-sm w-[200px] max-w-xs;
+} */
+.lbl{
+    @apply form-control w-[200px] max-w-xs ;
+}
+
+.slt{
+    @apply select select-bordered select-sm;
+}
+
+.pag{
+    @apply flex w-full justify-end pr-10;
+}
+.pag div{
+    @apply join;
+}
+.pag div button {
+    @apply join-item btn btn-xs bg-black text-white hover:bg-[#121242];
+}
+.pag span{
+    @apply join-item btn btn-xs bg-black text-white hover:bg-[#121242]  ;
+}
+
+/*  table details goes here , table details goes here  */
+
+.tabst{
+    @apply px-4  w-full border flex flex-row font-semibold  items-center justify-between border-sky-100 rounded-md ;
+}
+.tabc{
+    @apply p-2   flex flex-row  items-center justify-between border-sky-100 rounded-md ;
+}
+
+.tabc td{
+    @apply  flex flex-row  items-center justify-center border-sky-100 w-40 ;
+}
+.tabc div{
+    @apply  flex  items-center justify-center border-sky-100 w-40 ;
+}
+.tabc p{
+    @apply text-sm font-semibold;
+}
+.tabc img{
+    @apply object-cover rounded-md ;
+}
+
+.headr{
+    @apply text-[40px] bg-[#010103] text-white pl-4;
+}
+
+.headrr{
+    @apply bg-[#ffffff] pl-4 m-4 flex flex-row justify-between;
+}
+
+.headrr div button{
+    @apply  btn btn-xs bg-black text-white hover:bg-[#121242];
+}
+
+/*  button details goes here , button details goes here  */
+.smbut{
+    @apply btn btn-xs bg-black text-white hover:bg-[#121242] ;
+}
+
+.srch{
+    @apply w-[400px] ;
+}
+
+.srch input{
+    @apply w-[370px] ;
+}
+
+.srch  button{
+    @apply btn btn-xs bg-black text-white -ml-[60px] hover:bg-[#121242];
+}
+
+
+.mlay {
+   @apply fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50;
+}
+
+.mtent {
+  @apply bg-white p-6 rounded-lg w-[400px] max-w-full;
+}
+
+.mohedr {
+ @apply flex justify-between items-center;
+}
+
+.mter {
+ @apply text-xl font-semibold ;
+}
+
+.cbtn {
+ @apply cursor-pointer text-lg font-bold border-0 bg-none ;
+}
+
+.obtn {
+   @apply bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600;
+}
+.ccbtn {
+   @apply bg-red-500 text-white py-2 px-4 rounded-md hover:bg-red-600;
+}

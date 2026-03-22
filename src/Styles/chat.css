@@ -1,0 +1,64 @@
+/* styles.css */
+@font-face {
+  font-family: 'Cfont';
+  src: url('../assets/fonts/baskvl.ttf') format('truetype');
+
+}
+@font-face {
+  font-family: 'Dfont';
+  src: url('../assets/fonts/FashionWacks-Regular.ttf') format('truetype');
+ 
+  letter-spacing: 20dvw;
+}
+
+.cm{
+  @apply w-full;
+}
+
+.cmm{
+  @apply  lg:h-[700px] flex-shrink-0 bg-white rounded-md shadow-lg border border-gray-200 ;
+}
+
+.chead{
+  @apply  text-xl font-bold p-2 ;
+}
+.cmain{
+  @apply  lg:h-[600px] h-[400px] min-w-[850px] border m-1 px-4 bg-white overflow-y-auto ;
+}
+.csndr{
+  @apply chat chat-start;
+}
+
+.cce{
+  @apply chat chat-end ;
+}
+.cdp{
+  @apply chat-image avatar;
+}
+
+.cdp div{
+  @apply w-10;
+}
+
+.chdr{
+  @apply chat-header ;
+}
+
+.chdr time{
+  @apply  text-xs opacity-50;
+}
+
+.ctb{
+  @apply chat-bubble  bg-white text-black ;
+}
+
+.msgd{
+  @apply  flex  px-2 flex-row items-center justify-end;
+}
+.msgd input{
+  @apply mx-2 h-auto min-w-full  flex items-center ;
+}
+.msgd button{
+  @apply absolute bg-gradient-to-b mr-0 from-sky-500 to-indigo-600 p-2 text-white rounded-r-lg  w-[100px] hover:bg-gradient-to-t;
+}
+

@@ -1,0 +1,385 @@
+/* styles.css */
+@font-face {
+  font-family: 'Cfont';
+  src: url('../assets/fonts/baskvl.ttf') format('truetype');
+
+}
+@font-face {
+  font-family: 'Dfont';
+  src: url('../assets/fonts/FashionWacks-Regular.ttf') format('truetype');
+ 
+  letter-spacing: 20dvw;
+}
+
+
+.mfonts {
+  font-family: 'Cfont',sans-serif;
+  font-weight: 300;
+  text-transform: uppercase;
+  font-style: normal;
+  text-decoration: none;
+
+  letter-spacing: 0px;
+}
+.subfonts {
+  font-family: 'Cfont',sans-serif;
+  font-weight: 500;
+  text-transform: none;
+  font-style: normal;
+  text-decoration: none;
+  line-height: 1.4em;
+  letter-spacing: 0px;
+}
+.qfonts {
+  font-family: 'Cfont',sans-serif;
+  font-weight: 500;
+  text-transform: none;
+  font-style: normal;
+  text-decoration: none;
+  line-height: 1.3em;
+  letter-spacing: 0px;
+}
+
+.dfonts {
+  font-family: 'Dfont';
+}
+
+.container-custom {
+  @apply bg-white ;
+}
+
+/* Section with title and description */
+.section-title {
+  @apply flex flex-col lg:flex-row items-center gap-4;
+}
+
+.title-text {
+  @apply text-3xl lg:text-5xl font-bold;
+}
+
+.icon {
+  @apply text-5xl lg:text-8xl;
+}
+
+/* Content description */
+.description {
+  @apply text-sm lg:text-base;
+}
+
+.image {
+  @apply w-full h-auto object-cover;
+}
+
+/* styles.css or equivalent */
+
+/* Define the blinking animation */
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Apply the blinking animation */
+.blinking-effect {
+  animation: blink 1s infinite;
+}
+.blinking-effect2 {
+  animation: blink 2s infinite;
+}
+
+/* Define the typing animation */
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent; }
+  50% { border-color: white; }
+}
+
+/* Apply the typing effect to the text */
+/* .typing-effect {
+  display: inline-block;
+  overflow: hidden; 
+  white-space: nowrap; 
+  border-right: .15em solid white; 
+  animation: typing 3.5s steps(40, end) 1s 1 normal both, blink-caret .75s step-end infinite;
+  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+   */
+
+
+   /* styles.css or equivalent */
+
+/* Overlay for PDF display */
+.pdf-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8); /* Semi-transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it's above other content */
+}
+
+
+.container1 {
+@apply flex flex-wrap  bg-black text-white items-start justify-center  
+}
+
+.container2 {
+  @apply mx-auto px-4 py-6 lg:w-auto ;
+}
+.container3 {
+  @apply m-32  bg-black flex items-center justify-center flex-col;
+}
+
+.carde {
+  @apply w-[300px] lg:w-[400px] lg:h-[400px] text-center flex flex-col hover:bg-white hover:scale-110 duration-1000 justify-start items-start pt-5 px-10 pb-10;
+}
+
+.gallery {
+  @apply flex flex-wrap gap-4 justify-center;
+}
+
+.imageC {
+  @apply h-40 rounded-lg w-[300px] shadow-sm;
+}
+.imageProductcards {
+  @apply 
+  
+  
+  w-full bg-black ;
+}
+
+.card-heading {
+  @apply text-2xl mb-4;
+}
+
+.card h2 {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+
+
+
+/* Container for the PDF */
+.pdf-container {
+  position: relative;
+  width: 80%;
+  height: 80%;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .pdf-container {
+    width: 95%; 
+    height: 95%; 
+  }
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #333;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+/* Quary.css */
+.quary-container {
+  @apply flex flex-col lg:flex-row justify-between text-gray-300 lg:mx-40;
+}
+
+.quary-contact {
+  @apply  h-12 w-12 m-5 items-center justify-center;
+}
+
+.quary-heading {
+ @apply font-semibold text-2xl lg:text-3xl ;
+}
+
+.quary-info {
+  display: flex;
+  margin: 1.25rem 0; 
+}
+
+.quary-icon {
+  height: 3rem; 
+  width: 3rem; 
+  margin: 1.25rem; 
+}
+.animate__delay-0-5s {
+  animation-delay: 0.5s;
+}
+.animate__delay-1-5s {
+  animation-delay: 1.5s;
+}
+.animate__delay-2-5s {
+  animation-delay: 2.5s;
+}
+.animate__delay-3-5s {
+  animation-delay: 3.5s;
+}
+.animate__delay-4s {
+  animation-delay: 4s;
+}
+.animate__delay-4-5s {
+  animation-delay: 4.5s;
+}
+.animate__delay-5s {
+  animation-delay: 5s;
+}
+.animate__delay-5-5s {
+  animation-delay: 5.5s;
+}
+.animate__delay-6s {
+  animation-delay: 6s;
+}
+.animate__delay-6-5s {
+  animation-delay: 6.5s;
+}
+.animate__delay-7-5s {
+  animation-delay: 7.5s;
+}
+.animate__delay-8-5s {
+  animation-delay: 8.5s;
+}
+.animate__delay-9-5s {
+  animation-delay: 9.5s;
+}
+.animate__delay-10-5s {
+  animation-delay: 10.5s;
+}
+.animate__delay-11-5s {
+  animation-delay: 11.5s;
+}
+
+.quary-info-text {
+  margin-top: 0.75rem; 
+}
+
+.quary-form {
+  margin: 1.25rem; 
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.25rem; 
+}
+
+.quary-input {
+ @apply input bg-transparent outline outline-1 outline-slate-500 w-[300px] lg:w-[400px] duration-1000 hover:border-slate-100 ;
+}
+
+.quary-textarea {
+  height: 100px; /* h-[100px] */
+}
+
+.quary-button {
+  width: 100%; /* lg:w-[400px] */
+  background: black;
+  color: rgb(1, 24, 48);
+  padding: 0.75rem; /* Padding for button */
+}
+.image-container {
+  flex: 1; /* Allow flex items to grow equally */
+}
+
+.duratn{
+  animation-duration: 2s;
+}
+.animate__animated.animate__fadeUp {
+  --animate-duration: 2s;
+}
+/* map CSS */
+.mapmain{
+  @apply bg-white;
+}
+.mapheader{
+  @apply text-2xl lg:text-4xl font-bold my-4 text-center text-white;
+}
+.mapcontainer{
+  @apply w-screen h-[550px] flex flex-col overflow-x-auto lg:items-center justify-center mb-20;
+}
+.mapimagediv{
+@apply relative h-[500px] w-[1200px] ;
+}
+.mapimage{
+  @apply h-[500px] w-[1200px] absolute top-0 left-0 ;
+}
+.mapicon{
+  @apply  h-6 w-6 cursor-pointer text-blue-500 absolute text-2xl mt-4 lg:text-2xl bg-transparent border-none hover:scale-150 blinking-effect ;
+}
+.maptooltip{
+  @apply tooltip absolute w-max flex flex-row justify-start items-center bg-white shadow-xl rounded-lg ;
+}
+
+
+
+/* landing page css  */
+.left-div{
+  
+}
+.mainline{
+  @apply text-3xl lg:text-[80px] lg:leading-tight mt-40 ;
+}
+.subline{
+  @apply text-[20px]  mx-5   ;
+}
+
+
+
+
+
+/* pdf viewer  */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* Media query for mobile view */
+@media (max-width: 640px) {
+  .image-container {
+    flex: 0 0 100%; /* Full width on mobile */
+    max-width: 100%;
+  }
+}
+
+/* Media query for larger screens (laptop and above) */
+@media (min-width: 641px) {
+  .image-container {
+    flex: 1 0 23%; /* Allow 4 images per row with some margin */
+    max-width: 300px;
+     /* Adjust for spacing */
+  }
+}
+
+
