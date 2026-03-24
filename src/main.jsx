@@ -48,22 +48,33 @@ import PComments from './adminside/Comments/Comments';
 import CustomProjects from './adminside/Projects/CustomProjects';
 import EmailManager from './adminside/EmailManager/EMailManager';
 import EmailInbox from './adminside/EmailManager/EmailLogs';
+import EditPackage from './adminside/AddPackages/EditPackage';
 
 const router = createBrowserRouter([
+ {
+    path: "/admin",
+    element: <Admin />,
+    children: [
+      {
+        index: true,        // renders at /admin
+        element: <Home />,  // your dashboard
+      },
+    ],
+  },
+  {
+    path: "/admin/login",
+    element: <ASignin />,
+  },
+
   {
     path: "/",
-    element: <Admin></Admin>,
-  },
- {
-        path:"/admin/login",
-        element: <ASignin></ASignin>
-  },
-  {
-    path: "/admin",
-    element: <Admin></Admin>,
+    element: <Admin />,
     
     children: [
-     
+       {
+        index: true,        // renders at /admin
+        element: <Home />,  // your dashboard
+      },
       {
         path:"/admin",
         element: <Home></Home>
@@ -77,6 +88,17 @@ const router = createBrowserRouter([
         path:"/admin/add-pack",
         element: <AddPackages></AddPackages>
       },
+        {
+        path:"/admin/packageupdate/:id",
+        element: <EditPackage></EditPackage>,
+         loader: ({ params }) => fetch(`${base_url}/updatepackage/${params.id}`),
+      },
+
+
+
+
+
+    
       {
         path:"/admin/pack-stat",
         element: <PackStat></PackStat>,

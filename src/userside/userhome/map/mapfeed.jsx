@@ -13,7 +13,7 @@ const Mapfeed = () => {
   const [icons, setIcons]     = useState([]);
   const [loading, setLoading] = useState(false);
   const [newIcon, setNewIcon] = useState({
-    id: '', position: { top: '', left: '' }, imageUrl: '', data: ''
+   position: { top: '', left: '' },  data: ''
   });
 
   useEffect(() => {
@@ -139,10 +139,8 @@ const Mapfeed = () => {
         <form onSubmit={handleSubmit}>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-4">
             {[
-              { name: "id",          placeholder: "Pin ID",          readOnly: false },
               { name: "position.top", placeholder: "Top (auto)",     readOnly: true  },
               { name: "position.left",placeholder: "Left (auto)",    readOnly: true  },
-              { name: "imageUrl",    placeholder: "Image URL",       readOnly: false },
               { name: "data",        placeholder: "Tooltip text",    readOnly: false },
             ].map(f => (
               <input key={f.name} name={f.name} readOnly={f.readOnly}

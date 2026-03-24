@@ -2,22 +2,43 @@
 import { useEffect, useState, useRef } from "react";
 import { MdClose } from "react-icons/md";
 import { TiArrowMinimise } from "react-icons/ti";
-import { base_url,chat_url } from "../../config/config";
-const Schat = ({
-  supportId,
-  bId,
-  bName,
-  onClose,
-  isVisible,
-  onToggle,
-}) => {
+import { base_url, chat_url } from "../../config/config";
+
+const SeenLabel = ({ read }) => (
+  read
+    ? <span className="text-[10px] text-blue-500 mt-0.5">Seen</span>
+    : <span className="text-[10px] text-gray-400 mt-0.5">Sent</span>
+);
+
+const Schat = ({ supportId, bId, bName, onClose, isVisible, onToggle }) => {
   const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState("");
   const [socket, setSocket] = useState(null);
   const [isSending, setIsSending] = useState(false);
   const chatEndRef = useRef(null);
+  const isVisibleRef = useRef(false); // ✅ ref to avoid stale closure in WebSocket
 
-  // Fetch chat history
+  // Sync ref with prop + mark read when chat becomes visible
+  useEffect(() => {
+    isVisibleRef.current = isVisible;
+    if (isVisible && supportId) markMessagesRead();
+  }, [isVisible, supportId]);
+
+  // Mark user's messages as read (only called when chat is visible)
+  const markMessagesRead = async () => {
+    if (!supportId) return;
+    try {
+      await fetch(`${base_url}/schat/mark-read/${supportId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sender: "user" }), // mark user's msgs as read
+      });
+    } catch (err) {
+      console.error("Error marking as read:", err);
+    }
+  };
+
+  // Polling for messages
   useEffect(() => {
     const fetchMessages = async () => {
       try {
@@ -37,22 +58,36 @@ const Schat = ({
     }
   }, [supportId]);
 
+  // WebSocket setup
   useEffect(() => {
+    if (!supportId) return;
+
     const ws = new WebSocket(`${chat_url}`);
     setSocket(ws);
 
-    ws.onmessage = (event) => {
-      const msg = JSON.parse(event.data);
-      if (msg.supportId === supportId) {
-        setMessages((prev) => [...prev, msg]);
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+
+  // ✅ Ignore the initial array dump on connect
+  if (Array.isArray(data)) return;
+
+  if (data.supportId === supportId) {
+    setMessages((prev) => {
+      if (!prev.some((m) => m.time === data.time && m.text === data.text)) {
+        return [...prev, data];
       }
-    };
+      return prev;
+    });
 
+    // ✅ Only mark read if chat window is actually visible
+    if (isVisibleRef.current) markMessagesRead();
+  }
+};
     ws.onerror = (err) => console.error("WebSocket error:", err);
-
     return () => ws.close();
   }, [supportId]);
 
+  // Auto scroll
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -67,6 +102,7 @@ const Schat = ({
       sender: "manager",
       text: inputValue,
       time: new Date().toISOString(),
+      read: false,
     };
 
     setIsSending(true);
@@ -109,25 +145,25 @@ const Schat = ({
             {messages.map((msg, idx) => (
               <div
                 key={idx}
-                className={`flex mb-2 ${
-                  msg.sender === "manager" ? "justify-end" : "justify-start"
-                }`}
+                className={`flex mb-2 ${msg.sender === "manager" ? "justify-end" : "justify-start"}`}
               >
                 <div
                   className={`p-2 rounded-xl max-w-xs ${
-                    msg.sender === "manager"
-                      ? "bg-blue-200 text-right"
-                      : "bg-gray-200 text-left"
+                    msg.sender === "manager" ? "bg-blue-200 text-right" : "bg-gray-200 text-left"
                   }`}
                 >
                   <p className="text-sm">{msg.text}</p>
-                  <p className="text-[10px] text-gray-600">
-                    {new Date(msg.time).toLocaleTimeString()}
-                  </p>
+                  <div className="flex items-center justify-end gap-1 mt-0.5">
+                    <p className="text-[10px] text-gray-500">
+                      {new Date(msg.time).toLocaleTimeString()}
+                    </p>
+                    {/* ✅ Only show on manager's own messages */}
+                    {msg.sender === "manager" && <SeenLabel read={msg.read} />}
+                  </div>
                 </div>
               </div>
             ))}
-            <div ref={chatEndRef}></div>
+            <div ref={chatEndRef} />
           </div>
 
           <div className="flex border-t">

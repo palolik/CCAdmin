@@ -41,7 +41,7 @@ const AllHClient = () => {
     });
   };
 
-  // Add New Client
+ 
   const handleAddPost = async (e) => {
     e.preventDefault();
     const form = e.target;
@@ -127,7 +127,7 @@ const AllHClient = () => {
                 <td>{item.name}</td>
                 <td>
                   <a
-                    href={item.link.startsWith("http") ? item.link : `https://${item.link}`}
+                    href={item.link}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 underline"

@@ -112,10 +112,8 @@ const CollapsedFlyout = ({ section, routes, currentPath, onClose }) => {
 const Sidebar = () => {
   const [activeSection, setActiveSection] = useState(null);
   const [allowedTabs, setAllowedTabs]     = useState([]);
-  const [collapsed, setCollapsed]         = useState(true);
   // which section's flyout is open (collapsed mode)
-  const [flyoutSection, setFlyoutSection] = useState(null);
-  const flyoutRefs = useRef({});
+ 
 
   const sections = {
     packages: [
@@ -166,7 +164,18 @@ const Sidebar = () => {
       { id: 4, name: "Recruitment",   path: "/admin/recruitment" },
     ],
   };
+  const [collapsed, setCollapsed] = useState(() => {
+    const saved = localStorage.getItem('sidebar-collapsed');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
 
+  const [flyoutSection, setFlyoutSection] = useState(null);
+  const flyoutRefs = useRef({});
+
+  // Persist collapsed state whenever it changes
+  useEffect(() => {
+    localStorage.setItem('sidebar-collapsed', JSON.stringify(collapsed));
+  }, [collapsed]);
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("adminData"));
     if (storedUser?.tabs) {
