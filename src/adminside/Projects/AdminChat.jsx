@@ -59,7 +59,11 @@ const AttachmentBubble = ({ attachments, isManager }) => {
     </div>
   );
 };
-
+const SeenLabel = ({ read }) => (
+  read
+    ? <span className="text-[10px] text-slate-400 mt-0.5">Seen</span>
+    : <span className="text-[10px] text-slate-500 mt-0.5">Sent</span>
+);
 /* ── main component ──────────────────────────────────────── */
 const Chat = ({
   orderId, buyerid, bdp, name,
@@ -76,6 +80,7 @@ const Chat = ({
   const chatEndRef    = useRef(null);
   const scrollRef     = useRef(null);
   const isNearBottom  = useRef(true);
+const isVisibleRef = useRef(false);
 
   /* scroll logic */
   const checkBottom = () => {
@@ -94,6 +99,24 @@ const Chat = ({
     prevCount.current = messages.length;
   }, [messages, scrollToBottom]);
 
+  useEffect(() => {
+  isVisibleRef.current = isVisible;
+  if (isVisible && orderId) markMessagesRead();
+}, [isVisible, orderId]);
+
+// Mark client's messages as read
+const markMessagesRead = async () => {
+  if (!orderId) return;
+  try {
+    await fetch(`${base_url}/clichat/mark-read/${orderId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sender: "client" }), // mark client's msgs as read
+    });
+  } catch (err) {
+    console.error("Error marking as read:", err);
+  }
+};
   /* fetch messages */
   useEffect(() => {
     const fetch_ = async () => {
@@ -116,67 +139,89 @@ const Chat = ({
     const ws = new WebSocket(`${chat_url}?orderId=${orderId}`);
     setSocket(ws);
     ws.onopen    = () => console.log('WS connected');
-    ws.onmessage = (e) => {
-      const incoming = JSON.parse(e.data);
-      setMessages(p => {
-        if (p.some(m => m.time === incoming.time && m.text === incoming.text)) return p;
-        return [...p, incoming];
-      });
-    };
+  ws.onmessage = (e) => {
+  const data = JSON.parse(e.data);
+
+  // Ignore initial history array dump
+  if (Array.isArray(data)) return;
+
+  // Handle read_update broadcast from the other side
+  if (data.type === "read_update") {
+    setMessages(prev =>
+      prev.map(m =>
+        m.sender === data.sender ? { ...m, read: true } : m
+      )
+    );
+    return;
+  }
+
+  setMessages(p => {
+    if (p.some(m => m.time === data.time && m.text === data.text)) return p;
+    return [...p, data];
+  });
+};
     ws.onerror = (e) => console.error('WS error', e);
     return () => ws.close();
   }, [orderId]);
 
+const lastManagerMsgIndex = messages.map(m => m.sender).lastIndexOf("manager");
+
   /* send message */
-  const handleSend = async () => {
-    const hasText  = inputValue.trim();
-    const hasFiles = attachedFiles.length > 0;
-    // Guard: must have content, socket must be open
-    if ((!hasText && !hasFiles) || !socket || socket.readyState !== WebSocket.OPEN || isSending) return;
+const handleSend = async () => {
+  const hasText  = inputValue.trim();
+  const hasFiles = attachedFiles.length > 0;
 
-    setIsSending(true);
-    isNearBottom.current = true;
-    try {
-      if (hasFiles) {
-        const fd = new FormData();
-        fd.append('orderId', orderId);
-        fd.append('bId', buyerid);
-        fd.append('bName', buyerName);
-        fd.append('sender', 'manager');
-        fd.append('time', new Date().toISOString());
-        // Backend requires 'text' field — fall back to filename list if no text typed
-        fd.append('text', hasText || attachedFiles.map(f => f.name).join(', '));
-        attachedFiles.forEach(f => fd.append('files', f));
+  // ✅ Removed socket readyState check — backend handles persistence
+  if ((!hasText && !hasFiles) || isSending) return;
 
-        const r = await fetch(`${base_url}/addclichat/files`, { method: 'POST', body: fd });
-        if (!r.ok) throw new Error(`Upload failed: ${r.status} ${await r.text()}`);
-        const msg = await r.json();
-        // Broadcast via WS so client sees it instantly
-        if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify(msg));
-        setMessages(p => [...p, msg]);
-      } else {
-        const msg = {
-          orderId, bId: buyerid, bName: buyerName,
-          sender: 'manager', text: hasText,
-          time: new Date().toISOString(),
-        };
-        await fetch(`${base_url}/addclichat`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(msg),
-        });
-        if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify(msg));
-        setMessages(p => [...p, msg]);
-      }
-      setInputValue('');
-      setAttachedFiles([]);
-    } catch (e) {
-      console.error('Send error:', e);
-    } finally {
-      setIsSending(false);
+  setIsSending(true);
+  isNearBottom.current = true;
+  try {
+    if (hasFiles) {
+      const fd = new FormData();
+      fd.append('orderId', orderId);
+      fd.append('bId', buyerid);
+      fd.append('bName', buyerName);
+      fd.append('sender', 'manager');
+      fd.append('time', new Date().toISOString());
+      fd.append('text', hasText || attachedFiles.map(f => f.name).join(', '));
+      attachedFiles.forEach(f => fd.append('files', f));
+
+      const r = await fetch(`${base_url}/addclichat/files`, { method: 'POST', body: fd });
+      if (!r.ok) throw new Error(`Upload failed: ${r.status}`);
+      const msg = await r.json();
+
+      // ✅ Only send via WS if open — not required for message to be saved
+      if (socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify(msg));
+      setMessages(p => [...p, msg]);
+
+    } else {
+      const msg = {
+        orderId, bId: buyerid, bName: buyerName,
+        sender: 'manager', text: hasText,
+        time: new Date().toISOString(),
+        read: false,
+      };
+
+      await fetch(`${base_url}/addclichat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(msg),
+      });
+
+      // ✅ Only send via WS if open
+      if (socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify(msg));
+      setMessages(p => [...p, msg]);
     }
-  };
 
+    setInputValue('');
+    setAttachedFiles([]);
+  } catch (e) {
+    console.error('Send error:', e);
+  } finally {
+    setIsSending(false);
+  }
+};
   /* toggle package content */
    const handleToggleContent = async (index) => {
     const updated = updatedPackageContents.map((item, i) =>
@@ -275,6 +320,9 @@ const Chat = ({
                         {msg.text && !msg.text.startsWith('📎') && <p>{msg.text}</p>}
                         <AttachmentBubble attachments={msg.attachments} isManager={isManager} />
                       </div>
+                      {isManager && i === lastManagerMsgIndex && (
+  <SeenLabel read={msg.read} />
+)}
                     </div>
                   </div>
                 );
@@ -303,17 +351,31 @@ const Chat = ({
 
             {/* input bar */}
             <div className="flex items-center gap-1.5 px-2 py-2 bg-white border-t border-slate-100">
-              <input ref={fileInputRef} type="file" multiple accept="*/*" className="hidden"
-                onChange={e => { setAttachedFiles(p => [...p, ...Array.from(e.target.files)]); e.target.value = ''; }}
-              />
+           {/* Replace the hidden file input */}
+<input
+  ref={fileInputRef}
+  type="file"
+  multiple
+  className="hidden"
+  onClick={e => { e.target.value = null; }} // ✅ reset before opening so same file can be reselected
+  onChange={e => {
+    const files = Array.from(e.target.files);
+    if (files.length) setAttachedFiles(p => [...p, ...files]);
+  }}
+/>
               {/* attach */}
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="flex-shrink-0 p-2 rounded-lg text-slate-400 hover:text-blue-500 hover:bg-slate-100 transition-colors"
-                title="Attach files"
-              >
-                <FaPaperclip size={15} />
-              </button>
+            <button
+  type="button" // ✅ prevent accidental form submit
+  onClick={e => {
+    e.preventDefault();
+    e.stopPropagation();
+    fileInputRef.current?.click();
+  }}
+  className="flex-shrink-0 p-2 rounded-lg text-slate-400 hover:text-blue-500 hover:bg-slate-100 transition-colors"
+  title="Attach files"
+>
+  <FaPaperclip size={15} />
+</button>
               {/* text */}
               <input
                 type="text"
