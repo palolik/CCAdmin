@@ -487,12 +487,24 @@ const WorkDis = () => {
 
       {/* ── floating chat windows ── */}
       <div className="flex flex-row-reverse items-end fixed right-20 bottom-0 ">
-        {activeChatTasks.map(taskId => {
-          const t = tasks.find(task => task._id === taskId);
-          return (
-            <AdminempChat key={taskId} taskid={t?._id||''} emid={t?.taptr||''} dp={t?.apdp||''} name={t?.apname||'Unknown'} tname={t?.tname||''} tdesc={t?.tdesc||''} isVisible={chatVisibility[taskId]} onClose={()=>closeChat(taskId)} onToggle={()=>toggleChatVisibility(taskId)} />
-          );
-        })}
+       {activeChatTasks.map(taskId => {
+  const t = tasks.find(task => task._id === taskId);
+  console.log('Task object:', t); // ✅ check what fields exist
+  return (
+    <AdminempChat
+      key={taskId}
+      taskid={t?._id || ''}
+      emid={t?.taptr || t?.empId || t?.employeeId || ''} // ✅ try fallbacks
+      dp={t?.apdp || ''}
+      name={t?.apname || 'Unknown'}
+      tname={t?.tname || ''}
+      tdesc={t?.tdesc || ''}
+      isVisible={chatVisibility[taskId]}
+      onClose={() => closeChat(taskId)}
+      onToggle={() => toggleChatVisibility(taskId)}
+    />
+  );
+})}
       </div>
     </>
   );

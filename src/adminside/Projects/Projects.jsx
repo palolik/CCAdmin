@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLoaderData } from "react-router-dom";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
 import { MdChat } from "react-icons/md";
@@ -30,6 +30,7 @@ const formatDate = (dateString) => {
 
 const Projects = () => {
   const loaderorders = useLoaderData();
+
   const [orders, setOrders] = useState(
     [...(loaderorders || [])].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
   );
@@ -39,26 +40,36 @@ const Projects = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [expandedRow, setExpandedRow] = useState(null);
 
-  // Fetch & sort latest first
+  // ✅ ref is always in sync — updated synchronously before render commits
+  const ordersRef = useRef([]);
+  ordersRef.current = orders; // ✅ direct assignment, no useEffect needed
+
+  // Fetch orders with polling
   useEffect(() => {
-    fetch(`${base_url}/orders`)
-      .then(res => res.json())
-      .then(data => {
-        const sorted = [...data].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        setOrders(sorted);
-      })
-      .catch(err => console.error('Error fetching orders:', err));
+    const load = () => {
+      fetch(`${base_url}/orders`)
+        .then(res => res.json())
+        .then(data => {
+          const sorted = [...data].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+          setOrders(sorted);
+        })
+        .catch(err => console.error('Error fetching orders:', err));
+    };
+
+    load();
+    const iv = setInterval(load, 30000);
+    return () => clearInterval(iv);
   }, []);
 
-  // Countdown timers
+  // ✅ Timer reads from ref directly — always fresh, never stale
   useEffect(() => {
     const calc = () => {
       const now = new Date();
       const times = {};
-      orders.forEach(order => {
-        if (order.status === "completed") return;
+      ordersRef.current.forEach(order => {
+        if (order.status === "completed" || !order.startedAt || !order.time) return;
         const startedAt = new Date(order.startedAt);
-        const target = new Date(startedAt.getTime() + order.time * 3600000);
+const target = new Date(startedAt.getTime() + order.time * 86400000);
         const diff = target - now;
         if (diff > 0) {
           const h = Math.floor(diff / 3600000);
@@ -71,10 +82,11 @@ const Projects = () => {
       });
       setRemainingTimes(times);
     };
+
     calc();
     const iv = setInterval(calc, 1000);
     return () => clearInterval(iv);
-  }, [orders]);
+  }, []); // ✅ empty — registers once, reads fresh data via ref on every tick
 
   const totalPages = Math.ceil(orders.length / ORDERS_PER_PAGE);
   const paginated = orders.slice((currentPage - 1) * ORDERS_PER_PAGE, currentPage * ORDERS_PER_PAGE);
@@ -124,23 +136,21 @@ const Projects = () => {
       .catch(() => Swal.fire({ icon: "error", title: "Failed!", text: "Could not update status." }));
   };
 
-const handlePStatusChange = (orderId, newStatus) => {
-  fetch(`${base_url}/orderpaymentstatus/${orderId}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ pstatus: newStatus }),
-  })
-    .then(res => res.json())
-    .then(data => {
-      console.log("Response:", data); // ✅ দেখো কী আসছে
-      // ✅ message check করো
-      if (data.message) {
-        Swal.fire({ icon: "success", title: "Payment Updated!", timer: 1200, showConfirmButton: false });
-        setOrders(prev => prev.map(p => p._id === orderId ? { ...p, pstatus: newStatus } : p));
-      }
+  const handlePStatusChange = (orderId, newStatus) => {
+    fetch(`${base_url}/orderpaymentstatus/${orderId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pstatus: newStatus }),
     })
-    .catch(() => Swal.fire({ icon: "error", title: "Failed!", text: "Could not update payment status." }));
-};
+      .then(res => res.json())
+      .then(data => {
+        if (data.message) {
+          Swal.fire({ icon: "success", title: "Payment Updated!", timer: 1200, showConfirmButton: false });
+          setOrders(prev => prev.map(p => p._id === orderId ? { ...p, pstatus: newStatus } : p));
+        }
+      })
+      .catch(() => Swal.fire({ icon: "error", title: "Failed!", text: "Could not update payment status." }));
+  };
 
   const handleChatClick = (orderId) => {
     if (!activeChatTasks.includes(orderId)) setActiveChatTasks(prev => [...prev, orderId]);
@@ -156,7 +166,7 @@ const handlePStatusChange = (orderId, newStatus) => {
     setChatVisibility(prev => ({ ...prev, [orderId]: !prev[orderId] }));
 
   return (
-      <div className="w-full">
+    <div className="w-full">
       <div className="hdr">Projects</div>
 
       <div className="p-3 space-y-3">
@@ -171,15 +181,13 @@ const handlePStatusChange = (orderId, newStatus) => {
             <div key={order._id}
               className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
 
-              {/* Row smmary */}
+              {/* Row summary */}
               <div
                 className="grid grid-cols-[80px_100px_180px_120px_140px_160px_120px_160px] gap-4 px-5 py-4 items-center cursor-pointer"
                 onClick={() => setExpandedRow(isExpanded ? null : order._id)}
               >
-                {/* Index */}
                 <span className="text-xs text-gray-400 font-mono">{globalIndex}</span>
 
-                {/* Title + buyer */}
                 <div className="w-32">
                   <p className="font-semibold text-gray-800 text-sm truncate">{order.projectTitle}</p>
                   <div className="flex items-center gap-2 mt-1">
@@ -188,13 +196,11 @@ const handlePStatusChange = (orderId, newStatus) => {
                   </div>
                 </div>
 
-                {/* Package */}
                 <div className="min-w-0">
                   <p className="text-xs font-semibold text-gray-600 truncate">{order.packageName}</p>
                   <p className="text-xs text-gray-400">{order.packageContents?.length || 0} items</p>
                 </div>
 
-                {/* Progress */}
                 <div>
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-xs text-gray-500">{progress}%</span>
@@ -207,7 +213,6 @@ const handlePStatusChange = (orderId, newStatus) => {
                   </div>
                 </div>
 
-                {/* Time */}
                 <div className="text-xs">
                   {order.status === "completed" ? (
                     <div>
@@ -222,7 +227,6 @@ const handlePStatusChange = (orderId, newStatus) => {
                   )}
                 </div>
 
-                {/* Status badge */}
                 <div className="flex flex-row gap-1">
                   <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border w-fit ${status.color}`}>
                     {status.label}
@@ -232,10 +236,8 @@ const handlePStatusChange = (orderId, newStatus) => {
                   </span>
                 </div>
 
-                {/* Created at */}
                 <div className="text-xs text-gray-400">{formatDate(order.createdAt)}</div>
 
-                {/* Actions */}
                 <div className="flex flex-row gap-2" onClick={e => e.stopPropagation()}>
                   <select
                     value={order.status || "pending"}
@@ -264,16 +266,13 @@ const handlePStatusChange = (orderId, newStatus) => {
                 </div>
               </div>
 
-              {/* Expanded detail row */}
               {isExpanded && (
                 <div className="border-t border-gray-100 px-5 py-4 bg-gray-50 grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
-                  {/* Brief */}
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Project Brief</p>
                     <p className="text-gray-600 leading-relaxed">{order.projectBrief || "No details provided."}</p>
                   </div>
 
-                  {/* Package contents */}
                   <div>
                     <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Package Contents</p>
                     <ul className="space-y-1.5">
@@ -286,7 +285,6 @@ const handlePStatusChange = (orderId, newStatus) => {
                     </ul>
                   </div>
 
-                  {/* Buyer info + attachments */}
                   <div className="space-y-3">
                     <div>
                       <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Buyer</p>
@@ -313,7 +311,6 @@ const handlePStatusChange = (orderId, newStatus) => {
         })}
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between px-6 py-4 bg-white border-t border-gray-200">
           <p className="text-sm text-gray-400">
@@ -340,11 +337,11 @@ const handlePStatusChange = (orderId, newStatus) => {
                   <button
                     key={p}
                     onClick={() => setCurrentPage(p)}
-                    className={`w-9 h-9 text-sm rounded-lg border transition-colors font-medium
-                      ${currentPage === p
+                    className={`w-9 h-9 text-sm rounded-lg border transition-colors font-medium ${
+                      currentPage === p
                         ? 'bg-blue-600 text-white border-blue-600'
                         : 'border-gray-200 text-gray-600 hover:bg-gray-50'
-                      }`}
+                    }`}
                   >{p}</button>
                 )
               )}
@@ -358,7 +355,6 @@ const handlePStatusChange = (orderId, newStatus) => {
         </div>
       )}
 
-      {/* Floating chats */}
       <div className="flex flex-row-reverse items-end fixed right-4 bottom-4 gap-3 z-50">
         {activeChatTasks.map(orderId => {
           const task = orders.find(o => o._id === orderId);

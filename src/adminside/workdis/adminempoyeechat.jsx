@@ -12,6 +12,7 @@ import { base_url, chat_url } from '../../config/config';
 /* ── helpers ─────────────────────────────────────────────────────────────── */
 const isImage = (mime) => mime?.startsWith('image/');
 
+// ✅ Uses `mime` prop — matches how AttachmentBubble calls it
 const FileIcon = ({ mime }) => {
   if (mime?.includes('pdf'))                                return <FaFilePdf    className="text-red-400"   size={14} />;
   if (mime?.includes('word') || mime?.includes('document')) return <FaFileWord  className="text-blue-400"  size={14} />;
@@ -47,6 +48,7 @@ const AttachmentBubble = ({ attachments, isManager }) => {
                 : 'bg-white border-gray-200 text-gray-700'
             }`}
           >
+            {/* ✅ passes mime={file.mimetype} to match FileIcon prop */}
             <FileIcon mime={file.mimetype} />
             <div className="flex flex-col min-w-0">
               <span className="font-medium truncate max-w-[120px]">{file.originalName}</span>
@@ -60,12 +62,19 @@ const AttachmentBubble = ({ attachments, isManager }) => {
   );
 };
 
+// ✅ Seen label — same as Chat.jsx
+const SeenLabel = ({ read }) => (
+  read
+    ? <span className="text-[10px] text-slate-400 mt-0.5">Seen</span>
+    : <span className="text-[10px] text-slate-500 mt-0.5">Sent</span>
+);
+
 /* ── main component ──────────────────────────────────────────────────────── */
 const AdminempChat = ({ taskid, emid, dp, name, tname, tdesc, onClose, isVisible, onToggle }) => {
-  const [messages, setMessages]         = useState([]);
-  const [inputValue, setInputValue]     = useState('');
-  const [socket, setSocket]             = useState(null);
-  const [isSending, setIsSending]       = useState(false);
+  const [messages, setMessages]           = useState([]);
+  const [inputValue, setInputValue]       = useState('');
+  const [socket, setSocket]               = useState(null);
+  const [isSending, setIsSending]         = useState(false);
   const [attachedFiles, setAttachedFiles] = useState([]);
 
   const fileInputRef = useRef(null);
@@ -73,6 +82,7 @@ const AdminempChat = ({ taskid, emid, dp, name, tname, tdesc, onClose, isVisible
   const chatEndRef   = useRef(null);
   const isNearBottom = useRef(true);
   const prevCount    = useRef(0);
+  const isVisibleRef = useRef(false);
 
   /* ── scroll ── */
   const checkBottom = () => {
@@ -88,6 +98,26 @@ const AdminempChat = ({ taskid, emid, dp, name, tname, tdesc, onClose, isVisible
     if (messages.length > prevCount.current) scrollToBottom();
     prevCount.current = messages.length;
   }, [messages, scrollToBottom]);
+
+  // ✅ Track visibility + mark read when opened — same as Chat.jsx
+  useEffect(() => {
+    isVisibleRef.current = isVisible;
+    if (isVisible && taskid) markMessagesRead();
+  }, [isVisible, taskid]);
+
+  // ✅ Mark emp messages as read
+  const markMessagesRead = async () => {
+    if (!taskid) return;
+    try {
+      await fetch(`${base_url}/empchat/mark-read/${taskid}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sender: 'emp' }),
+      });
+    } catch (err) {
+      console.error('Error marking as read:', err);
+    }
+  };
 
   /* ── fetch + poll ── */
   useEffect(() => {
@@ -111,10 +141,25 @@ const AdminempChat = ({ taskid, emid, dp, name, tname, tdesc, onClose, isVisible
     setSocket(ws);
     ws.onopen    = () => console.log('WS connected');
     ws.onmessage = (e) => {
-      const incoming = JSON.parse(e.data);
+      const data = JSON.parse(e.data);
+
+      // ✅ Ignore initial history array dump — same as Chat.jsx
+      if (Array.isArray(data)) return;
+
+      // ✅ Handle read_update broadcast — same as Chat.jsx
+      if (data.type === 'read_update') {
+        setMessages(prev =>
+          prev.map(m => m.sender === data.sender ? { ...m, read: true } : m)
+        );
+        return;
+      }
+
+      // ✅ Mark emp message read immediately if chat is open
+      if (data.sender === 'emp' && isVisibleRef.current) markMessagesRead();
+
       setMessages(p => {
-        if (p.some(m => m.time === incoming.time && m.text === incoming.text)) return p;
-        return [...p, incoming];
+        if (p.some(m => m.time === data.time && m.text === data.text)) return p;
+        return [...p, data];
       });
     };
     ws.onerror = (e) => console.error('WS error', e);
@@ -126,7 +171,8 @@ const AdminempChat = ({ taskid, emid, dp, name, tname, tdesc, onClose, isVisible
   const handleSend = async () => {
     const hasText  = inputValue.trim();
     const hasFiles = attachedFiles.length > 0;
-    if ((!hasText && !hasFiles) || !socket || socket.readyState !== WebSocket.OPEN || isSending) return;
+    // ✅ Removed socket readyState gate — same as Chat.jsx
+    if ((!hasText && !hasFiles) || isSending) return;
 
     setIsSending(true);
     isNearBottom.current = true;
@@ -138,25 +184,27 @@ const AdminempChat = ({ taskid, emid, dp, name, tname, tdesc, onClose, isVisible
         fd.append('empName', name);
         fd.append('sender',  'manager');
         fd.append('time',    new Date().toISOString());
-        if (hasText) fd.append('text', hasText);
+        fd.append('text',    hasText || attachedFiles.map(f => f.name).join(', '));
         attachedFiles.forEach(f => fd.append('files', f));
 
         const r   = await fetch(`${base_url}/addempchat/files`, { method: 'POST', body: fd });
+        if (!r.ok) throw new Error(`Upload failed: ${r.status}`);
         const msg = await r.json();
-        if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify(msg));
+        if (socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify(msg));
         setMessages(p => [...p, msg]);
       } else {
         const msg = {
           taskId: taskid, empId: emid, empName: name,
           sender: 'manager', text: hasText,
           time: new Date().toISOString(),
+          read: false,
         };
         await fetch(`${base_url}/addempchat`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(msg),
         });
-        if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify(msg));
+        if (socket?.readyState === WebSocket.OPEN) socket.send(JSON.stringify(msg));
         setMessages(p => [...p, msg]);
       }
       setInputValue('');
@@ -167,6 +215,9 @@ const AdminempChat = ({ taskid, emid, dp, name, tname, tdesc, onClose, isVisible
       setIsSending(false);
     }
   };
+
+  // ✅ Seen label on last manager message — same as Chat.jsx
+  const lastManagerMsgIndex = messages.map(m => m.sender).lastIndexOf('manager');
 
   /* ── render ── */
   return (
@@ -255,6 +306,10 @@ const AdminempChat = ({ taskid, emid, dp, name, tname, tdesc, onClose, isVisible
                       {msg.text && !msg.text.startsWith('📎') && <p>{msg.text}</p>}
                       <AttachmentBubble attachments={msg.attachments} isManager={isManager} />
                     </div>
+                    {/* ✅ Seen label on last manager message — same as Chat.jsx */}
+                    {isManager && i === lastManagerMsgIndex && (
+                      <SeenLabel read={msg.read} />
+                    )}
                   </div>
                 </div>
               );
@@ -282,10 +337,15 @@ const AdminempChat = ({ taskid, emid, dp, name, tname, tdesc, onClose, isVisible
           <div className="flex items-center gap-1.5 px-2 py-2 bg-white border-t border-slate-100">
             <input
               ref={fileInputRef} type="file" multiple accept="*/*" className="hidden"
-              onChange={e => { setAttachedFiles(p => [...p, ...Array.from(e.target.files)]); e.target.value = ''; }}
+              onClick={e => { e.target.value = null; }}
+              onChange={e => {
+                const files = Array.from(e.target.files);
+                if (files.length) setAttachedFiles(p => [...p, ...files]);
+              }}
             />
             <button
-              onClick={() => fileInputRef.current?.click()}
+              type="button"
+              onClick={e => { e.preventDefault(); e.stopPropagation(); fileInputRef.current?.click(); }}
               className="flex-shrink-0 p-2 rounded-lg text-slate-400 hover:text-blue-500 hover:bg-slate-100 transition-colors"
               title="Attach files"
             >
@@ -318,4 +378,3 @@ const AdminempChat = ({ taskid, emid, dp, name, tname, tdesc, onClose, isVisible
 };
 
 export default AdminempChat;
-
