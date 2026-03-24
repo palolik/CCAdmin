@@ -39,29 +39,64 @@ const Projects = () => {
   const [activeChatTasks, setActiveChatTasks] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [expandedRow, setExpandedRow] = useState(null);
+  // ✅ separate map for unread counts so they update independently
+  const [unreadCounts, setUnreadCounts] = useState({});
 
-  // ✅ ref is always in sync — updated synchronously before render commits
   const ordersRef = useRef([]);
-  ordersRef.current = orders; // ✅ direct assignment, no useEffect needed
+  ordersRef.current = orders;
 
-  // Fetch orders with polling
-  useEffect(() => {
-    const load = () => {
-      fetch(`${base_url}/orders`)
-        .then(res => res.json())
-        .then(data => {
-          const sorted = [...data].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-          setOrders(sorted);
+  /* ── fetch orders ── */
+  const loadP = () => {
+    fetch(`${base_url}/orders`)
+      .then(res => res.json())
+      .then(data => {
+        const sorted = [...data].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+        setOrders(sorted);
+      })
+      .catch(err => console.error('Error fetching orders:', err));
+  };
+
+  /* ── fetch unread counts for all orders ── */
+  const loadUnreadCounts = async () => {
+    try {
+      const allOrders = ordersRef.current;
+      // Fetch unread count per order in parallel
+      const results = await Promise.all(
+        allOrders.map(async (order) => {
+          try {
+            const r = await fetch(`${base_url}/clichat/${order._id}`);
+            if (!r.ok) return { id: order._id, count: 0 };
+            const msgs = await r.json();
+            // Unread = messages sent by 'client' that are not read
+            const count = msgs.filter(m => m.sender === 'client' && !m.read).length;
+            return { id: order._id, count };
+          } catch {
+            return { id: order._id, count: 0 };
+          }
         })
-        .catch(err => console.error('Error fetching orders:', err));
-    };
+      );
+      const map = {};
+      results.forEach(({ id, count }) => { map[id] = count; });
+      setUnreadCounts(map);
+    } catch (err) {
+      console.error('Error fetching unread counts:', err);
+    }
+  };
 
-    load();
-    const iv = setInterval(load, 30000);
-    return () => clearInterval(iv);
+  useEffect(() => {
+    loadP();
+    const interval = setInterval(loadP, 10000);
+    return () => clearInterval(interval);
   }, []);
 
-  // ✅ Timer reads from ref directly — always fresh, never stale
+  // ✅ Load unread counts once orders are loaded, then poll every 5s
+  useEffect(() => {
+    if (!orders.length) return;
+    loadUnreadCounts();
+    const interval = setInterval(loadUnreadCounts, 5000);
+    return () => clearInterval(interval);
+  }, [orders.length]);
+
   useEffect(() => {
     const calc = () => {
       const now = new Date();
@@ -69,7 +104,7 @@ const Projects = () => {
       ordersRef.current.forEach(order => {
         if (order.status === "completed" || !order.startedAt || !order.time) return;
         const startedAt = new Date(order.startedAt);
-const target = new Date(startedAt.getTime() + order.time * 86400000);
+        const target = new Date(startedAt.getTime() + order.time * 86400000);
         const diff = target - now;
         if (diff > 0) {
           const h = Math.floor(diff / 3600000);
@@ -82,11 +117,10 @@ const target = new Date(startedAt.getTime() + order.time * 86400000);
       });
       setRemainingTimes(times);
     };
-
     calc();
     const iv = setInterval(calc, 1000);
     return () => clearInterval(iv);
-  }, []); // ✅ empty — registers once, reads fresh data via ref on every tick
+  }, []);
 
   const totalPages = Math.ceil(orders.length / ORDERS_PER_PAGE);
   const paginated = orders.slice((currentPage - 1) * ORDERS_PER_PAGE, currentPage * ORDERS_PER_PAGE);
@@ -153,8 +187,19 @@ const target = new Date(startedAt.getTime() + order.time * 86400000);
   };
 
   const handleChatClick = (orderId) => {
-    if (!activeChatTasks.includes(orderId)) setActiveChatTasks(prev => [...prev, orderId]);
+    if (!activeChatTasks.includes(orderId))
+      setActiveChatTasks(prev => [...prev, orderId]);
     setChatVisibility(prev => ({ ...prev, [orderId]: true }));
+
+    // ✅ Clear unread count immediately in UI
+    setUnreadCounts(prev => ({ ...prev, [orderId]: 0 }));
+
+    // ✅ Fixed: correct endpoint + sender body (backend requires sender field)
+    fetch(`${base_url}/clichat/mark-read/${orderId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sender: "client" }),
+    }).catch(err => console.error("Error marking messages as read:", err));
   };
 
   const closeChat = (orderId) => {
@@ -176,6 +221,7 @@ const target = new Date(startedAt.getTime() + order.time * 86400000);
           const pstatus = pstatusConfig[order.pstatus] || pstatusConfig.notpaid;
           const isExpanded = expandedRow === order._id;
           const globalIndex = (currentPage - 1) * ORDERS_PER_PAGE + index + 1;
+          const unread = unreadCounts[order._id] || 0; // ✅ read from separate map
 
           return (
             <div key={order._id}
@@ -257,11 +303,18 @@ const target = new Date(startedAt.getTime() + order.time * 86400000);
                     <option value="notpaid">Unpaid</option>
                     <option value="paid">Paid</option>
                   </select>
+
+                  {/* ✅ Fixed: relative on button so absolute badge positions correctly */}
                   <button
                     onClick={() => handleChatClick(order._id)}
-                    className="flex items-center gap-1.5 text-xs px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+                    className="relative flex items-center gap-1.5 text-xs px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
                   >
                     <MdChat className="w-3.5 h-3.5" /> Chat
+                    {unread > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full leading-none">
+                        {unread}
+                      </span>
+                    )}
                   </button>
                 </div>
               </div>

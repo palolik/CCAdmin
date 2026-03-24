@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useLoaderData } from "react-router-dom";
 import { createPortal } from "react-dom";
 import Swal from "sweetalert2";
@@ -75,18 +75,17 @@ const formatDate = (ds) => {
 };
 
 // ── task row ──────────────────────────────────────────────────────────────────
-const TaskRow = ({ task, onDelete, onChatClick, onExtraTime }) => {
+// ✅ accepts unreadCount prop from parent
+const TaskRow = ({ task, onDelete, onChatClick, onExtraTime, unreadCount }) => {
   const [open, setOpen] = useState(false);
   const st = statusStyle[task.tstatus] || { bg:"#f8fafc", color:"#64748b", border:"#e2e8f0" };
 
   return (
     <>
-      {/* ── summary row — always visible ── */}
       <tr
         className="border-b border-gray-100 hover:bg-gray-50/80 transition-colors cursor-pointer"
         onClick={() => setOpen(o => !o)}
       >
-        {/* expand chevron + name */}
         <td style={{ padding:"14px 16px" }}>
           <div style={{ display:"flex", alignItems:"center", gap:10 }}>
             <span style={{
@@ -102,13 +101,11 @@ const TaskRow = ({ task, onDelete, onChatClick, onExtraTime }) => {
           </div>
         </td>
 
-        {/* dept */}
         <td style={{ padding:"14px 16px" }}>
           <p style={{ margin:0, fontSize:13, color:"#334155" }}>{task.rdep}</p>
           <p style={{ margin:"2px 0 0", fontSize:11, color:"#94a3b8" }}>{task.rsubdep} · {task.esprts}</p>
         </td>
 
-        {/* time + cc */}
         <td style={{ padding:"14px 16px" }}>
           <span style={{ fontSize:12, background:"#f0fdf4", color:"#16a34a", border:"1px solid #bbf7d0", borderRadius:999, padding:"2px 10px", fontWeight:600, marginRight:6 }}>
             ⏱ {task.ttime}h
@@ -118,7 +115,6 @@ const TaskRow = ({ task, onDelete, onChatClick, onExtraTime }) => {
           </span>
         </td>
 
-        {/* accepted by */}
         <td style={{ padding:"14px 16px" }}>
           {task.apname ? (
             <div style={{ display:"flex", alignItems:"center", gap:8 }}>
@@ -135,7 +131,6 @@ const TaskRow = ({ task, onDelete, onChatClick, onExtraTime }) => {
           )}
         </td>
 
-        {/* status */}
         <td style={{ padding:"14px 16px" }}>
           <span style={{ fontSize:11.5, fontWeight:600, padding:"3px 12px", borderRadius:999,
             background: st.bg, color: st.color, border:`1px solid ${st.border}` }}>
@@ -143,14 +138,26 @@ const TaskRow = ({ task, onDelete, onChatClick, onExtraTime }) => {
           </span>
         </td>
 
-        {/* actions — stop propagation so clicks don't toggle row */}
         <td style={{ padding:"14px 16px" }} onClick={e => e.stopPropagation()}>
           <div style={{ display:"flex", gap:6 }}>
+            {/* ✅ relative positioning so badge sits on button */}
             <button
               onClick={() => onChatClick(task._id)}
-              style={{ display:"flex", alignItems:"center", gap:5, padding:"5px 12px", borderRadius:7, border:"none",
+              style={{ position:"relative", display:"flex", alignItems:"center", gap:5, padding:"5px 12px", borderRadius:7, border:"none",
                 background:"#eff6ff", color:"#2563eb", fontWeight:500, fontSize:12, cursor:"pointer" }}>
               <MdChat size={13} /> Chat
+              {/* ✅ unread badge */}
+              {unreadCount > 0 && (
+                <span style={{
+                  position:"absolute", top:-7, right:-7,
+                  background:"#ef4444", color:"#fff",
+                  fontSize:9, fontWeight:700,
+                  padding:"2px 5px", borderRadius:999,
+                  lineHeight:1, minWidth:16, textAlign:"center",
+                }}>
+                  {unreadCount}
+                </span>
+              )}
             </button>
             <button
               onClick={() => onDelete(task._id)}
@@ -162,13 +169,11 @@ const TaskRow = ({ task, onDelete, onChatClick, onExtraTime }) => {
         </td>
       </tr>
 
-      {/* ── expanded detail row ── */}
       {open && (
         <tr style={{ background:"#fafbfd" }}>
           <td colSpan={6} style={{ padding:"0 16px 16px 44px", borderBottom:"2px solid #e8eaf0" }}>
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:16, paddingTop:14 }}>
 
-              {/* description */}
               <div style={{ gridColumn:"1 / -1" }}>
                 <p style={{ ...lbl, marginBottom:6 }}>Task Description</p>
                 {task.tdesc ? (
@@ -182,7 +187,6 @@ const TaskRow = ({ task, onDelete, onChatClick, onExtraTime }) => {
                 )}
               </div>
 
-              {/* timing */}
               <div>
                 <p style={lbl}>Timing</p>
                 <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
@@ -202,7 +206,6 @@ const TaskRow = ({ task, onDelete, onChatClick, onExtraTime }) => {
                 </div>
               </div>
 
-              {/* follow-up */}
               <div>
                 <p style={lbl}>Follow-up For</p>
                 <p style={{ fontSize:13, color:"#475569", fontFamily:"monospace", background:"#f8fafc", border:"1px solid #e8eaf0", borderRadius:8, padding:"8px 12px", margin:0 }}>
@@ -210,7 +213,6 @@ const TaskRow = ({ task, onDelete, onChatClick, onExtraTime }) => {
                 </p>
               </div>
 
-              {/* more time request */}
               {task.tmoretime && (
                 <div>
                   <p style={lbl}>More Time Request</p>
@@ -252,6 +254,11 @@ const WorkDis = () => {
   const [search, setSearch]                         = useState("");
   const [filterStatus, setFilterStatus]             = useState("All");
   const [focused, setFocused]                       = useState(null);
+  // ✅ unread counts map: { taskId: number }
+  const [unreadCounts, setUnreadCounts]             = useState({});
+
+  const tasksRef = useRef([]);
+  tasksRef.current = tasks;
 
   const fi = (name) => focused === name
     ? { ...inp, borderColor:"#6366f1", boxShadow:"0 0 0 3px rgba(99,102,241,.1)", background:"#fff" }
@@ -267,6 +274,40 @@ const WorkDis = () => {
   useEffect(() => {
     fetch(`${base_url}/alltasks`).then(r => r.json()).then(setTasks).catch(console.error);
   }, []);
+
+  // ✅ Fetch unread counts: messages from 'emp' that are unread
+  const loadUnreadCounts = async () => {
+    const allTasks = tasksRef.current;
+    if (!allTasks.length) return;
+    try {
+      const results = await Promise.all(
+        allTasks.map(async (task) => {
+          try {
+            const r = await fetch(`${base_url}/empchat/${task._id}`);
+            if (!r.ok) return { id: task._id, count: 0 };
+            const msgs = await r.json();
+            const count = msgs.filter(m => m.sender === 'emp' && !m.read).length;
+            return { id: task._id, count };
+          } catch {
+            return { id: task._id, count: 0 };
+          }
+        })
+      );
+      const map = {};
+      results.forEach(({ id, count }) => { map[id] = count; });
+      setUnreadCounts(map);
+    } catch (err) {
+      console.error('Error fetching unread counts:', err);
+    }
+  };
+
+  // ✅ Poll unread counts every 5s once tasks are loaded
+  useEffect(() => {
+    if (!tasks.length) return;
+    loadUnreadCounts();
+    const interval = setInterval(loadUnreadCounts, 5000);
+    return () => clearInterval(interval);
+  }, [tasks.length]);
 
   useEffect(() => { setSelectedSubDepartment(""); setSelectedExpertise(""); setAvailableExpertise([]); }, [selectedDepartment]);
   useEffect(() => { setAvailableExpertise(subdepartmentData[selectedSubDepartment] || []); setSelectedExpertise(""); }, [selectedSubDepartment]);
@@ -306,7 +347,18 @@ const WorkDis = () => {
   const handleChatClick = (taskid) => {
     if (!activeChatTasks.includes(taskid)) setActiveChatTasks(prev => [...prev, taskid]);
     setChatVisibility(prev => ({ ...prev, [taskid]: true }));
+
+    // ✅ Clear badge immediately
+    setUnreadCounts(prev => ({ ...prev, [taskid]: 0 }));
+
+    // ✅ Mark emp messages as read on the server
+    fetch(`${base_url}/empchat/mark-read/${taskid}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sender: 'emp' }),
+    }).catch(err => console.error('Error marking as read:', err));
   };
+
   const closeChat = (taskid) => {
     setActiveChatTasks(prev => prev.filter(t => t !== taskid));
     setChatVisibility(prev => { const n = {...prev}; delete n[taskid]; return n; });
@@ -353,7 +405,6 @@ const WorkDis = () => {
 
         <div style={{ padding:"20px 28px 28px" }}>
 
-          {/* ── stats ── */}
           <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14, marginBottom:22 }}>
             {[
               { label:"Total Tasks",  value: counts.All,       color:"#1e293b" },
@@ -368,7 +419,6 @@ const WorkDis = () => {
             ))}
           </div>
 
-          {/* ── toolbar ── */}
           <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:18, flexWrap:"wrap", gap:10 }}>
             <div style={{ display:"flex", alignItems:"center", gap:10, flexWrap:"wrap" }}>
               <input className="wd-search" placeholder="Search name, ID, employee…" value={search} onChange={e => setSearch(e.target.value)} />
@@ -383,7 +433,6 @@ const WorkDis = () => {
             <button className="wd-addbtn" onClick={() => setShowForm(true)}>+ Add Task</button>
           </div>
 
-          {/* ── table ── */}
           <div className="wd-card">
             {filtered.length === 0 ? (
               <div style={{ padding:"56px 0", textAlign:"center", color:"#94a3b8", fontSize:14 }}>No tasks found.</div>
@@ -404,6 +453,7 @@ const WorkDis = () => {
                       onDelete={handleDelete}
                       onChatClick={handleChatClick}
                       onExtraTime={handleExtraTime}
+                      unreadCount={unreadCounts[task._id] || 0}
                     />
                   ))}
                 </tbody>
@@ -486,25 +536,24 @@ const WorkDis = () => {
       , document.body)}
 
       {/* ── floating chat windows ── */}
-      <div className="flex flex-row-reverse items-end fixed right-20 bottom-0 ">
-       {activeChatTasks.map(taskId => {
-  const t = tasks.find(task => task._id === taskId);
-  console.log('Task object:', t); // ✅ check what fields exist
-  return (
-    <AdminempChat
-      key={taskId}
-      taskid={t?._id || ''}
-      emid={t?.taptr || t?.empId || t?.employeeId || ''} // ✅ try fallbacks
-      dp={t?.apdp || ''}
-      name={t?.apname || 'Unknown'}
-      tname={t?.tname || ''}
-      tdesc={t?.tdesc || ''}
-      isVisible={chatVisibility[taskId]}
-      onClose={() => closeChat(taskId)}
-      onToggle={() => toggleChatVisibility(taskId)}
-    />
-  );
-})}
+      <div className="flex flex-row-reverse items-end fixed right-20 bottom-0">
+        {activeChatTasks.map(taskId => {
+          const t = tasks.find(task => task._id === taskId);
+          return (
+            <AdminempChat
+              key={taskId}
+              taskid={t?._id || ''}
+              emid={t?.taptr || t?.empId || t?.employeeId || ''}
+              dp={t?.apdp || ''}
+              name={t?.apname || 'Unknown'}
+              tname={t?.tname || ''}
+              tdesc={t?.tdesc || ''}
+              isVisible={chatVisibility[taskId]}
+              onClose={() => closeChat(taskId)}
+              onToggle={() => toggleChatVisibility(taskId)}
+            />
+          );
+        })}
       </div>
     </>
   );

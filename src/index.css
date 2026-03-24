@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.hdr{
+    @apply text-[40px] bg-[#010103] text-white pl-4 ;
+    
+}
+
+.smbut{
+    @apply btn btn-xs bg-black text-white hover:bg-[#121242] ;
+}
