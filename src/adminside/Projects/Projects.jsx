@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useLoaderData } from "react-router-dom";
 import { IoCheckmarkDoneOutline } from "react-icons/io5";
-import { MdChat } from "react-icons/md";
+import { MdChat, MdExpandMore, MdExpandLess } from "react-icons/md";
 import AdminChat from './AdminChat';
 import Swal from 'sweetalert2';
 import { base_url } from "../../config/config";
@@ -39,13 +39,11 @@ const Projects = () => {
   const [activeChatTasks, setActiveChatTasks] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [expandedRow, setExpandedRow] = useState(null);
-  // ✅ separate map for unread counts so they update independently
   const [unreadCounts, setUnreadCounts] = useState({});
 
   const ordersRef = useRef([]);
   ordersRef.current = orders;
 
-  /* ── fetch orders ── */
   const loadP = () => {
     fetch(`${base_url}/orders`)
       .then(res => res.json())
@@ -56,18 +54,15 @@ const Projects = () => {
       .catch(err => console.error('Error fetching orders:', err));
   };
 
-  /* ── fetch unread counts for all orders ── */
   const loadUnreadCounts = async () => {
     try {
       const allOrders = ordersRef.current;
-      // Fetch unread count per order in parallel
       const results = await Promise.all(
         allOrders.map(async (order) => {
           try {
             const r = await fetch(`${base_url}/clichat/${order._id}`);
             if (!r.ok) return { id: order._id, count: 0 };
             const msgs = await r.json();
-            // Unread = messages sent by 'client' that are not read
             const count = msgs.filter(m => m.sender === 'client' && !m.read).length;
             return { id: order._id, count };
           } catch {
@@ -89,7 +84,6 @@ const Projects = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // ✅ Load unread counts once orders are loaded, then poll every 5s
   useEffect(() => {
     if (!orders.length) return;
     loadUnreadCounts();
@@ -190,11 +184,7 @@ const Projects = () => {
     if (!activeChatTasks.includes(orderId))
       setActiveChatTasks(prev => [...prev, orderId]);
     setChatVisibility(prev => ({ ...prev, [orderId]: true }));
-
-    // ✅ Clear unread count immediately in UI
     setUnreadCounts(prev => ({ ...prev, [orderId]: 0 }));
-
-    // ✅ Fixed: correct endpoint + sender body (backend requires sender field)
     fetch(`${base_url}/clichat/mark-read/${orderId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -214,29 +204,29 @@ const Projects = () => {
     <div className="w-full">
       <div className="hdr">Projects</div>
 
-      <div className="p-3 space-y-3">
+      {/* ── Desktop table rows (lg+) ── */}
+      <div className="hidden lg:block p-3 space-y-3">
         {paginated.map((order, index) => {
           const progress = calculateProgress(order.packageContents);
           const status = statusConfig[order.status] || statusConfig.pending;
           const pstatus = pstatusConfig[order.pstatus] || pstatusConfig.notpaid;
           const isExpanded = expandedRow === order._id;
           const globalIndex = (currentPage - 1) * ORDERS_PER_PAGE + index + 1;
-          const unread = unreadCounts[order._id] || 0; // ✅ read from separate map
+          const unread = unreadCounts[order._id] || 0;
 
           return (
             <div key={order._id}
               className="bg-white rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
 
-              {/* Row summary */}
               <div
-                className="grid grid-cols-[80px_100px_180px_120px_140px_160px_120px_160px] gap-4 px-5 py-4 items-center cursor-pointer"
+                className="grid grid-cols-[60px_140px_160px_100px_140px_150px_110px_180px] gap-3 px-5 py-4 items-center cursor-pointer"
                 onClick={() => setExpandedRow(isExpanded ? null : order._id)}
               >
                 <span className="text-xs text-gray-400 font-mono">{globalIndex}</span>
 
-                <div className="w-32">
+                <div>
                   <p className="font-semibold text-gray-800 text-sm truncate">{order.projectTitle}</p>
-                  <div className="flex items-center gap-2 mt-1">
+                  <div className="flex items-center gap-1.5 mt-1">
                     {order.bdp && <img src={order.bdp} className="w-5 h-5 rounded-full object-cover border" alt="" />}
                     <span className="text-xs text-gray-400 truncate">{order.buyername || "Unknown"}</span>
                   </div>
@@ -248,7 +238,7 @@ const Projects = () => {
                 </div>
 
                 <div>
-                  <div className="flex items-center justify-between mb-1">
+                  <div className="flex justify-between mb-1">
                     <span className="text-xs text-gray-500">{progress}%</span>
                   </div>
                   <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
@@ -268,27 +258,23 @@ const Projects = () => {
                   ) : (
                     <div>
                       <p className="text-gray-400">{formatDate(order.startedAt)}</p>
-                      <p className="text-blue-500 font-mono">{remainingTimes[order._id] || "—"}</p>
+                      <p className="text-blue-500 font-mono text-[11px]">{remainingTimes[order._id] || "—"}</p>
                     </div>
                   )}
                 </div>
 
-                <div className="flex flex-row gap-1">
-                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border w-fit ${status.color}`}>
-                    {status.label}
-                  </span>
-                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border w-fit ${pstatus.color}`}>
-                    {pstatus.label}
-                  </span>
+                <div className="flex flex-col gap-1">
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border w-fit ${status.color}`}>{status.label}</span>
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full border w-fit ${pstatus.color}`}>{pstatus.label}</span>
                 </div>
 
                 <div className="text-xs text-gray-400">{formatDate(order.createdAt)}</div>
 
-                <div className="flex flex-row gap-2" onClick={e => e.stopPropagation()}>
+                <div className="flex flex-row gap-1.5" onClick={e => e.stopPropagation()}>
                   <select
                     value={order.status || "pending"}
                     onChange={e => handleStatusChange(order._id, e.target.value)}
-                    className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    className="text-xs border border-gray-200 rounded-lg px-1.5 py-1 bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-300"
                   >
                     <option value="pending">Pending</option>
                     <option value="started">Active</option>
@@ -298,16 +284,14 @@ const Projects = () => {
                   <select
                     value={order.pstatus || "notpaid"}
                     onChange={e => handlePStatusChange(order._id, e.target.value)}
-                    className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    className="text-xs border border-gray-200 rounded-lg px-1.5 py-1 bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-300"
                   >
                     <option value="notpaid">Unpaid</option>
                     <option value="paid">Paid</option>
                   </select>
-
-                  {/* ✅ Fixed: relative on button so absolute badge positions correctly */}
                   <button
                     onClick={() => handleChatClick(order._id)}
-                    className="relative flex items-center gap-1.5 text-xs px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
+                    className="relative flex items-center gap-1 text-xs px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium"
                   >
                     <MdChat className="w-3.5 h-3.5" /> Chat
                     {unread > 0 && (
@@ -319,61 +303,141 @@ const Projects = () => {
                 </div>
               </div>
 
-              {isExpanded && (
-                <div className="border-t border-gray-100 px-5 py-4 bg-gray-50 grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Project Brief</p>
-                    <p className="text-gray-600 leading-relaxed">{order.projectBrief || "No details provided."}</p>
-                  </div>
-
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Package Contents</p>
-                    <ul className="space-y-1.5">
-                      {(order.packageContents || []).map((c, i) => (
-                        <li key={i} className="flex items-center gap-2">
-                          <IoCheckmarkDoneOutline className={`w-4 h-4 ${c.isDone ? 'text-green-500' : 'text-gray-300'}`} />
-                          <span className={c.isDone ? "text-gray-700" : "text-gray-400"}>{c.name}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Buyer</p>
-                      <div className="flex items-center gap-3">
-                        {order.bdp && <img src={order.bdp} className="w-10 h-10 rounded-full object-cover border-2 border-white shadow" alt="" />}
-                        <div>
-                          <p className="font-medium text-gray-800">{order.buyername || "—"}</p>
-                          <p className="text-xs text-gray-400">{order.email}</p>
-                          <p className="text-xs text-gray-300 font-mono">{order.buyerid}</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Attachments</p>
-                      <div className="flex flex-wrap gap-1">
-                        {order.attachments?.length ? renderAttachments(order.attachments) : <span className="text-gray-400 text-xs">None</span>}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              )}
+              {isExpanded && <ExpandedDetail order={order} renderAttachments={renderAttachments} />}
             </div>
           );
         })}
       </div>
 
+      {/* ── Mobile cards (< lg) ── */}
+      <div className="lg:hidden p-3 space-y-3">
+        {paginated.map((order, index) => {
+          const progress = calculateProgress(order.packageContents);
+          const status = statusConfig[order.status] || statusConfig.pending;
+          const pstatus = pstatusConfig[order.pstatus] || pstatusConfig.notpaid;
+          const isExpanded = expandedRow === order._id;
+          const globalIndex = (currentPage - 1) * ORDERS_PER_PAGE + index + 1;
+          const unread = unreadCounts[order._id] || 0;
+
+          return (
+            <div key={order._id}
+              className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+
+              {/* Card header */}
+              <div className="px-4 pt-4 pb-3">
+                {/* Top row: index + title + chat button */}
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-start gap-2 min-w-0">
+                    <span className="text-xs text-gray-400 font-mono mt-0.5 flex-shrink-0">#{globalIndex}</span>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-gray-800 text-sm leading-tight">{order.projectTitle}</p>
+                      <div className="flex items-center gap-1.5 mt-1">
+                        {order.bdp && <img src={order.bdp} className="w-4 h-4 rounded-full object-cover border" alt="" />}
+                        <span className="text-xs text-gray-400 truncate">{order.buyername || "Unknown"}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Chat button */}
+                  <button
+                    onClick={() => handleChatClick(order._id)}
+                    className="relative flex items-center gap-1 text-xs px-3 py-1.5 bg-blue-600
+                      hover:bg-blue-700 text-white rounded-lg transition-colors font-medium flex-shrink-0"
+                  >
+                    <MdChat className="w-3.5 h-3.5" /> Chat
+                    {unread > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px]
+                        font-bold px-1.5 py-0.5 rounded-full leading-none">
+                        {unread}
+                      </span>
+                    )}
+                  </button>
+                </div>
+
+                {/* Package name */}
+                <p className="text-xs text-gray-500 mt-2 truncate">{order.packageName}</p>
+
+                {/* Progress bar */}
+                <div className="mt-3">
+                  <div className="flex justify-between mb-1">
+                    <span className="text-xs text-gray-400">Progress</span>
+                    <span className="text-xs font-medium text-gray-600">{progress}%</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all ${progress === 100 ? 'bg-green-500' : progress > 50 ? 'bg-blue-500' : 'bg-amber-400'}`}
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                </div>
+
+                {/* Status badges */}
+                <div className="flex flex-wrap gap-1.5 mt-3">
+                  <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border ${status.color}`}>{status.label}</span>
+                  <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full border ${pstatus.color}`}>{pstatus.label}</span>
+                  {order.status === "completed" ? (
+                    <span className="text-xs text-green-600 font-medium">✅ {formatDate(order.completedAt)}</span>
+                  ) : remainingTimes[order._id] ? (
+                    <span className="text-xs text-blue-500 font-mono">{remainingTimes[order._id]}</span>
+                  ) : null}
+                </div>
+
+                {/* Controls row */}
+                <div className="flex flex-wrap gap-2 mt-3" onClick={e => e.stopPropagation()}>
+                  <select
+                    value={order.status || "pending"}
+                    onChange={e => handleStatusChange(order._id, e.target.value)}
+                    className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white
+                      text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-300 flex-1 min-w-[110px]"
+                  >
+                    <option value="pending">Pending</option>
+                    <option value="started">Active</option>
+                    <option value="completed">Completed</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
+                  <select
+                    value={order.pstatus || "notpaid"}
+                    onChange={e => handlePStatusChange(order._id, e.target.value)}
+                    className="text-xs border border-gray-200 rounded-lg px-2 py-1.5 bg-white
+                      text-gray-700 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-300 flex-1 min-w-[100px]"
+                  >
+                    <option value="notpaid">Unpaid</option>
+                    <option value="paid">Paid</option>
+                  </select>
+                </div>
+
+                {/* Created at + expand toggle */}
+                <div className="flex items-center justify-between mt-3">
+                  <span className="text-xs text-gray-400">{formatDate(order.createdAt)}</span>
+                  <button
+                    onClick={() => setExpandedRow(isExpanded ? null : order._id)}
+                    className="flex items-center gap-1 text-xs text-blue-500 hover:text-blue-700 transition-colors"
+                  >
+                    {isExpanded ? <><MdExpandLess size={16} /> Less</> : <><MdExpandMore size={16} /> Details</>}
+                  </button>
+                </div>
+              </div>
+
+              {/* Expanded detail */}
+              {isExpanded && <ExpandedDetail order={order} renderAttachments={renderAttachments} />}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── Pagination ── */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between px-6 py-4 bg-white border-t border-gray-200">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3
+          px-4 py-4 bg-white border-t border-gray-200">
           <p className="text-sm text-gray-400">
             Showing {(currentPage - 1) * ORDERS_PER_PAGE + 1}–{Math.min(currentPage * ORDERS_PER_PAGE, orders.length)} of {orders.length}
           </p>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-wrap justify-center">
             <button
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600
+                hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >← Prev</button>
 
             {Array.from({ length: totalPages }, (_, i) => i + 1)
@@ -402,35 +466,81 @@ const Projects = () => {
             <button
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="px-3 py-1.5 text-sm rounded-lg border border-gray-200 text-gray-600
+                hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >Next →</button>
           </div>
         </div>
       )}
 
-      <div className="flex flex-row-reverse items-end fixed right-4 bottom-4 gap-3 z-50">
-        {activeChatTasks.map(orderId => {
-          const task = orders.find(o => o._id === orderId);
-          return (
-            <AdminChat
-              key={orderId}
-              orderId={orderId}
-              bdp={task?.bdp}
-              buyerid={task?.buyerid}
-              projectTitle={task?.projectTitle || 'Unknown'}
-              buyerName={task?.buyername || 'Unknown'}
-              projectDetails={task?.projectBrief || 'Unknown'}
-              packageContents={task?.packageContents || []}
-              isVisible={chatVisibility[orderId]}
-              packageType="regular"
-              onClose={() => closeChat(orderId)}
-              onToggle={() => toggleChatVisibility(orderId)}
-            />
-          );
-        })}
+     <div className="fixed bottom-2 right-0 left-0 md:left-auto md:right-4 md:bottom-4 z-50
+  flex flex-row-reverse items-end justify-end gap-2 px-2">
+  {activeChatTasks.map(orderId => {
+    const task = orders.find(o => o._id === orderId);
+    return (
+      <div key={orderId} className="flex-shrink-0 w-[calc(100vw-16px)] md:w-[640px]">
+        <AdminChat
+          orderId={orderId}
+          bdp={task?.bdp}
+          buyerid={task?.buyerid}
+          projectTitle={task?.projectTitle || 'Unknown'}
+          buyerName={task?.buyername || 'Unknown'}
+          projectDetails={task?.projectBrief || 'Unknown'}
+          packageContents={task?.packageContents || []}
+          isVisible={chatVisibility[orderId]}
+          packageType="regular"
+          onClose={() => closeChat(orderId)}
+          onToggle={() => toggleChatVisibility(orderId)}
+        />
       </div>
+    );
+  })}
+</div>
     </div>
   );
 };
+
+/* ── Shared expanded detail panel ── */
+const ExpandedDetail = ({ order, renderAttachments }) => (
+  <div className="border-t border-gray-100 px-4 py-4 bg-gray-50
+    grid grid-cols-1 md:grid-cols-3 gap-5 text-sm">
+    <div>
+      <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Project Brief</p>
+      <p className="text-gray-600 leading-relaxed text-sm">{order.projectBrief || "No details provided."}</p>
+    </div>
+
+    <div>
+      <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Package Contents</p>
+      <ul className="space-y-1.5">
+        {(order.packageContents || []).map((c, i) => (
+          <li key={i} className="flex items-center gap-2">
+            <IoCheckmarkDoneOutline className={`w-4 h-4 flex-shrink-0 ${c.isDone ? 'text-green-500' : 'text-gray-300'}`} />
+            <span className={`text-sm ${c.isDone ? "text-gray-700" : "text-gray-400"}`}>{c.name}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    <div className="space-y-4">
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Buyer</p>
+        <div className="flex items-center gap-3">
+          {order.bdp && <img src={order.bdp} className="w-10 h-10 rounded-full object-cover border-2 border-white shadow flex-shrink-0" alt="" />}
+          <div className="min-w-0">
+            <p className="font-medium text-gray-800 truncate">{order.buyername || "—"}</p>
+            <p className="text-xs text-gray-400 truncate">{order.email}</p>
+            <p className="text-xs text-gray-300 font-mono truncate">{order.buyerid}</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Attachments</p>
+        <div className="flex flex-wrap gap-1">
+          {order.attachments?.length ? renderAttachments(order.attachments) : <span className="text-gray-400 text-xs">None</span>}
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
 export default Projects;

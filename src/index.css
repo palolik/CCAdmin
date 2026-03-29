@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .hdr{
-    @apply text-[40px] bg-[#010103] text-white pl-4 ;
+    @apply lg:text-[40px] text-[16px] bg-[#010103] text-white pl-4 py-4  font-bold mb-6;
     
 }
 

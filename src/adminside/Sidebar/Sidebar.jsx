@@ -111,7 +111,7 @@ const CollapsedFlyout = ({ section, routes, currentPath, onClose }) => {
 
 // ── Mobile top bar with hamburger ────────────────────────────
 const MobileTopBar = ({ onOpen }) => (
-  <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center gap-3
+  <div className="md:hidden fixed top-0 right-0 z-40 flex items-center gap-3
     px-4 h-14 bg-[#09090f] border-b border-white/5">
     <button
       onClick={onOpen}
@@ -119,7 +119,6 @@ const MobileTopBar = ({ onOpen }) => (
     >
       <MdMenu size={22} />
     </button>
-    <span className="text-sky-400 font-black text-lg tracking-wider">CCAdmin</span>
   </div>
 );
 

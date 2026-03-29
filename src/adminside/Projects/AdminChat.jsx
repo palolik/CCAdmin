@@ -247,9 +247,9 @@ const handleSend = async () => {
 
   return (
     <div
-      className="flex flex-col mx-2 rounded-xl overflow-hidden shadow-2xl border border-slate-200"
-      style={{ width: 640, maxHeight: 'max-content', fontFamily: "'DM Sans', sans-serif" }}
-    >
+  className="flex flex-col rounded-xl overflow-hidden shadow-2xl border border-slate-200 w-[min(640px,calc(100vw-16px))]"
+  style={{ maxHeight: 'max-content', fontFamily: "'DM Sans', sans-serif" }}
+>
       {/* ── title bar ── */}
       <div className="flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-slate-800 to-slate-700">
         <div className="flex items-center gap-2.5">
@@ -279,7 +279,7 @@ const handleSend = async () => {
       </div>
 
       {isVisible && (
-        <div className="flex flex-row bg-white" style={{ height: 460 }}>
+       <div className="flex flex-row bg-white h-[360px] md:h-[460px]">
 
           {/* ── chat panel ── */}
           <div className="flex flex-col flex-1 min-w-0 border-r border-slate-100">
@@ -401,7 +401,7 @@ const handleSend = async () => {
           </div>
 
           {/* ── sidebar ── */}
-          <div className="w-52 flex flex-col bg-white overflow-y-auto"
+          <div className="hidden md:flex w-52 flex-col bg-white overflow-y-auto"
             style={{ scrollbarWidth: 'thin', scrollbarColor: '#e2e8f0 transparent' }}
           >
             {/* buyer card */}
