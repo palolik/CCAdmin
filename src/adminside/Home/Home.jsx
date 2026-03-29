@@ -51,7 +51,7 @@ const Home = () => {
   return (
     <div className="w-full">
       <div className="hdr">Dashboard</div>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 py-10 px-6 lg:px-12">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 py-10 px-6  lg:px-12">
 
         {/* Stat Cards */}
         <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6" {...fadeUp(0)}>

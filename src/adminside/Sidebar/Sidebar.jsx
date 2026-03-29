@@ -9,7 +9,7 @@ import {
   MdEmail, MdInbox, MdStarRate, MdCampaign, MdLocalOffer,
   MdAdsClick, MdComment, MdAttachMoney, MdMoneyOff, MdPayment,
   MdAdminPanelSettings, MdBadge, MdPersonAdd, MdLogout,
-  MdChevronRight, MdChevronLeft, MdInventory, MdGroups,
+  MdChevronRight, MdChevronLeft, MdInventory, MdGroups, MdMenu, MdClose,
 } from "react-icons/md";
 import { FaBriefcase, FaUserTie } from "react-icons/fa";
 
@@ -109,11 +109,154 @@ const CollapsedFlyout = ({ section, routes, currentPath, onClose }) => {
   );
 };
 
+// ── Mobile top bar with hamburger ────────────────────────────
+const MobileTopBar = ({ onOpen }) => (
+  <div className="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center gap-3
+    px-4 h-14 bg-[#09090f] border-b border-white/5">
+    <button
+      onClick={onOpen}
+      className="p-2 rounded-lg text-gray-400 hover:bg-white/5 hover:text-white transition-colors"
+    >
+      <MdMenu size={22} />
+    </button>
+    <span className="text-sky-400 font-black text-lg tracking-wider">CCAdmin</span>
+  </div>
+);
+
+// ── Shared sidebar content (used in both desktop & drawer) ───
+const SidebarContent = ({ collapsed, sections, filteredSections, activeSection,
+  setActiveSection, flyoutSection, setFlyoutSection, flyoutRefs,
+  currentPath, sectionLabel, handleLogout, isMobile, onNavClick }) => (
+  <>
+    {/* Logo */}
+    <div className="flex items-center justify-center h-16 flex-shrink-0 overflow-hidden">
+      {collapsed && !isMobile
+        ? <span className="text-sky-400 font-black text-xl">C</span>
+        : <img className="h-12 object-contain" src={logo} alt="logo" />
+      }
+    </div>
+
+    {/* Dashboard link */}
+    
+   <a   href="/admin"
+      onClick={onNavClick}
+      title={collapsed && !isMobile ? "Dashboard" : ""}
+      className={`flex items-center gap-3 mx-2 mb-1 px-3 py-2.5 rounded-lg
+        text-gray-300 hover:bg-white/5 hover:text-white transition-colors
+        ${collapsed && !isMobile ? "justify-center" : ""}`}
+    >
+      <span className="flex-shrink-0 text-sky-400"><MdDashboard size={20} /></span>
+      {(!collapsed || isMobile) && (
+        <span className="text-sm font-semibold tracking-wide">Dashboard</span>
+      )}
+    </a>
+
+    <div className="mx-3 border-t border-white/5 mb-2" />
+
+    {/* Sections */}
+    <div className="flex-1 overflow-y-auto overflow-x-hidden px-2 pb-4">
+      {filteredSections.length > 0 ? filteredSections.map(([key, routes]) => (
+        <div
+          key={key}
+          className="mb-1 relative"
+          ref={el => flyoutRefs.current[key] = el}
+        >
+          <button
+            onClick={() => {
+              if (collapsed && !isMobile) {
+                setFlyoutSection(flyoutSection === key ? null : key);
+              } else {
+                setActiveSection(activeSection === key ? null : key);
+              }
+            }}
+            title={collapsed && !isMobile ? sectionLabel(key) : ""}
+            className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg
+              text-gray-400 hover:bg-white/5 hover:text-white transition-colors
+              ${collapsed && !isMobile ? "justify-center" : "justify-between"}
+              ${collapsed && !isMobile && flyoutSection === key ? "bg-white/10 text-white" : ""}
+              ${(!collapsed || isMobile) && activeSection === key ? "text-white" : ""}
+            `}
+          >
+            <div className="flex items-center gap-3">
+              <span className="flex-shrink-0">{sectionIcons[key]}</span>
+              {(!collapsed || isMobile) && (
+                <span className="text-sm font-medium tracking-wide">
+                  {sectionLabel(key)}
+                </span>
+              )}
+            </div>
+            {(!collapsed || isMobile) && (
+              <MdChevronRight
+                size={16}
+                style={{
+                  transition: "transform 0.25s",
+                  transform: activeSection === key ? "rotate(90deg)" : "rotate(0deg)"
+                }}
+              />
+            )}
+          </button>
+
+          {/* Expanded inline sub-items */}
+          {(!collapsed || isMobile) && activeSection === key && (
+            <ul className="mt-0.5 ml-3 pl-3 border-l border-white/10 flex flex-col gap-0.5">
+              {routes.map(route => (
+                <li key={route.id}>
+                <a  
+                    href={route.path}
+                    onClick={onNavClick}
+                    className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all
+                      ${currentPath === route.path
+                        ? "bg-sky-500/20 text-sky-300"
+                        : "text-gray-400 hover:bg-white/5 hover:text-white"
+                      }`}
+                >
+                    <span className="flex-shrink-0">
+                      {routeIcons[route.name] ?? <MdListAlt size={16} />}
+                    </span>
+                    <span className="truncate">{route.name}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {/* Collapsed flyout */}
+          {collapsed && !isMobile && flyoutSection === key && (
+            <CollapsedFlyout
+              section={key}
+              routes={routes}
+              currentPath={currentPath}
+              onClose={() => setFlyoutSection(null)}
+            />
+          )}
+        </div>
+      )) : (
+        <p className="text-gray-600 text-center text-xs py-8 italic">No tabs assigned.</p>
+      )}
+    </div>
+
+    <div className="mx-3 border-t border-white/5" />
+
+    {/* Logout */}
+    <button
+      onClick={handleLogout}
+      title={collapsed && !isMobile ? "Log out" : ""}
+      className={`flex items-center gap-3 mx-2 my-3 px-3 py-2.5 rounded-lg
+        text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors
+        ${collapsed && !isMobile ? "justify-center" : ""}`}
+    >
+      <span className="flex-shrink-0"><MdLogout size={20} /></span>
+      {(!collapsed || isMobile) && (
+        <span className="text-sm font-medium">Log out</span>
+      )}
+    </button>
+  </>
+);
+
 const Sidebar = () => {
   const [activeSection, setActiveSection] = useState(null);
   const [allowedTabs, setAllowedTabs]     = useState([]);
-  // which section's flyout is open (collapsed mode)
- 
+  const [drawerOpen, setDrawerOpen]       = useState(false);
 
   const sections = {
     packages: [
@@ -164,18 +307,19 @@ const Sidebar = () => {
       { id: 4, name: "Recruitment",   path: "/admin/recruitment" },
     ],
   };
+
   const [collapsed, setCollapsed] = useState(() => {
-    const saved = localStorage.getItem('sidebar-collapsed');
+    const saved = localStorage.getItem("sidebar-collapsed");
     return saved !== null ? JSON.parse(saved) : true;
   });
 
   const [flyoutSection, setFlyoutSection] = useState(null);
   const flyoutRefs = useRef({});
 
-  // Persist collapsed state whenever it changes
   useEffect(() => {
-    localStorage.setItem('sidebar-collapsed', JSON.stringify(collapsed));
+    localStorage.setItem("sidebar-collapsed", JSON.stringify(collapsed));
   }, [collapsed]);
+
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("adminData"));
     if (storedUser?.tabs) {
@@ -190,10 +334,15 @@ const Sidebar = () => {
     }
   }, []);
 
-  // close flyout when sidebar expands
   useEffect(() => {
     if (!collapsed) setFlyoutSection(null);
   }, [collapsed]);
+
+  // Lock body scroll when drawer is open
+  useEffect(() => {
+    document.body.style.overflow = drawerOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [drawerOpen]);
 
   const handleLogout = () => {
     localStorage.removeItem("adminData");
@@ -212,142 +361,71 @@ const Sidebar = () => {
 
   const currentPath = window.location.pathname;
 
+  const sharedProps = {
+    collapsed, sections, filteredSections, activeSection,
+    setActiveSection, flyoutSection, setFlyoutSection,
+    flyoutRefs, currentPath, sectionLabel, handleLogout,
+  };
+
   return (
+    <>
+      {/* ── Mobile top bar ── */}
+      <MobileTopBar onOpen={() => setDrawerOpen(true)} />
 
-    <div  style={{ transition: "width 0.3s cubic-bezier(.4,0,.2,1)" }}
-      className={`relative flex flex-col bg-[#09090f] border-r border-white/5
-        min-h-screen flex-shrink-0 ${collapsed ? "w-[64px]" : "w-[240px]"}`}
-    >
+      {/* ── Mobile drawer backdrop ── */}
+      {drawerOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+          onClick={() => setDrawerOpen(false)}
+        />
+      )}
 
-      <button
-        onClick={() => setCollapsed(c => !c)}
-        className="absolute -right-3 top-6 z-50 w-6 h-6 rounded-full bg-sky-500
-          text-white flex items-center justify-center shadow-lg hover:bg-sky-400 transition-colors"
+      {/* ── Mobile drawer ── */}
+      <div
+        className={`md:hidden fixed top-0 left-0 z-50 h-full w-[270px] flex flex-col
+          bg-[#09090f] border-r border-white/5 shadow-2xl
+          transition-transform duration-300 ease-in-out
+          ${drawerOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
-        {collapsed ? <MdChevronRight size={16} /> : <MdChevronLeft size={16} />}
-      </button>
+        {/* Drawer close button */}
+        <button
+          onClick={() => setDrawerOpen(false)}
+          className="absolute top-4 right-4 p-1.5 rounded-lg text-gray-400
+            hover:bg-white/5 hover:text-white transition-colors"
+        >
+          <MdClose size={20} />
+        </button>
 
-  
-      <div className="flex items-center justify-center h-16 flex-shrink-0 overflow-hidden">
-        {collapsed
-          ? <span className="text-sky-400 font-black text-xl">C</span>
-          : <img className="h-12 object-contain" src={logo} alt="logo" />
-        }
+        <SidebarContent
+          {...sharedProps}
+          isMobile={true}
+          onNavClick={() => setDrawerOpen(false)}
+        />
       </div>
 
-    
-      
-    <a    href="/admin"
-        title={collapsed ? "Dashboard" : ""}
-        className={`flex items-center gap-3 mx-2 mb-1 px-3 py-2.5 rounded-lg
-          text-gray-300 hover:bg-white/5 hover:text-white transition-colors
-          ${collapsed ? "justify-center" : ""}`}
+      {/* ── Desktop sidebar ── */}
+      <div
+        style={{ transition: "width 0.3s cubic-bezier(.4,0,.2,1)" }}
+        className={`hidden md:flex relative flex-col bg-[#09090f] border-r border-white/5
+          min-h-screen flex-shrink-0 ${collapsed ? "w-[64px]" : "w-[240px]"}`}
       >
-        <span className="flex-shrink-0 text-sky-400"><MdDashboard size={20} /></span>
-        {!collapsed && <span className="text-sm font-semibold tracking-wide">Dashboard</span>}
-      </a>
+        {/* Collapse toggle */}
+        <button
+          onClick={() => setCollapsed(c => !c)}
+          className="absolute -right-3 top-6 z-50 w-6 h-6 rounded-full bg-sky-500
+            text-white flex items-center justify-center shadow-lg
+            hover:bg-sky-400 transition-colors"
+        >
+          {collapsed ? <MdChevronRight size={16} /> : <MdChevronLeft size={16} />}
+        </button>
 
-      <div className="mx-3 border-t border-white/5 mb-2" />
-
-      <div className="flex-1 overflow-y-auto overflow-x-hidden px-2 pb-4">
-        {filteredSections.length > 0 ? filteredSections.map(([key, routes]) => (
-          <div
-            key={key}
-            className="mb-1 relative"
-            ref={el => flyoutRefs.current[key] = el}
-          >
-
-            {/* Section header button */}
-            <button
-              onClick={() => {
-                if (collapsed) {
-                  // toggle flyout for this section only
-                  setFlyoutSection(flyoutSection === key ? null : key);
-                } else {
-                  setActiveSection(activeSection === key ? null : key);
-                }
-              }}
-              title={collapsed ? sectionLabel(key) : ""}
-              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg
-                text-gray-400 hover:bg-white/5 hover:text-white transition-colors
-                ${collapsed ? "justify-center" : "justify-between"}
-                ${collapsed && flyoutSection === key ? "bg-white/10 text-white" : ""}
-                ${!collapsed && activeSection === key ? "text-white" : ""}
-              `}
-            >
-              <div className="flex items-center gap-3">
-                <span className="flex-shrink-0">{sectionIcons[key]}</span>
-                {!collapsed && (
-                  <span className="text-sm font-medium tracking-wide">
-                    {sectionLabel(key)}
-                  </span>
-                )}
-              </div>
-              {!collapsed && (
-                <MdChevronRight
-                  size={16}
-                  style={{
-                    transition: "transform 0.25s",
-                    transform: activeSection === key ? "rotate(90deg)" : "rotate(0deg)"
-                  }}
-                />
-              )}
-            </button>
-
-            {/* ── EXPANDED: inline sub-items ── */}
-            {!collapsed && activeSection === key && (
-              <ul className="mt-0.5 ml-3 pl-3 border-l border-white/10 flex flex-col gap-0.5">
-                {routes.map(route => (
-                  <li key={route.id}>
-                    
-                  <a    href={route.path}
-                      className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all
-                        ${currentPath === route.path
-                          ? "bg-sky-500/20 text-sky-300"
-                          : "text-gray-400 hover:bg-white/5 hover:text-white"
-                        }`}
-                    >
-                      <span className="flex-shrink-0">
-                        {routeIcons[route.name] ?? <MdListAlt size={16} />}
-                      </span>
-                      <span className="truncate">{route.name}</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            {/* ── COLLAPSED: flyout panel for THIS section only ── */}
-            {collapsed && flyoutSection === key && (
-              <CollapsedFlyout
-                section={key}
-                routes={routes}
-                currentPath={currentPath}
-                onClose={() => setFlyoutSection(null)}
-              />
-            )}
-
-          </div>
-        )) : (
-          <p className="text-gray-600 text-center text-xs py-8 italic">No tabs assigned.</p>
-        )}
+        <SidebarContent
+          {...sharedProps}
+          isMobile={false}
+          onNavClick={() => {}}
+        />
       </div>
-
-      <div className="mx-3 border-t border-white/5" />
-
-
-      <button
-        onClick={handleLogout}
-        title={collapsed ? "Log out" : ""}
-        className={`flex items-center gap-3 mx-2 my-3 px-3 py-2.5 rounded-lg
-          text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors
-          ${collapsed ? "justify-center" : ""}`}
-      >
-        <span className="flex-shrink-0"><MdLogout size={20} /></span>
-        {!collapsed && <span className="text-sm font-medium">Log out</span>}
-      </button>
-
-    </div>
+    </>
   );
 };
 
