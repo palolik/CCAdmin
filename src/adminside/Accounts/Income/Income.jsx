@@ -5,21 +5,31 @@ import { base_url } from "../../../config/config";
 
 const CATEGORIES = ["General", "Service", "Freelance", "Bonus", "Refund", "Other"];
 
-const emptyForm = { title: "", amount: "", category: "General", note: "" };
+const emptyForm    = { title: "", amount: "", category: "General", note: "" };
+const emptyAutoForm = {
+  packageName: "", buyername: "", email: "", projectTitle: "",
+  sellPrice: "", paymentMethod: "", paymentStatus: "", status: "", transactionId: "",
+};
 
 const Income = () => {
-  const [activeTab, setActiveTab]     = useState("auto");   // "auto" | "manual"
-  const [incomeData, setIncomeData]   = useState([]);
-  const [manualData, setManualData]   = useState([]);
-  const [loading, setLoading]         = useState(true);
+  const [activeTab, setActiveTab]   = useState("auto");
+  const [incomeData, setIncomeData] = useState([]);
+  const [manualData, setManualData] = useState([]);
+  const [loading, setLoading]       = useState(true);
 
-  // modal state
-  const [showModal, setShowModal]     = useState(false);
-  const [editTarget, setEditTarget]   = useState(null);     // null = add, obj = edit
-  const [form, setForm]               = useState(emptyForm);
-  const [saving, setSaving]           = useState(false);
+  // ── Manual modal state ──
+  const [showModal, setShowModal]   = useState(false);
+  const [editTarget, setEditTarget] = useState(null);
+  const [form, setForm]             = useState(emptyForm);
+  const [saving, setSaving]         = useState(false);
 
-  // ── Loaders ────────────────────────────────
+  // ── Auto modal state ──
+  const [showAutoModal, setShowAutoModal]   = useState(false);
+  const [autoEditTarget, setAutoEditTarget] = useState(null);
+  const [autoForm, setAutoForm]             = useState(emptyAutoForm);
+  const [autoSaving, setAutoSaving]         = useState(false);
+
+  // ── Loaders ──
   const loadAuto = async () => {
     const res  = await fetch(`${base_url}/income`);
     const data = await res.json();
@@ -46,29 +56,20 @@ const Income = () => {
 
   useEffect(() => { loadAll(); }, []);
 
-  // ── Totals ─────────────────────────────────
-  const autoTotal   = incomeData.reduce((s, i) => s + Number(i.sellPrice  || 0), 0);
-  const manualTotal = manualData.reduce((s, i) => s + Number(i.amount     || 0), 0);
+  const autoTotal   = incomeData.reduce((s, i) => s + Number(i.sellPrice || 0), 0);
+  const manualTotal = manualData.reduce((s, i) => s + Number(i.amount    || 0), 0);
   const grandTotal  = autoTotal + manualTotal;
 
-  // ── Modal helpers ──────────────────────────
-  const openAdd = () => {
-    setEditTarget(null);
-    setForm(emptyForm);
-    setShowModal(true);
-  };
-
+  // ── Manual CRUD ──
+  const openAdd  = () => { setEditTarget(null); setForm(emptyForm); setShowModal(true); };
   const openEdit = (item) => {
     setEditTarget(item);
     setForm({ title: item.title, amount: item.amount, category: item.category, note: item.note || "" });
     setShowModal(true);
   };
-
-  const closeModal = () => { setShowModal(false); setEditTarget(null); };
-
+  const closeModal      = () => { setShowModal(false); setEditTarget(null); };
   const handleFormChange = (e) => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
-  // ── Save (add / edit) ──────────────────────
   const handleSave = async () => {
     if (!form.title.trim() || !form.amount) {
       Swal.fire("Validation", "Title and Amount are required.", "warning");
@@ -79,14 +80,8 @@ const Income = () => {
       const isEdit = !!editTarget;
       const url    = isEdit ? `${base_url}/manual-income/${editTarget._id}` : `${base_url}/manual-income`;
       const method = isEdit ? "PUT" : "POST";
-
-      const res  = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
-
+      const res    = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
+      const data   = await res.json();
       if (data.success) {
         Swal.fire("Success", isEdit ? "Entry updated!" : "Entry added!", "success");
         closeModal();
@@ -94,81 +89,104 @@ const Income = () => {
       } else {
         Swal.fire("Error", data.message || "Something went wrong", "error");
       }
-    } catch (err) {
-      console.error(err);
-      Swal.fire("Error", "Request failed", "error");
-    } finally {
-      setSaving(false);
-    }
+    } catch { Swal.fire("Error", "Request failed", "error"); }
+    finally  { setSaving(false); }
   };
 
-  // ── Delete ─────────────────────────────────
   const handleDelete = async (id) => {
     const confirm = await Swal.fire({
-      title: "Delete this entry?",
-      text: "This action cannot be undone.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Delete",
-      confirmButtonColor: "#ef4444",
+      title: "Delete this entry?", text: "This action cannot be undone.",
+      icon: "warning", showCancelButton: true,
+      confirmButtonText: "Delete", confirmButtonColor: "#ef4444",
     });
     if (!confirm.isConfirmed) return;
-
     try {
       const res  = await fetch(`${base_url}/manual-income/${id}`, { method: "DELETE" });
       const data = await res.json();
-      if (data.success) {
-        Swal.fire("Deleted", "Entry removed.", "success");
-        loadManual();
-      } else {
-        Swal.fire("Error", data.message, "error");
-      }
-    } catch (err) {
-      Swal.fire("Error", "Delete failed", "error");
-    }
+      if (data.success) { Swal.fire("Deleted", "Entry removed.", "success"); loadManual(); }
+      else Swal.fire("Error", data.message, "error");
+    } catch { Swal.fire("Error", "Delete failed", "error"); }
   };
 
-  // ── Export ─────────────────────────────────
+  // ── Auto (Order) CRUD ──
+  const openAutoEdit = (item) => {
+    setAutoEditTarget(item);
+    setAutoForm({
+      packageName:   item.packageName   || "",
+      buyername:     item.buyername     || "",
+      email:         item.email         || "",
+      projectTitle:  item.projectTitle  || "",
+      sellPrice:     item.sellPrice     || "",
+      paymentMethod: item.paymentMethod || "",
+      paymentStatus: item.paymentStatus || "",
+      status:        item.status        || "",
+      transactionId: item.transactionId || "",
+    });
+    setShowAutoModal(true);
+  };
+  const closeAutoModal       = () => { setShowAutoModal(false); setAutoEditTarget(null); };
+  const handleAutoFormChange = (e) => setAutoForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+
+  const handleAutoSave = async () => {
+    if (!autoForm.sellPrice) {
+      Swal.fire("Validation", "Amount is required.", "warning");
+      return;
+    }
+    try {
+      setAutoSaving(true);
+      const res  = await fetch(`${base_url}/income/${autoEditTarget._id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(autoForm),
+      });
+      const data = await res.json();
+      if (data.success) {
+        Swal.fire("Success", "Order income updated!", "success");
+        closeAutoModal();
+        loadAuto();
+      } else {
+        Swal.fire("Error", data.message || "Something went wrong", "error");
+      }
+    } catch { Swal.fire("Error", "Request failed", "error"); }
+    finally  { setAutoSaving(false); }
+  };
+
+  const handleAutoDelete = async (id) => {
+    const confirm = await Swal.fire({
+      title: "Delete this order income?", text: "This cannot be undone.",
+      icon: "warning", showCancelButton: true,
+      confirmButtonText: "Delete", confirmButtonColor: "#ef4444",
+    });
+    if (!confirm.isConfirmed) return;
+    try {
+      const res  = await fetch(`${base_url}/income/${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (data.success) { Swal.fire("Deleted", "Entry removed.", "success"); loadAuto(); }
+      else Swal.fire("Error", data.message, "error");
+    } catch { Swal.fire("Error", "Delete failed", "error"); }
+  };
+
+  // ── Export ──
   const exportToExcel = () => {
     const autoRows = incomeData.map(i => ({
-      Type:          "Auto (Order)",
-      Title:         i.packageName    || "",
-      Buyer:         i.buyername      || i.buyerid || "",
-      Email:         i.email          || "",
-      Project:       i.projectTitle   || "",
-      Category:      "Order",
-      Amount:        Number(i.sellPrice || 0).toFixed(2),
-      PaymentMethod: i.paymentMethod  || "",
-      PaymentStatus: i.paymentStatus  || "",
-      TrxID:         i.transactionId  || "",
-      Status:        i.status         || "",
-      Date:          i.createdAt ? new Date(i.createdAt).toLocaleString() : "",
-      Note:          "",
+      Type: "Auto (Order)", Title: i.packageName || "", Buyer: i.buyername || i.buyerid || "",
+      Email: i.email || "", Project: i.projectTitle || "", Category: "Order",
+      Amount: Number(i.sellPrice || 0).toFixed(2), PaymentMethod: i.paymentMethod || "",
+      PaymentStatus: i.paymentStatus || "", TrxID: i.transactionId || "",
+      Status: i.status || "", Date: i.createdAt ? new Date(i.createdAt).toLocaleString() : "", Note: "",
     }));
-
     const manualRows = manualData.map(i => ({
-      Type:          "Manual",
-      Title:         i.title          || "",
-      Buyer:         "",
-      Email:         "",
-      Project:       "",
-      Category:      i.category       || "",
-      Amount:        Number(i.amount  || 0).toFixed(2),
-      PaymentMethod: "",
-      PaymentStatus: "",
-      TrxID:         "",
-      Status:        "",
-      Date:          i.createdAt ? new Date(i.createdAt).toLocaleString() : "",
-      Note:          i.note           || "",
+      Type: "Manual", Title: i.title || "", Buyer: "", Email: "", Project: "",
+      Category: i.category || "", Amount: Number(i.amount || 0).toFixed(2),
+      PaymentMethod: "", PaymentStatus: "", TrxID: "", Status: "",
+      Date: i.createdAt ? new Date(i.createdAt).toLocaleString() : "", Note: i.note || "",
     }));
-
     const ws = XLSX.utils.json_to_sheet([...autoRows, ...manualRows]);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, "Income Data");
     XLSX.writeFile(wb, "income_data.xlsx");
   };
 
-  // ── UI ─────────────────────────────────────
   return (
     <div className="w-full">
       <div className="hdr">Income Records</div>
@@ -191,45 +209,33 @@ const Income = () => {
           ))}
         </div>
 
-        {/* ── Tabs + actions ── */}
+        {/* ── Tab bar ── */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex gap-2">
             {["auto", "manual"].map(tab => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
+              <button key={tab} onClick={() => setActiveTab(tab)}
                 className={`px-4 py-1.5 rounded text-sm font-medium transition-colors ${
-                  activeTab === tab
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  activeTab === tab ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
                 {tab === "auto" ? "Order Income" : "Manual Income"}
               </button>
             ))}
           </div>
-
           <div className="flex gap-2">
             {activeTab === "manual" && (
-              <button
-                onClick={openAdd}
-                className="smbut bg-green-500 hover:bg-green-600 text-white"
-              >
+              <button onClick={openAdd} className="smbut bg-green-500 hover:bg-green-600 text-white">
                 + Add Entry
               </button>
             )}
-            <button className="smbut" onClick={exportToExcel}>
-              Export to Excel
-            </button>
+            <button className="smbut" onClick={exportToExcel}>Export to Excel</button>
           </div>
         </div>
 
-        {/* ── Tables ── */}
         {loading ? (
           <div className="py-10 text-center text-gray-400">Loading...</div>
-        ) : activeTab === "auto" ? (
 
-          /* ── Auto income table ── */
+        ) : activeTab === "auto" ? (
           incomeData.length === 0 ? (
             <div className="py-10 text-center text-gray-400">No order income found.</div>
           ) : (
@@ -246,6 +252,7 @@ const Income = () => {
                     <th className="px-2 py-2">Pay Status</th>
                     <th className="px-2 py-2">Order Status</th>
                     <th className="px-2 py-2">Date</th>
+                    <th className="px-2 py-2">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -274,6 +281,23 @@ const Income = () => {
                       <td className="px-2 py-2 text-xs text-gray-500">
                         {income.createdAt ? new Date(income.createdAt).toLocaleDateString() : ""}
                       </td>
+                      {/* ── NEW: action buttons ── */}
+                      <td className="px-2 py-2">
+                        <div className="flex justify-center gap-2">
+                          <button
+                            onClick={() => openAutoEdit(income)}
+                            className="text-xs px-3 py-1 rounded bg-blue-100 text-blue-600 hover:bg-blue-200"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleAutoDelete(income._id)}
+                            className="text-xs px-3 py-1 rounded bg-red-100 text-red-500 hover:bg-red-200"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -282,8 +306,6 @@ const Income = () => {
           )
 
         ) : (
-
-          /* ── Manual income table ── */
           manualData.length === 0 ? (
             <div className="py-10 text-center text-gray-400">No manual entries yet. Add one!</div>
           ) : (
@@ -315,16 +337,12 @@ const Income = () => {
                       </td>
                       <td className="px-2 py-2">
                         <div className="flex justify-center gap-2">
-                          <button
-                            onClick={() => openEdit(item)}
-                            className="text-xs px-3 py-1 rounded bg-blue-100 text-blue-600 hover:bg-blue-200"
-                          >
+                          <button onClick={() => openEdit(item)}
+                            className="text-xs px-3 py-1 rounded bg-blue-100 text-blue-600 hover:bg-blue-200">
                             Edit
                           </button>
-                          <button
-                            onClick={() => handleDelete(item._id)}
-                            className="text-xs px-3 py-1 rounded bg-red-100 text-red-500 hover:bg-red-200"
-                          >
+                          <button onClick={() => handleDelete(item._id)}
+                            className="text-xs px-3 py-1 rounded bg-red-100 text-red-500 hover:bg-red-200">
                             Delete
                           </button>
                         </div>
@@ -338,77 +356,109 @@ const Income = () => {
         )}
       </div>
 
-      {/* ── Add / Edit Modal ── */}
+      {/* ── Manual Add / Edit Modal ── */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
             <h2 className="text-lg font-semibold text-gray-800 mb-4">
               {editTarget ? "Edit Entry" : "Add Manual Income"}
             </h2>
-
             <div className="flex flex-col gap-3">
               <div>
                 <label className="text-xs text-gray-500 mb-1 block">Title *</label>
-                <input
-                  name="title"
-                  value={form.title}
-                  onChange={handleFormChange}
+                <input name="title" value={form.title} onChange={handleFormChange}
                   placeholder="e.g. Client advance payment"
-                  className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
-                />
+                  className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200" />
               </div>
-
               <div>
                 <label className="text-xs text-gray-500 mb-1 block">Amount (BDT) *</label>
-                <input
-                  name="amount"
-                  type="number"
-                  min="0"
-                  value={form.amount}
-                  onChange={handleFormChange}
+                <input name="amount" type="number" min="0" value={form.amount} onChange={handleFormChange}
                   placeholder="0.00"
-                  className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
-                />
+                  className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200" />
               </div>
-
               <div>
                 <label className="text-xs text-gray-500 mb-1 block">Category</label>
-                <select
-                  name="category"
-                  value={form.category}
-                  onChange={handleFormChange}
-                  className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
-                >
+                <select name="category" value={form.category} onChange={handleFormChange}
+                  className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200">
                   {CATEGORIES.map(c => <option key={c}>{c}</option>)}
                 </select>
               </div>
-
               <div>
                 <label className="text-xs text-gray-500 mb-1 block">Note</label>
-                <textarea
-                  name="note"
-                  value={form.note}
-                  onChange={handleFormChange}
-                  placeholder="Optional note..."
-                  rows={3}
-                  className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 resize-none"
-                />
+                <textarea name="note" value={form.note} onChange={handleFormChange}
+                  placeholder="Optional note..." rows={3}
+                  className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 resize-none" />
               </div>
             </div>
-
             <div className="flex justify-end gap-2 mt-5">
-              <button
-                onClick={closeModal}
-                className="px-4 py-2 text-sm rounded bg-gray-100 text-gray-600 hover:bg-gray-200"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="px-4 py-2 text-sm rounded bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50"
-              >
+              <button onClick={closeModal}
+                className="px-4 py-2 text-sm rounded bg-gray-100 text-gray-600 hover:bg-gray-200">Cancel</button>
+              <button onClick={handleSave} disabled={saving}
+                className="px-4 py-2 text-sm rounded bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50">
                 {saving ? "Saving..." : editTarget ? "Update" : "Add"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Auto (Order) Edit Modal ── */}
+      {showAutoModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">Edit Order Income</h2>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { label: "Package Name",    name: "packageName"   },
+                { label: "Buyer Name",      name: "buyername"     },
+                { label: "Email",           name: "email"         },
+                { label: "Project Title",   name: "projectTitle"  },
+                { label: "Amount (BDT) *",  name: "sellPrice",    type: "number" },
+                { label: "Transaction ID",  name: "transactionId" },
+              ].map(f => (
+                <div key={f.name}>
+                  <label className="text-xs text-gray-500 mb-1 block">{f.label}</label>
+                  <input
+                    name={f.name} type={f.type || "text"}
+                    value={autoForm[f.name]} onChange={handleAutoFormChange}
+                    className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
+                  />
+                </div>
+              ))}
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">Payment Method</label>
+                <select name="paymentMethod" value={autoForm.paymentMethod} onChange={handleAutoFormChange}
+                  className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200">
+                  {["", "bKash", "Nagad", "Bank", "Cash", "Card", "Other"].map(m => (
+                    <option key={m} value={m}>{m || "— Select —"}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs text-gray-500 mb-1 block">Payment Status</label>
+                <select name="paymentStatus" value={autoForm.paymentStatus} onChange={handleAutoFormChange}
+                  className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200">
+                  {["", "Pending", "Verified", "Rejected"].map(s => (
+                    <option key={s} value={s}>{s || "— Select —"}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="col-span-2">
+                <label className="text-xs text-gray-500 mb-1 block">Order Status</label>
+                <select name="status" value={autoForm.status} onChange={handleAutoFormChange}
+                  className="w-full border rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200">
+                  {["", "pending", "active", "completed", "cancelled"].map(s => (
+                    <option key={s} value={s}>{s ? s.charAt(0).toUpperCase() + s.slice(1) : "— Select —"}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 mt-5">
+              <button onClick={closeAutoModal}
+                className="px-4 py-2 text-sm rounded bg-gray-100 text-gray-600 hover:bg-gray-200">Cancel</button>
+              <button onClick={handleAutoSave} disabled={autoSaving}
+                className="px-4 py-2 text-sm rounded bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50">
+                {autoSaving ? "Saving..." : "Update"}
               </button>
             </div>
           </div>

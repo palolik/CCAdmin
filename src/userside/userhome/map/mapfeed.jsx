@@ -83,13 +83,14 @@ const Mapfeed = () => {
   const inputClass = "w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 outline-none focus:border-blue-400 transition-colors";
 
   return (
-    <div className="w-full p-6">
-      <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
-        <h1 className="text-xl font-medium text-gray-900">Map Management</h1>
-      </div>
+     <div className="min-h-screen w-full">
+            <div className="hdr">
+                <h1 >Map </h1>
+            </div>
+
 
       {/* Table */}
-      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden mb-8">
+      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden mb-8 p-6">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse">
             <thead>

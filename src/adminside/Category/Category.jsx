@@ -72,15 +72,12 @@ const Cetagory = () => {
     );
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
-
-            {/* Page Header */}
-            <div className="mb-8">
-                <h1 className="text-2xl font-bold text-gray-800">Categories</h1>
-                <p className="text-gray-400 text-sm mt-1">Manage your product categories</p>
+        <div className="min-h-screen w-full">
+            <div className="hdr">
+                <h1 >Categories</h1>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-6 items-start">
+            <div className="flex flex-col lg:flex-row gap-6 items-start  p-6">
 
                 {/* Add Category Card */}
                 <div className="w-full lg:w-72 bg-white border border-gray-200 rounded-2xl p-6 shadow-sm lg:sticky lg:top-6">

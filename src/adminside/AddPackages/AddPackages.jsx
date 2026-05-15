@@ -112,15 +112,13 @@ const AddPackages = () => {
     const sectionTitle = "text-xs font-semibold text-gray-400 uppercase tracking-widest mb-4";
 
     return (
-        <div className="min-h-screen bg-gray-50 p-6">
-
-            <div className="mb-8">
-                <h1 className="text-2xl font-bold text-gray-800">Add Package</h1>
-                <p className="text-gray-400 text-sm mt-1">Fill in the details to create a new package</p>
+           <div className="min-h-screen w-full">
+            <div className="hdr">
+                <h1 >Add Packages</h1>
             </div>
 
             <form onSubmit={handleAddPost}>
-                <div className="flex flex-col xl:flex-row gap-6 items-start">
+                <div className="flex flex-col xl:flex-row gap-6 p-6 items-start">
 
                     {/* Left Column */}
                     <div className="flex flex-col gap-6 w-full xl:w-96">

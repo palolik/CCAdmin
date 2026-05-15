@@ -140,25 +140,11 @@ const PackStat = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-slate-50 font-sans">
-      {/* ── Header ── */}
-      <div className="bg-white border-b border-slate-200 px-6 py-5">
-        <div className="max-w-screen-xl mx-auto flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-800 tracking-tight">
-              Package Statistics
-            </h1>
-            <p className="text-sm text-slate-500 mt-0.5">
-              Manage and monitor all your service packages
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-400 font-medium uppercase tracking-wide">
-              {filtered.length} of {packs.length} packages
-            </span>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen w-full">
+            <div className="hdr">
+                <h1 >Packages Statistics</h1>
+            </div>
+
 
       <div className="  px-6 py-6 space-y-6">
         {/* ── Stat Cards ── */}

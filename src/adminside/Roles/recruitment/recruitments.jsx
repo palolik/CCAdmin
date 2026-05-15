@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
-import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css";
+
 import { base_url } from "../../../config/config";
+import RichTextEditor from "../../../userside/utils/PichTextEditor";
 const RecruitmentAdmin = () => {
   const [jobs, setJobs] = useState([]);
   const [showForm, setShowForm] = useState(false);
@@ -121,14 +121,24 @@ const RecruitmentAdmin = () => {
                 <td>{job.department}</td>
                 <td>{job.deadline}</td>
                 <td>{job.salary}</td>
-                <td className="max-w-xs truncate"> <div
-                className="prose max-w-none text-gray-700 leading-relaxed [&>ul]:list-disc [&>ul]:pl-6 [&>ol]:list-decimal [&>ol]:pl-6"
-                dangerouslySetInnerHTML={{ __html: job.description }}
-              /></td>
-                <td className="max-w-xs truncate"> <div
-                className="prose max-w-none text-gray-700 leading-relaxed [&>ul]:list-disc [&>ul]:pl-6 [&>ol]:list-decimal [&>ol]:pl-6"
-                dangerouslySetInnerHTML={{ __html: job.requirements }}
-              /></td>
+                <td className="max-w-xs truncate"> 
+    <div
+                                    className="prose prose-sm max-w-none text-slate-700 [&>ul]:list-disc [&>ul]:pl-5 [&>ol]:list-decimal [&>ol]:pl-5"
+                                    dangerouslySetInnerHTML={{
+                                      __html:  job.descriptions,
+                                    }}
+                                  />
+              
+              </td>
+
+                <td className="max-w-xs truncate">
+              
+               <div
+                                    className="prose prose-sm max-w-none text-slate-700 [&>ul]:list-disc [&>ul]:pl-5 [&>ol]:list-decimal [&>ol]:pl-5"
+                                    dangerouslySetInnerHTML={{
+                                      __html: job.requirements,
+                                    }}
+                                  /></td>
                 <td>
                   <Link
                     className="btn btn-xs bg-blue-300 text-black mr-2"
@@ -158,9 +168,8 @@ const RecruitmentAdmin = () => {
       </div>
 
       {showForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-3xl relative">
-            <button
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center  justify-center z-50 ">
+<div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-3xl relative h-[500px] overflow-y-auto overflow-hidden">            <button
               onClick={() => setShowForm(false)}
               className="absolute top-3 right-3 text-gray-500 hover:text-red-500 text-xl"
             >
@@ -208,19 +217,19 @@ const RecruitmentAdmin = () => {
                 onChange={(e) => setSalary(e.target.value)}
               />
               <label className="font-semibold mt-3">Job Description</label>
-              <ReactQuill
+              <RichTextEditor
                 theme="snow"
                 value={description}
                 onChange={setDescription}
-                className="bg-white rounded-lg w-full h-[120px]"
+                className="bg-white rounded-lg w-full "
               />
 
               <label className="font-semibold mt-3">Requirements</label>
-              <ReactQuill
+              <RichTextEditor
                 theme="snow"
                 value={requirements}
                 onChange={setRequirements}
-                className="bg-white rounded-lg w-full h-[120px]"
+                className="bg-white rounded-lg w-full "
               />
 
               <button type="submit" className="btn btn-primary w-full mt-3">

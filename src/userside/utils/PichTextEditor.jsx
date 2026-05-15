@@ -329,7 +329,7 @@ const RichTextEditor = ({ value = "", onChange, placeholder = "Write your task d
   const Sep = () => <div className="w-px h-5 bg-gray-300 mx-0.5 self-center flex-shrink-0" />;
 
   return (
-    <div className="w-full border border-gray-200 rounded-xl overflow-hidden shadow-sm focus-within:ring-2 focus-within:ring-blue-100 focus-within:border-blue-400 transition-all">
+    <div className="w-full border mb-10 border-red-700 rounded-xl overflow-hidden shadow-sm focus-within:ring-2 focus-within:ring-blue-100 focus-within:border-blue-400 transition-all">
 
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 bg-gray-50 border-b border-gray-200">
@@ -461,7 +461,7 @@ const RichTextEditor = ({ value = "", onChange, placeholder = "Write your task d
 
       {/* iframe */}
       <iframe ref={iframeRef} title="editor" className="w-full bg-white"
-        style={{ minHeight: "300px", maxHeight: "420px", border: "none", display: "block" }} />
+        style={{ minHeight: "50px", maxHeight: "420px", border: "none", display: "block" }} />
 
       {/* Hint */}
       <div className="px-3 py-1.5 bg-gray-50 border-t border-gray-100 flex items-center gap-1.5">
