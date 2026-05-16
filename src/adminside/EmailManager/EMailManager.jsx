@@ -16,9 +16,9 @@ const DEFAULT_SIGNATURE = `Best regards,
 
 Prottoy
 CEO, Cloud Company
-📧 prottoy.ceo@cloudcompany.cc
-🌐 https://cloudcompany.cc
-📍 Dhaka, Bangladesh`;
+prottoy.ceo@cloudcompany.cc
+https://cloudcompany.cc
+Dhaka, Bangladesh`;
 
 const inp = "w-full border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm text-gray-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/10 transition-all bg-white placeholder:text-gray-300";
 const cardCls  = "bg-white border border-gray-200 rounded-2xl p-5";
@@ -228,24 +228,15 @@ const EmailManager = () => {
   const validCount  = recipients.filter(r => r.email.trim().includes("@")).length;
 
   return (
-    <div className="w-full p-6 bg-white min-h-screen">
-
-      {/* Header */}
-      <div className="flex items-center justify-between mb-7 pb-4 border-b border-gray-100">
-        <div>
-          <h1 className="text-xl font-medium text-gray-900 flex items-center gap-2">
-            <Mail className="w-5 h-5 text-blue-500" />
-            Email Manager
-          </h1>
-          <p className="text-sm text-gray-400 font-light mt-0.5">
-            Bulk email sending · up to 100 recipients · multiple senders
-          </p>
-        </div>
-        <button onClick={clearAll}
-          className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-red-400 border border-gray-200 hover:border-red-200 px-3 py-2 rounded-xl transition-colors">
+       <div className="min-h-screen w-full">
+            <div className="hdr flex flex-row justify-between">
+                <h1 >Email Manager</h1>
+                 <button onClick={clearAll}
+          className="flex items-center gap-1.5 text-xs text-gray-400 h-8 hover:text-red-400 border border-gray-200 hover:border-red-200 px-3 py-2 rounded-xl transition-colors">
           <Trash2 className="w-3.5 h-3.5" /> Clear all
         </button>
-      </div>
+            </div>
+     
 
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_300px] gap-5 items-start">
 

@@ -45,7 +45,7 @@ const AddSocial = () => {
     };
 
     try {
-      const response = await fetch(`${base_url}/addsocial`, {
+      const response = await fetch(`${base_url}/addsocials`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(postData),
@@ -67,7 +67,7 @@ const AddSocial = () => {
 
   return (
        <div className="w-full">
-            <div className='hdr'>Services</div>
+            <div className='hdr'>Social Media</div>
 
     <div className="relative px-6 py-4">
       <div className="flex justify-end items-center mb-4">
@@ -115,7 +115,7 @@ const AddSocial = () => {
         </table>
       </div>
 
-      {/* ===== FLOATING FORM MODAL ===== */}
+     
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md relative">

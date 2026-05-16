@@ -30,7 +30,7 @@ const AdminPortfolio = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`${base_url}/portfolio/${_id}`, { method: "DELETE" })
+        fetch(`${base_url}/delportfolio/${_id}`, { method: "DELETE" })
           .then((res) => res.json())
           .then((data) => {
             if (data.success) {
@@ -231,7 +231,7 @@ const handleStatusChange = (_id, currentStatus) => {
           </table>
         </div>
 
-        {/* ===== FLOATING FORM MODAL ===== */}
+ 
         {showForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md relative max-h-[90vh] overflow-y-auto">
@@ -252,13 +252,46 @@ const handleStatusChange = (_id, currentStatus) => {
                   className="input input-bordered w-full"
                   required
                 />
-                <input
-                  name="portfolioType"
-                  type="text"
-                  placeholder="Portfolio Type (e.g., web-development)"
-                  className="input input-bordered w-full"
-                  required
-                />
+               <select
+  name="portfolioType"
+  className="select select-bordered w-full"
+  required
+  defaultValue=""
+>
+  <option value="" disabled>
+    Select Portfolio Type
+  </option>
+
+  <option value="Web Development">Web Development</option>
+  <option value="Frontend Development">Frontend Development</option>
+  <option value="Backend Development">Backend Development</option>
+  <option value="Full Stack Development">Full Stack Development</option>
+  <option value="App Development">App Development</option>
+
+  <option value="UI/UX Design">UI/UX Design</option>
+  <option value="Graphic Design">Graphic Design</option>
+  <option value="Logo Design">Logo Design</option>
+  <option value="Brand Identity">Brand Identity</option>
+  <option value="Poster Design">Poster Design</option>
+  <option value="Social Media Design">Social Media Design</option>
+
+  <option value="Motion Graphics">Motion Graphics</option>
+  <option value="Video Editing">Video Editing</option>
+  <option value="Animation">Animation</option>
+
+  <option value="Digital Marketing">Digital Marketing</option>
+  <option value="SEO">SEO</option>
+  <option value="Content Writing">Content Writing</option>
+  <option value="Copywriting">Copywriting</option>
+  <option value="Academic Writing">Academic Writing</option>
+  <option value="Business Writing">Business Writing</option>
+
+  <option value="Data Entry">Data Entry</option>
+  <option value="Virtual Assistant">Virtual Assistant</option>
+  <option value="E-commerce">E-commerce</option>
+  <option value="Software">Software</option>
+  <option value="Other">Other</option>
+</select>
                 <textarea
                   name="shortDetails"
                   placeholder="Short Details"

@@ -132,7 +132,7 @@ const availableTabs = [
 
   return (
      <div className="w-full">
-                    <div className='hdr'>Feedbacks</div>
+                    <div className='hdr'>Admin List</div>
     <div className="w-full px-6 py-6">
       <div className="flex justify-end items-center mb-6">
        

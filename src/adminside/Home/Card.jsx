@@ -12,9 +12,7 @@ const Card = ({cartItem}) => {
                     <div>
                         <h1 className='text-xl font-medium'>{name}</h1>
                     </div>
-                    <div>
-                        <FaDollarSign></FaDollarSign>
-                    </div>
+                  
                 </div>
 
                 <div className='text-center text-3xl font-bold'>

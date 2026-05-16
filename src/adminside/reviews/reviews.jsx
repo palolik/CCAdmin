@@ -75,7 +75,7 @@ const Reviews = () => {
 
   return (
     <div className="w-full">
-                    <div className='hdr'>Feedbacks</div>
+                    <div className='hdr'>Reviews</div>
 
       <div className="overflow-x-auto">
         <table className="table w-full border">
@@ -83,7 +83,6 @@ const Reviews = () => {
             <tr className="font-semibold text-center">
               <th>Client</th>
               <th>Order ID</th>
-              <th>Package ID</th>
               <th>Feedback</th>
               <th>Rating</th>
               <th>Date</th>
@@ -106,8 +105,7 @@ const Reviews = () => {
                     />
                     <span className="font-medium">{review.cname}</span>
                   </td>
-                  <td>{review.orderid}</td>
-                  <td>{review.packageId}</td>
+                  <td><p>{review.orderid}</p><p>{review.packageId}</p></td>
                   <td className="max-w-xs text-sm">{review.tfeedback}</td>
                   <td>
                     {"⭐".repeat(review.rating || 0)}

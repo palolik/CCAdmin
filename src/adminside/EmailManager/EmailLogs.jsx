@@ -187,25 +187,17 @@ const fetchEmails = async (t = tab, isRefresh = false) => {
   const unreadCount = emails.filter(e => tab === "inbox" && !e.read).length;
 
   return (
-    <div className="w-full p-6 bg-white min-h-screen">
-
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
-        <div>
-          <h1 className="text-xl font-medium text-gray-900 flex items-center gap-2">
-            <Mail className="w-5 h-5 text-blue-500" />
-            Email Inbox
-          </h1>
-          <p className="text-sm text-gray-400 font-light mt-0.5">
-            prottoy.ceo@cloudcompany.cc
-          </p>
-        </div>
-        <button onClick={() => fetchEmails(tab, true)} disabled={refreshing}
-          className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-blue-500 border border-gray-200 hover:border-blue-200 px-3 py-2 rounded-xl transition-colors disabled:opacity-50">
+       <div className="min-h-screen w-full">
+            <div className="hdr flex flex-row justify-between">
+                <h1 >Email Inbox</h1>
+                 <button onClick={() => fetchEmails(tab, true)} disabled={refreshing}
+          className="flex items-center h-10 gap-1.5 text-xs text-gray-500 hover:text-blue-500 border border-gray-200 hover:border-blue-200 px-3 py-2 rounded-xl transition-colors disabled:opacity-50">
           <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin" : ""}`} />
           Refresh
         </button>
-      </div>
+            </div>
+
+    
 
       <div className="flex gap-5 h-[calc(100vh-180px)]">
 

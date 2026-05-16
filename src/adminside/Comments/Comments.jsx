@@ -57,8 +57,10 @@ const PComments = () => {
   };
 
   return (
-    <div className="w-full ">
-      <div className='headr'>All Comments</div>
+        <div className="min-h-screen w-full">
+            <div className="hdr">
+                <h1 >Comments</h1>
+            </div>
 
       {currentOrders.map((comment) => (
         <div

@@ -1,4 +1,3 @@
-
 21. phone ui - done 
 25. notification service , 
 26. admin app ,
@@ -8,6 +7,15 @@
 31. otp varifier for emails 
 32. forgot password , 
 32. chat massage seen unseen 
-33. 
+33. recruitment forms collection missing ,
+34. portfolio ui fix ,
+35. website is slow , make it faster , 
+36. support chat clossing messege 
+37. emails on package bought 
+38. package $ to taka conversion 
+39. footer pages 
+40. already applied 
+41. remove unnecessary icons , 
+
 
 
