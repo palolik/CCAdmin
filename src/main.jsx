@@ -12,12 +12,10 @@ import Reviews from './adminside/reviews/reviews';
 import Coupon from './adminside/Coupons/coupons';
 import Service from './adminside/Service/Service';
 import Teamadmin from './adminside/Team/Team';
-import Mapfeed from './userside/userhome/map/mapfeed';
+import Mapfeed from './adminside/Map/mapfeed';
 import Cetagory from './adminside/Category/Category';
 import AuthProvider from './userside/Provider/AuthProvider';
-// import ESignin from './userside/auth/ESignin';
 import AddSocial from './adminside/Social/Addsocial';
-// import OurClient from './adminside/OurClient/OurClient';
 import WorkDis from './adminside/workdis/workdis';
 import Adminlist from './adminside/Roles/adminlist/Adminlist';
 import Employeelist from './adminside/Roles/employeelist/Employeelist';
@@ -39,19 +37,17 @@ import FormPage from './adminside/Businessplanner/Plannerform';
 import AllHClient from './adminside/Clients/Clients';
 import { base_url } from './config/config';
 import AdminPortfoilo from './adminside/Portfolio/portfolio';
-
 import { HelmetProvider } from 'react-helmet-async'
-
 import PaymentMethod from './adminside/PaymentMethod/paymentmethod';
 import PComments from './adminside/Comments/Comments';
-
 import CustomProjects from './adminside/Projects/CustomProjects';
 import EmailManager from './adminside/EmailManager/EMailManager';
 import EmailInbox from './adminside/EmailManager/EmailLogs';
 import EditPackage from './adminside/AddPackages/EditPackage';
+import Applications from './adminside/Applications/Applications';
 
 const router = createBrowserRouter([
- {
+  {
     path: "/admin",
     element: <Admin />,
     children: [
@@ -69,217 +65,218 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <Admin />,
-    
+
     children: [
-       {
-        index: true,        // renders at /admin
-        element: <Home />,  // your dashboard
+      {
+        index: true,      
+        element: <Home />,  
       },
       {
-        path:"/admin",
+        path: "/admin",
         element: <Home></Home>
       },
       {
-        path:"/admin/projects",
+        path: "/admin/projects",
         element: <Projects></Projects>,
-        loader: ()=> fetch(`${base_url}/orders`),
+        loader: () => fetch(`${base_url}/orders`),
       },
       {
-        path:"/admin/add-pack",
+        path: "/admin/add-pack",
         element: <AddPackages></AddPackages>
       },
-        {
-        path:"/admin/packageupdate/:id",
-        element: <EditPackage></EditPackage>,
-         loader: ({ params }) => fetch(`${base_url}/updatepackage/${params.id}`),
-      },
-
-
-
-
-
-    
       {
-        path:"/admin/pack-stat",
+        path: "/admin/packageupdate/:id",
+        element: <EditPackage></EditPackage>,
+        loader: ({ params }) => fetch(`${base_url}/updatepackage/${params.id}`),
+      },
+      {
+        path: "/admin/pack-stat",
         element: <PackStat></PackStat>,
-        loader: ()=> fetch(`${base_url}/packages`),
+        loader: () => fetch(`${base_url}/packages`),
 
       },
-        {
-        path:"/admin/customprojects",
+      {
+        path: "/admin/customprojects",
         element: <CustomProjects></CustomProjects>,
 
       },
-      
-          {
-        path:"/admin/hclients",
+
+      {
+        path: "/admin/hclients",
         element: <AllHClient></AllHClient>,
-        loader: ()=> fetch(`${base_url}/hclient`),
+        loader: () => fetch(`${base_url}/hclient`),
       },
       {
-        path:"/admin/faq",
+        path: "/admin/faq",
         element: <Faqall></Faqall>,
-        loader: ()=> fetch(`${base_url}/faq`),
+        loader: () => fetch(`${base_url}/faq`),
       },
       {
-        path:"/admin/team",
+        path: "/admin/team",
         element: <Teamadmin></Teamadmin>,
-        loader: ()=> fetch(`${base_url}/team`),
+        loader: () => fetch(`${base_url}/team`),
 
       },
       {
-        path:"/admin/cetagory",
+        path: "/admin/cetagory",
         element: <Cetagory></Cetagory>,
-        loader: ()=> fetch(`${base_url}/category`),
+        loader: () => fetch(`${base_url}/category`),
       },
       {
-        path:"/admin/service",
+        path: "/admin/service",
         element: <Service></Service>,
       },
       {
-        path:"/admin/reviews",
+        path: "/admin/reviews",
         element: <Reviews></Reviews>,
-        loader: ()=> fetch(`${base_url}/clientfeedbacks`),
+        loader: () => fetch(`${base_url}/review`),
 
       },
-        {
-      path:"/admin/coupons",
-      element: <Coupon></Coupon>,
-      loader: ()=> fetch(`${base_url}/coupon`),
-     },
       {
-      path:"/admin/marketing",
-      element: <Marketing></Marketing>,
-      loader: ()=> fetch(`${base_url}/marketing`),
-     },
-     {
-      path:"/admin/map",
-      element: <Mapfeed></Mapfeed>,
-      loader: ()=> fetch(`${base_url}/map`),
-     },
+        path: "/admin/coupons",
+        element: <Coupon></Coupon>,
+        loader: () => fetch(`${base_url}/coupon`),
+      },
       {
-        path:"/admin/clientlist",
+        path: "/admin/marketing",
+        element: <Marketing></Marketing>,
+        loader: () => fetch(`${base_url}/marketing`),
+      },
+      {
+        path: "/admin/map",
+        element: <Mapfeed></Mapfeed>,
+        loader: () => fetch(`${base_url}/map`),
+      },
+      {
+        path: "/admin/clientlist",
         element: <Clientlist></Clientlist>,
-                 loader: ()=> fetch(`${base_url}/allclients`),
+        loader: () => fetch(`${base_url}/allclients`),
 
       },
       {
-        path:"/admin/employeelist",
+        path: "/admin/employeelist",
         element: <Employeelist></Employeelist>,
-         loader: ()=> fetch(`${base_url}/employees`),
+        loader: () => fetch(`${base_url}/employees`),
 
-      }, 
+      },
       {
-        path:"/admin/adminlist",
+        path: "/admin/adminlist",
         element: <Adminlist></Adminlist>,
-         loader: ()=> fetch(`${base_url}/roles`),
+        loader: () => fetch(`${base_url}/roles`),
 
       },
-        {
-        path:"/admin/recruitment",
+      {
+        path: "/admin/recruitment",
         element: <RecruitmentAdmin></RecruitmentAdmin>,
-        loader: ()=> fetch(`${base_url}/recruitment`),
+        loader: () => fetch(`${base_url}/recruitment`),
 
       },
-   
+      {
+        path: "/admin/applications",
+        element: <Applications></Applications>,
+        loader: () => fetch(`${base_url}/jobapplications`),
+
+      },
       {
         path: "/admin/social",
         element: <AddSocial></AddSocial>,
       },
-       {
+      {
         path: "/admin/comments",
         element: <PComments></PComments>,
       },
-        {
+      {
         path: "/admin/flowmaker",
         element: <Flowmaker></Flowmaker>,
       },
-        {
+      {
         path: "/admin/allflows",
         element: <Allflows></Allflows>,
-                loader: ()=> fetch(`${base_url}/taskflows`),
+        loader: () => fetch(`${base_url}/taskflows`),
 
       },
-        {
+      {
         path: "/admin/planner",
         element: <Planner></Planner>,
       },
-        {
+      {
         path: "/admin/planslist",
         element: <Planlist></Planlist>
       },
-        {
-      path: "/admin/editplanner/:id", 
-      element: <EditPlanner />,
-      loader: ({ params }) => fetch(`${base_url}/planner/${params.id}`),
-    },
- {
-      path: "/admin/planform/:id", 
-      element: <FormPage />,
-      loader: ({ params }) => fetch(`${base_url}/planner/${params.id}`),
-    },
-   
-        {
+      {
+        path: "/admin/editplanner/:id",
+        element: <EditPlanner />,
+        loader: ({ params }) => fetch(`${base_url}/planner/${params.id}`),
+      },
+      {
+        path: "/admin/planform/:id",
+        element: <FormPage />,
+        loader: ({ params }) => fetch(`${base_url}/planner/${params.id}`),
+      },
+      {
         path: "/admin/planresponses",
         element: <Responses></Responses>,
       },
-       {
+      {
         path: "/admin/paymentgate",
         element: <PaymentMethod></PaymentMethod>
       },
-    
+
       {
         path: "/admin/workdistribution",
         element: <WorkDis></WorkDis>,
-        loader: ()=> fetch(`${base_url}/alltasks`),
+        loader: () => fetch(`${base_url}/alltasks`),
 
       },
-        {
+      {
         path: "/admin/income",
         element: <Income></Income>,
-        loader: ()=> fetch(`${base_url}/income`),
+        loader: () => fetch(`${base_url}/income`),
 
       },
-        {
+      {
         path: "/admin/expense",
         element: <Expense></Expense>,
-        loader: ()=> fetch(`${base_url}/expense`),
+        loader: () => fetch(`${base_url}/expense`),
 
       },
-        {
+      {
         path: "/admin/advertisement",
         element: <Advertise></Advertise>,
-        loader: ()=> fetch(`${base_url}/advertise`),
-        },
-        {
+        loader: () => fetch(`${base_url}/advertise`),
+      },
+      {
         path: "/admin/support",
         element: <AdminSupport></AdminSupport>,
-        loader: ()=> fetch(`${base_url}/adminsupport`),
-        },
-         {
+        loader: () => fetch(`${base_url}/adminsupport`),
+      },
+      {
         path: "/admin/emailmanager",
         element: <EmailManager></EmailManager>,
-        },
-{ path: "/admin/emailinbox",
-   element: <EmailInbox /> },
- {
+      },
+      {
+        path: "/admin/emailinbox",
+        element: <EmailInbox />
+      },
+      {
         path: "/admin/portfolio",
         element: <AdminPortfoilo></AdminPortfoilo>,
-        loader: ()=> fetch(`${base_url}/getportfolio`),
-        },
+        loader: () => fetch(`${base_url}/getportfolio`),
+      },
 
-      ],},],
-
+    ],
+  },
+],
 );
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-       <HelmetProvider>
-        <AuthProvider>
-             {/* ← moved here, renders on every page */}
+    <HelmetProvider>
+      <AuthProvider>
+        {/* ← moved here, renders on every page */}
         <RouterProvider router={router} />
-        </AuthProvider>
-       </HelmetProvider>
-  
-    </React.StrictMode>,
+      </AuthProvider>
+    </HelmetProvider>
+
+  </React.StrictMode>,
 )

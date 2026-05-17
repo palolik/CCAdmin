@@ -2,6 +2,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import logo from "/assets/logow.png";
+import logos from "/assets/febicon.svg";
+
 import {
   MdDashboard, MdOutlineCategory, MdAddBox, MdBarChart,
   MdFolderOpen, MdTune, MdAccountTree, MdAltRoute, MdListAlt,
@@ -107,6 +109,8 @@ const sections = {
     { id: 2, name: "Employee List", path: "/admin/employeelist" },
     { id: 3, name: "Client List",   path: "/admin/clientlist" },
     { id: 4, name: "Recruitment",   path: "/admin/recruitment" },
+    { id: 5, name: "Applications",   path: "/admin/applications" },
+
   ],
 };
 
@@ -238,7 +242,7 @@ const Sidebar = () => {
       {/* Logo */}
       <div className="flex items-center justify-center h-16 flex-shrink-0 overflow-hidden">
         {collapsed
-          ? <span className="text-sky-400 font-black text-xl">C</span>
+          ?  <img className="h-12 object-contain" src={logos} alt="logo" />
           : <img className="h-12 object-contain" src={logo} alt="logo" />
         }
       </div>

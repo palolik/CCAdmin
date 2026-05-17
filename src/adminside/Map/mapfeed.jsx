@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { base_url } from "../../../config/config";
+import { base_url } from "../../config/config";
 import { MapPinCheck } from 'lucide-react';
 import { X } from 'lucide-react';
 
@@ -95,7 +95,7 @@ const Mapfeed = () => {
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-gray-50 border-b border-gray-100">
-                {["ID","Position","Image","Tooltip","Actions"].map(h => (
+                {["Position","Tooltip","Actions"].map(h => (
                   <th key={h} className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{h}</th>
                 ))}
               </tr>
@@ -107,13 +107,10 @@ const Mapfeed = () => {
                 <tr><td colSpan={5} className="text-center py-10 text-gray-400 text-sm font-light">No pins added yet.</td></tr>
               ) : icons.map(icon => (
                 <tr key={icon._id} className="border-b border-gray-50 hover:bg-blue-50/30 transition-colors">
-                  <td className="px-4 py-3 text-sm font-medium text-gray-900">{icon.id}</td>
                   <td className="px-4 py-3 text-xs text-gray-500 font-mono">
                     T:{icon.position.top} L:{icon.position.left}
                   </td>
-                  <td className="px-4 py-3">
-                    <img src={icon.imageUrl} alt={icon.id} className="w-10 h-10 rounded-xl object-cover" />
-                  </td>
+               
                   <td className="px-4 py-3 text-sm text-gray-500 max-w-[180px] truncate">{icon.data}</td>
                   <td className="px-4 py-3">
                     <div className="flex gap-2">
@@ -159,7 +156,7 @@ const Mapfeed = () => {
             Add Pin
           </button>
           <p className="text-xs text-gray-400 font-light mt-3">
-            💡 Click anywhere on the map below to set the pin position automatically.
+             Click anywhere on the map below to set the pin position automatically.
           </p>
         </form>
       </div>
