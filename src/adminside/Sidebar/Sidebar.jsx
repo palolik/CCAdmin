@@ -91,6 +91,8 @@ const sections = {
     { id: 7, name: "FAQ",           path: "/admin/faq" },
     { id: 8, name: "EMail Manager", path: "/admin/emailmanager" },
     { id: 9, name: "EMail Inbox",   path: "/admin/emailinbox" },
+        { id: 10, name: "Blog",          path: "/admin/blogs" },
+
   ],
   marketing: [
     { id: 1, name: "Reviews",      path: "/admin/reviews" },

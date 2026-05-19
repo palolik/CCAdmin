@@ -45,6 +45,10 @@ import EmailManager from './adminside/EmailManager/EMailManager';
 import EmailInbox from './adminside/EmailManager/EmailLogs';
 import EditPackage from './adminside/AddPackages/EditPackage';
 import Applications from './adminside/Applications/Applications';
+import Blog from './adminside/Blogs/Blogs';
+import BlogDetails from './adminside/Blogs/BlogDetails';
+import BlogList from './adminside/Blogs/Bloglist';
+import BlogsPage from './adminside/Blogs/Blogspage';
 
 const router = createBrowserRouter([
   {
@@ -258,6 +262,25 @@ const router = createBrowserRouter([
         path: "/admin/emailinbox",
         element: <EmailInbox />
       },
+
+ {
+        path: "/admin/blogs",
+        element: <Blog />
+      },
+{
+        path: "/blogs",
+        element: <BlogsPage />
+      },
+      {
+        path: "/blog/:slug",
+        element: <BlogDetails />
+      },
+       {
+        path: "blogs/:slug",
+        element: <BlogsPage />
+      },
+
+     
       {
         path: "/admin/portfolio",
         element: <AdminPortfoilo></AdminPortfoilo>,
