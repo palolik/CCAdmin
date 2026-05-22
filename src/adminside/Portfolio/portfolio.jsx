@@ -50,6 +50,10 @@ const handleStatusChange = (_id, currentStatus) => {
         <option value="hidden" ${currentStatus === "hidden" ? "selected" : ""}>Hidden</option>
         <option value="visible" ${currentStatus === "visible" ? "selected" : ""}>Visible</option>
         <option value="archived" ${currentStatus === "archived" ? "selected" : ""}>Archived</option>
+        <option value="pending" ${currentStatus === "pending" ? "selected" : ""}>Pending</option>
+        <option value="rejected" ${currentStatus === "rejected" ? "selected" : ""}>Rejected</option>
+
+
       </select>
       <textarea id="status-note" class="swal2-textarea" placeholder="Add a note (optional)" style="width: 80%;"></textarea>
     `,
@@ -82,7 +86,7 @@ const handleStatusChange = (_id, currentStatus) => {
             }
             Swal.fire("Updated!", message, "success");
             
-            // Update local state with note
+      
             setPortfolios((prev) =>
               prev.map((p) => (p._id === _id ? { ...p, status, statusNote: note } : p))
             );
@@ -285,7 +289,6 @@ const handleStatusChange = (_id, currentStatus) => {
   <option value="Copywriting">Copywriting</option>
   <option value="Academic Writing">Academic Writing</option>
   <option value="Business Writing">Business Writing</option>
-
   <option value="Data Entry">Data Entry</option>
   <option value="Virtual Assistant">Virtual Assistant</option>
   <option value="E-commerce">E-commerce</option>
