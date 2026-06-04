@@ -7,8 +7,8 @@ import { MdChat } from "react-icons/md";
 import RichTextEditor from '../../userside/utils/PichTextEditor';
 import { base_url } from "../../config/config";
 import AdminempChat from "./adminempoyeechat";
+import CountdownTimer from "../../userside/utils/CountdownTimer";
 
-// ── department data ───────────────────────────────────────────────────────────
 const departmentData = [
   { department: "Web Development",        subDepartments: ["Frontend", "Backend", "Full Stack", "CMS Development"] },
   { department: "Graphic Design",         subDepartments: ["Social Media Design", "Post Design", "Logo Design", "UI/UX Design", "Print Design"] },
@@ -57,7 +57,6 @@ const subdepartmentData = {
   "Technical Support":["Remote Support","System Maintenance","Bug Fixing"],
 };
 
-// ── status config ─────────────────────────────────────────────────────────────
 const statusStyle = {
   pending:   { bg:"#fff7ed", color:"#c2410c", border:"#fed7aa" },
   Accepted:  { bg:"#eff6ff", color:"#1d4ed8", border:"#bfdbfe" },
@@ -74,8 +73,6 @@ const formatDate = (ds) => {
   return d.toLocaleString("en-US", { month:"short", day:"numeric", hour:"numeric", minute:"2-digit", hour12:true });
 };
 
-// ── task row ──────────────────────────────────────────────────────────────────
-// ✅ accepts unreadCount prop from parent
 const TaskRow = ({ task, onDelete, onChatClick, onExtraTime, unreadCount }) => {
   const [open, setOpen] = useState(false);
   const st = statusStyle[task.tstatus] || { bg:"#f8fafc", color:"#64748b", border:"#e2e8f0" };
@@ -106,13 +103,18 @@ const TaskRow = ({ task, onDelete, onChatClick, onExtraTime, unreadCount }) => {
           <p style={{ margin:"2px 0 0", fontSize:11, color:"#94a3b8" }}>{task.rsubdep} · {task.esprts}</p>
         </td>
 
-        <td style={{ padding:"14px 16px" }}>
-          <span style={{ fontSize:12, background:"#f0fdf4", color:"#16a34a", border:"1px solid #bbf7d0", borderRadius:999, padding:"2px 10px", fontWeight:600, marginRight:6 }}>
+        <td style={{ padding:"" }}>
+        <div className="flex flex-col"><div>  <span style={{ fontSize:12, background:"#f0fdf4", color:"#16a34a", border:"1px solid #bbf7d0", borderRadius:999, padding:"2px 10px", fontWeight:600, marginRight:6 }}>
             ⏱ {task.ttime}h
           </span>
           <span style={{ fontSize:12, background:"#eff6ff", color:"#2563eb", border:"1px solid #bfdbfe", borderRadius:999, padding:"2px 10px", fontWeight:600 }}>
             💰 {task.tcc} CC
-          </span>
+          </span></div>
+        <div> <CountdownTimer
+                          targetDate={
+                            new Date(new Date(task.tat).getTime() + Number(task.ttime) * 60 * 60 * 1000)
+                          }
+                        /></div></div>
         </td>
 
         <td style={{ padding:"14px 16px" }}>
@@ -140,13 +142,11 @@ const TaskRow = ({ task, onDelete, onChatClick, onExtraTime, unreadCount }) => {
 
         <td style={{ padding:"14px 16px" }} onClick={e => e.stopPropagation()}>
           <div style={{ display:"flex", gap:6 }}>
-            {/* ✅ relative positioning so badge sits on button */}
             <button
               onClick={() => onChatClick(task._id)}
               style={{ position:"relative", display:"flex", alignItems:"center", gap:5, padding:"5px 12px", borderRadius:7, border:"none",
                 background:"#eff6ff", color:"#2563eb", fontWeight:500, fontSize:12, cursor:"pointer" }}>
               <MdChat size={13} /> Chat
-              {/* ✅ unread badge */}
               {unreadCount > 0 && (
                 <span style={{
                   position:"absolute", top:-7, right:-7,
@@ -239,7 +239,6 @@ const TaskRow = ({ task, onDelete, onChatClick, onExtraTime, unreadCount }) => {
   );
 };
 
-// ── main component ────────────────────────────────────────────────────────────
 const WorkDis = () => {
   const loaderTasks = useLoaderData();
   const [tasks, setTasks]                           = useState(loaderTasks || []);
@@ -275,7 +274,6 @@ const WorkDis = () => {
     fetch(`${base_url}/alltasks`).then(r => r.json()).then(setTasks).catch(console.error);
   }, []);
 
-  // ✅ Fetch unread counts: messages from 'emp' that are unread
   const loadUnreadCounts = async () => {
     const allTasks = tasksRef.current;
     if (!allTasks.length) return;
@@ -301,7 +299,6 @@ const WorkDis = () => {
     }
   };
 
-  // ✅ Poll unread counts every 5s once tasks are loaded
   useEffect(() => {
     if (!tasks.length) return;
     loadUnreadCounts();
@@ -348,10 +345,8 @@ const WorkDis = () => {
     if (!activeChatTasks.includes(taskid)) setActiveChatTasks(prev => [...prev, taskid]);
     setChatVisibility(prev => ({ ...prev, [taskid]: true }));
 
-    // ✅ Clear badge immediately
     setUnreadCounts(prev => ({ ...prev, [taskid]: 0 }));
 
-    // ✅ Mark emp messages as read on the server
     fetch(`${base_url}/empchat/mark-read/${taskid}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -440,7 +435,7 @@ const WorkDis = () => {
               <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13.5 }}>
                 <thead>
                   <tr style={{ borderBottom:"2px solid #f0f2f7" }}>
-                    {["Task","Department","Time / CC","Assigned To","Status","Actions"].map(h => (
+                    {["Task","Department","Time / CC","Time Remaining","Assigned To","Status","Actions"].map(h => (
                       <th key={h} style={{ textAlign:"left", padding:"12px 16px", fontSize:11, fontWeight:600, color:"#94a3b8", letterSpacing:"0.07em", textTransform:"uppercase" }}>{h}</th>
                     ))}
                   </tr>

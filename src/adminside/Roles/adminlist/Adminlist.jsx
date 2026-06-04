@@ -16,6 +16,7 @@ const Adminlist = () => {
 const availableTabs = [
   "packages",
   "orders",
+  "tasks",
   "website",
   "businessplanner",
   "marketing",

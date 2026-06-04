@@ -19,6 +19,7 @@ import { FaBriefcase, FaUserTie } from "react-icons/fa";
 const sectionIcons = {
   packages:        <MdInventory size={20} />,
   orders:          <MdFolderOpen size={20} />,
+  tasks:          <MdGroup  size={20} />,
   businessplanner: <FaBriefcase size={18} />,
   website:         <MdWork size={20} />,
   marketing:       <MdCampaign size={20} />,
@@ -71,10 +72,13 @@ const sections = {
   orders: [
     { id: 1, name: "Projects",          path: "/admin/projects" },
     { id: 2, name: "Custom projects",   path: "/admin/customprojects" },
-    { id: 3, name: "Work Distribution", path: "/admin/workdistribution" },
-    { id: 4, name: "Work Flow Maker",   path: "/admin/flowmaker" },
-    { id: 5, name: "All Work Flows",    path: "/admin/allflows" },
-    { id: 6, name: "Support Chat",      path: "/admin/support" },
+    { id: 3, name: "Support Chat",      path: "/admin/support" },
+  ],
+    tasks: [
+  
+    { id: 1, name: "Work Distribution", path: "/admin/workdistribution" },
+    { id: 2, name: "Work Flow Maker",   path: "/admin/flowmaker" },
+    { id: 3, name: "All Work Flows",    path: "/admin/allflows" },
   ],
   businessplanner: [
     { id: 1, name: "Planner",   path: "/admin/planner" },
@@ -91,7 +95,7 @@ const sections = {
     { id: 7, name: "FAQ",           path: "/admin/faq" },
     { id: 8, name: "EMail Manager", path: "/admin/emailmanager" },
     { id: 9, name: "EMail Inbox",   path: "/admin/emailinbox" },
-        { id: 10, name: "Blog",          path: "/admin/blogs" },
+    { id: 10, name: "Blog",          path: "/admin/blogs" },
 
   ],
   marketing: [
@@ -167,7 +171,6 @@ const CollapsedFlyout = ({ section, routes, currentPath, onClose }) => {
   );
 };
 
-// ── Main Sidebar ───────────────────────────────────────────────
 const Sidebar = () => {
   // ✅ useLocation() called at the top level of the component
   const { pathname: currentPath } = useLocation();
@@ -200,17 +203,14 @@ const Sidebar = () => {
     }
   }, [currentPath]);
 
-  // Persist collapsed state
   useEffect(() => {
     localStorage.setItem("sidebar-collapsed", JSON.stringify(collapsed));
   }, [collapsed]);
 
-  // Close flyout when sidebar expands
   useEffect(() => {
     if (!collapsed) setFlyoutSection(null);
   }, [collapsed]);
 
-  // ✅ useNavigate instead of window.location.href
   const handleLogout = () => {
     localStorage.removeItem("adminData");
     localStorage.removeItem("token");
@@ -232,16 +232,14 @@ const Sidebar = () => {
       className={`relative flex flex-col bg-[#09090f] border-r border-white/5
         min-h-screen flex-shrink-0 ${collapsed ? "w-[64px]" : "w-[240px]"}`}
     >
-      {/* Toggle button */}
       <button
         onClick={() => setCollapsed((c) => !c)}
-        className="absolute -right-3 top-6 z-50 w-6 h-6 rounded-full bg-sky-500
-          text-white flex items-center justify-center shadow-lg hover:bg-sky-400 transition-colors"
+        className="absolute -right-3 top-6 z-50 w-6 h-6 rounded-full bg-black
+          text-white flex items-center justify-center shadow-lg hover:bg-black transition-colors"
       >
         {collapsed ? <MdChevronRight size={16} /> : <MdChevronLeft size={16} />}
       </button>
 
-      {/* Logo */}
       <div className="flex items-center justify-center h-16 flex-shrink-0 overflow-hidden">
         {collapsed
           ?  <img className="h-12 object-contain" src={logos} alt="logo" />
@@ -249,7 +247,6 @@ const Sidebar = () => {
         }
       </div>
 
-      {/* Dashboard link */}
       <Link
         to="/admin"
         title={collapsed ? "Dashboard" : ""}
@@ -263,7 +260,6 @@ const Sidebar = () => {
 
       <div className="mx-3 border-t border-white/5 mb-2" />
 
-      {/* Nav sections */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden px-2 pb-4">
         {filteredSections.length > 0 ? (
           filteredSections.map(([key, routes]) => (
@@ -272,7 +268,6 @@ const Sidebar = () => {
               className="mb-1 relative"
               ref={(el) => (flyoutRefs.current[key] = el)}
             >
-              {/* Section header */}
               <button
                 onClick={() => {
                   if (collapsed) {
