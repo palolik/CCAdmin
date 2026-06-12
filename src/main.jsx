@@ -49,6 +49,7 @@ import Blog from './adminside/Blogs/Blogs';
 import BlogDetails from './adminside/Blogs/BlogDetails';
 import BlogList from './adminside/Blogs/Bloglist';
 import BlogsPage from './adminside/Blogs/Blogspage';
+import TaskDashboard from './adminside/workdis/taskdeashboard';
 
 const router = createBrowserRouter([
   {
@@ -225,7 +226,12 @@ const router = createBrowserRouter([
         path: "/admin/paymentgate",
         element: <PaymentMethod></PaymentMethod>
       },
+ {
+        path: "/admin/taskdashboard",
+        element: <TaskDashboard></TaskDashboard>,
+        loader: () => fetch(`${base_url}/alltasks`),
 
+      },
       {
         path: "/admin/workdistribution",
         element: <WorkDis></WorkDis>,

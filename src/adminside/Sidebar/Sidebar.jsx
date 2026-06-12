@@ -75,10 +75,11 @@ const sections = {
     { id: 3, name: "Support Chat",      path: "/admin/support" },
   ],
     tasks: [
-  
-    { id: 1, name: "Work Distribution", path: "/admin/workdistribution" },
-    { id: 2, name: "Work Flow Maker",   path: "/admin/flowmaker" },
-    { id: 3, name: "All Work Flows",    path: "/admin/allflows" },
+      { id: 1, name: "Dashboard", path: "/admin/taskdashboard" },
+
+    { id: 2, name: "Work Distribution", path: "/admin/workdistribution" },
+    { id: 3, name: "Work Flow Maker",   path: "/admin/flowmaker" },
+    { id: 4, name: "All Work Flows",    path: "/admin/allflows" },
   ],
   businessplanner: [
     { id: 1, name: "Planner",   path: "/admin/planner" },
