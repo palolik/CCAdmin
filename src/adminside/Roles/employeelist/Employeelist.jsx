@@ -96,6 +96,7 @@ const Employeelist = () => {
     const postData = {
       rppic:  form.rppic.value.trim(),
       role:   "emp",
+      isReady: false,
       rname:  form.rname.value.trim(),
       remail: form.remail.value.trim(),
       rphone: form.rphone.value.trim(),
@@ -128,7 +129,26 @@ const Employeelist = () => {
       Swal.fire("Error", "An unexpected error occurred", "error");
     }
   };
+const handleToggleReady = async (_id, currentValue) => {
+  const newValue = !currentValue;
 
+  // Optimistic update
+  setEmployees(prev => prev.map(m => m._id === _id ? { ...m, isReady: newValue } : m));
+
+  try {
+    const res = await fetch(`${base_url}/employee/${_id}/ready`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ isReady: newValue }),
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+  } catch (err) {
+    // Revert on failure
+    setEmployees(prev => prev.map(m => m._id === _id ? { ...m, isReady: currentValue } : m));
+    Swal.fire("Error", "Could not update ready status", "error");
+  }
+};
   const handleDelete = (_id) => {
     Swal.fire({
       title: "Delete this employee?", text: "This cannot be undone.",
@@ -199,6 +219,20 @@ const Employeelist = () => {
           font-size:12px; cursor:pointer; font-family:'DM Sans',sans-serif; transition:background .15s;
         }
         .el-delbtn:hover { background:#fee2e2; }
+        .el-toggle {
+  position:relative; width:38px; height:22px; border-radius:999px;
+  background:#d1d5db; cursor:pointer; transition:background .2s;
+  border:none; padding:0; flex-shrink:0;
+}
+.el-toggle.on { background:#16a34a; }
+.el-toggle::after {
+  content:""; position:absolute; top:2px; left:2px;
+  width:18px; height:18px; border-radius:50%;
+  background:#fff; transition:transform .2s;
+  box-shadow:0 1px 3px rgba(0,0,0,.2);
+}
+.el-toggle.on::after { transform:translateX(16px); }
+.el-toggle:disabled { opacity:.5; cursor:not-allowed; }
         @keyframes el-up { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:none } }
       `}</style>
 
@@ -250,7 +284,7 @@ const Employeelist = () => {
               <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13.5 }}>
                 <thead>
                   <tr style={{ borderBottom:"2px solid #f0f2f7" }}>
-                    {["Employee","Contact","Department","Banking","Stats","Status",""].map(h => (
+                    {["Employee","Contact","Department","is Ready","Banking","Stats","Status",""].map(h => (
                       <th key={h} style={{ textAlign:"left", padding:"12px 18px", fontSize:11, fontWeight:600, color:"#94a3b8", letterSpacing:"0.07em", textTransform:"uppercase" }}>
                         {h}
                       </th>
@@ -300,7 +334,23 @@ const Employeelist = () => {
                           <p style={{ margin:0, fontSize:12, color:"#64748b" }}>{member.rsubdep || "—"}</p>
                           <p style={{ margin:"2px 0 0", fontSize:11, color:"#94a3b8" }}>{member.esprts || "—"}</p>
                         </td>
-
+   
+                      <td style={{ padding:"14px 18px" }}>
+  <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+    <button
+      type="button"
+      className={`el-toggle ${member.isReady ? "on" : ""}`}
+      onClick={() => handleToggleReady(member._id, !!member.isReady)}
+      aria-label={`Toggle ready status for ${member.rname}`}
+    />
+    <span style={{
+      fontSize:12, fontWeight:600,
+      color: member.isReady ? "#16a34a" : "#94a3b8",
+    }}>
+      {member.isReady ? "Ready" : "Not ready"}
+    </span>
+  </div>
+</td>
                         {/* banking */}
                         <td style={{ padding:"14px 18px" }}>
                           {[["Bkash", member.bkash], ["Nagad", member.nogod], ["Bank", member.bankn], ["A/C", member.bacc]].map(([label, val]) => (

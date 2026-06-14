@@ -162,7 +162,6 @@ const router = createBrowserRouter([
         path: "/admin/employeelist",
         element: <Employeelist></Employeelist>,
         loader: () => fetch(`${base_url}/employees`),
-
       },
       {
         path: "/admin/adminlist",
