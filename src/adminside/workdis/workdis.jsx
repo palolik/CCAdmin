@@ -308,7 +308,7 @@ const WorkDis = () => {
   const [focused, setFocused]                             = useState(null);
   const [unreadCounts, setUnreadCounts]                   = useState({});
   const [employees, setEmployees]                         = useState([]);
-
+const [selectedEmployee, setSelectedEmployee] = useState(""); // "" = open for all
   const tasksRef = useRef([]);
   tasksRef.current = tasks;
 
@@ -483,32 +483,62 @@ const WorkDis = () => {
     }
   };
 
-  const handleAddPost = async (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const postData = {
-      tname: form.tname.value.trim(), tdesc: formData.tdesc,
-      rdep: selectedDepartment, rsubdep: selectedSubDepartment, esprts: selectedExpertise,
-      ttime: form.ttime.value.trim(), tcc: form.tcc.value.trim(), tfid: form.tfid.value.trim(),
-      taptr:"NA", tmt: formatDateTime(new Date()), tdt:"NA", tstatus:"pending",
-    };
-    try {
-      const res  = await fetch(`${base_url}/addtask`, { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(postData) });
-      const data = await res.json();
-      if (data.insertedId) {
-        Swal.fire("Success","New task added!","success");
-        setTasks(prev => [...prev, { ...postData, _id: data.insertedId }]);
-        form.reset(); setFormData({ tdesc:"" });
-        setSelectedDepartment(""); setSelectedSubDepartment(""); setSelectedExpertise("");
-        setShowForm(false);
-      } else {
-        Swal.fire("Error","Could not add task","error");
-      }
-    } catch {
-      Swal.fire("Error","Unexpected error","error");
-    }
+const handleAddPost = async (e) => {
+  e.preventDefault();
+  const form = e.target;
+
+  // Find the chosen employee (if any)
+  const emp = selectedEmployee ? employees.find(em => em._id === selectedEmployee) : null;
+
+  const postData = {
+    tname: form.tname.value.trim(),
+    tdesc: formData.tdesc,
+    rdep: selectedDepartment,
+    rsubdep: selectedSubDepartment,
+    esprts: selectedExpertise,
+    ttime: form.ttime.value.trim(),
+    tcc: form.tcc.value.trim(),
+    tfid: form.tfid.value.trim(),
+
+    // 👇 Direct assignment vs open-for-all
+    taptr:  emp ? emp._id   : "NA",
+    apname: emp ? emp.rname : "",
+    apdp:   emp ? emp.rppic : "",
+    directAssigned: !!emp,        // optional flag — handy on the backend
+
+    tmt: formatDateTime(new Date()),
+    tdt: "NA",
+    tstatus: "pending",
   };
 
+  try {
+    const res  = await fetch(`${base_url}/addtask`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(postData),
+    });
+    const data = await res.json();
+    if (data.insertedId) {
+      Swal.fire(
+        "Success",
+        emp ? `Task assigned directly to ${emp.rname}!` : "New task added (open for all)!",
+        "success"
+      );
+      setTasks(prev => [...prev, { ...postData, _id: data.insertedId }]);
+      form.reset();
+      setFormData({ tdesc: "" });
+      setSelectedDepartment("");
+      setSelectedSubDepartment("");
+      setSelectedExpertise("");
+      setSelectedEmployee(""); // 👈 reset
+      setShowForm(false);
+    } else {
+      Swal.fire("Error", "Could not add task", "error");
+    }
+  } catch {
+    Swal.fire("Error", "Unexpected error", "error");
+  }
+};
   const handleDelete = (_id) => {
     Swal.fire({ title:"Delete this task?", text:"This cannot be undone.", icon:"warning", showCancelButton:true, confirmButtonColor:"#ef4444", confirmButtonText:"Delete" })
     .then(({ isConfirmed }) => {
@@ -694,8 +724,7 @@ const WorkDis = () => {
                 </div>
               </div>
 
-              <p style={{ ...lbl, marginBottom:10 }}>Department</p>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:12, marginBottom:18 }}>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr ", gap:12, marginBottom:18 }}>
                 <div>
                   <label style={lbl}>Department *</label>
                   <select value={selectedDepartment} onChange={e=>setSelectedDepartment(e.target.value)} required style={inp}>
@@ -717,6 +746,59 @@ const WorkDis = () => {
                     {availableExpertise.map(e=><option key={e}>{e}</option>)}
                   </select>
                 </div>
+                  <div>
+  <label style={lbl}>Assign to Employee (Optional)</label>
+  <select
+    value={selectedEmployee}
+    onChange={e => setSelectedEmployee(e.target.value)}
+    style={inp}
+  >
+    <option value="">Open for all</option>
+    {employees.map(emp => (
+      <option key={emp._id} value={emp._id}>
+        {emp.rname}
+      </option>
+    ))}
+  </select>
+
+  {selectedEmployee && (() => {
+    const emp = employees.find(e => e._id === selectedEmployee);
+    if (!emp) return null;
+    return (
+      <div style={{
+        marginTop: 10,
+        display: "flex",
+        alignItems: "center",
+        gap: 10,
+        padding: "8px 12px",
+        background: "#eff6ff",
+        border: "1px solid #bfdbfe",
+        borderRadius: 8,
+      }}>
+        <img
+          src={emp.rppic || "https://cdn-icons-png.flaticon.com/512/847/847969.png"}
+          style={{ width:32, height:32, borderRadius:"50%", objectFit:"cover", border:"1.5px solid #fff" }}
+          onError={e => { e.target.src="https://cdn-icons-png.flaticon.com/512/847/847969.png"; }}
+        />
+        <div style={{ flex:1 }}>
+          <p style={{ margin:0, fontSize:13, fontWeight:600, color:"#1e3a8a" }}>{emp.rname}</p>
+       
+        </div>
+        <button
+          type="button"
+          onClick={() => setSelectedEmployee("")}
+          style={{
+            border:"none", background:"transparent",
+            color:"#1d4ed8", fontSize:12, cursor:"pointer", fontWeight:600,
+          }}
+        >
+          Clear
+        </button>
+      </div>
+    );
+  })()}
+
+                  </div>
               </div>
 
               <p style={{ ...lbl, marginBottom:10 }}>Task Description</p>
