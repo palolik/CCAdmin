@@ -50,10 +50,12 @@ const AdminSupport = () => {
   };
 
   const closeChat = (supportId) => {
-    setChatVisibility((prev) => ({
-      ...prev,
-      [supportId]: false,
-    }));
+    setActiveChats((prev) => prev.filter((id) => id !== supportId));
+    setChatVisibility((prev) => {
+      const next = { ...prev };
+      delete next[supportId];
+      return next;
+    });
   };
 
   const toggleChatVisibility = (supportId) => {
