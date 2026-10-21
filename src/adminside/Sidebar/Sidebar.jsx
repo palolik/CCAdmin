@@ -15,6 +15,7 @@ import {
   MdChevronRight, MdChevronLeft, MdInventory, MdGroups,
 } from "react-icons/md";
 import { FaBriefcase, FaUserTie } from "react-icons/fa";
+import { base_url } from "../../config/config";
 
 const sectionIcons = {
   packages:        <MdInventory size={20} />,
@@ -54,7 +55,6 @@ const routeIcons = {
   "Sell Coupons":        <MdLocalOffer size={16} />,
   "Advertise":           <MdAdsClick size={16} />,
   "Comments":            <MdComment size={16} />,
-  "Event Analytics":     <MdInsights size={16} />,
   "Income":              <MdAttachMoney size={16} />,
   "Expense":             <MdMoneyOff size={16} />,
   "Payment Gateway":     <MdPayment size={16} />,
@@ -106,7 +106,6 @@ const sections = {
     { id: 3, name: "Sell Coupons", path: "/admin/coupons" },
     { id: 4, name: "Advertise",    path: "/admin/advertisement" },
     { id: 5, name: "Comments",     path: "/admin/comments" },
-    { id: 6, name: "Event Analytics", path: "/admin/eventanalytics" },
   ],
   accounts: [
     { id: 1, name: "Income",          path: "/admin/income" },
@@ -187,6 +186,18 @@ const Sidebar = () => {
   });
   const [flyoutSection, setFlyoutSection] = useState(null);
   const flyoutRefs = useRef({});
+  // Show Event Analytics only when the API has a CC Events dashboard link
+  // (admin token required).
+  const [hasEventsDashboard, setHasEventsDashboard] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("adminToken");
+    if (!token) return;
+    fetch(`${base_url}/admin/eventsdashboardlink`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => setHasEventsDashboard(Boolean(data?.url)))
+      .catch(() => setHasEventsDashboard(false));
+  }, []);
 
   // Load user tabs from localStorage once on mount
   useEffect(() => {
@@ -260,6 +271,21 @@ const Sidebar = () => {
         <span className="flex-shrink-0 text-sky-400"><MdDashboard size={20} /></span>
         {!collapsed && <span className="text-sm font-semibold tracking-wide">Dashboard</span>}
       </Link>
+
+      {hasEventsDashboard && (
+        <Link
+          to="/admin/eventanalytics"
+          title={collapsed ? "Event Analytics" : ""}
+          className={`flex items-center gap-3 mx-2 mb-1 px-3 py-2.5 rounded-lg transition-colors
+            ${currentPath === "/admin/eventanalytics"
+              ? "bg-sky-500/20 text-sky-300"
+              : "text-gray-300 hover:bg-white/5 hover:text-white"}
+            ${collapsed ? "justify-center" : ""}`}
+        >
+          <span className="flex-shrink-0 text-sky-400"><MdInsights size={20} /></span>
+          {!collapsed && <span className="text-sm font-semibold tracking-wide">Event Analytics</span>}
+        </Link>
+      )}
 
       <div className="mx-3 border-t border-white/5 mb-2" />
 
