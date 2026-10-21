@@ -11,7 +11,7 @@ import {
   MdGroup, MdWork, MdMap, MdShare, MdPeople, MdHelpOutline,
   MdEmail, MdInbox, MdStarRate, MdCampaign, MdLocalOffer,
   MdAdsClick, MdComment, MdAttachMoney, MdMoneyOff, MdPayment,
-  MdAdminPanelSettings, MdBadge, MdPersonAdd, MdLogout,
+  MdAdminPanelSettings, MdBadge, MdPersonAdd, MdLogout, MdInsights,
   MdChevronRight, MdChevronLeft, MdInventory, MdGroups,
 } from "react-icons/md";
 import { FaBriefcase, FaUserTie } from "react-icons/fa";
@@ -54,6 +54,7 @@ const routeIcons = {
   "Sell Coupons":        <MdLocalOffer size={16} />,
   "Advertise":           <MdAdsClick size={16} />,
   "Comments":            <MdComment size={16} />,
+  "Event Analytics":     <MdInsights size={16} />,
   "Income":              <MdAttachMoney size={16} />,
   "Expense":             <MdMoneyOff size={16} />,
   "Payment Gateway":     <MdPayment size={16} />,
@@ -105,6 +106,7 @@ const sections = {
     { id: 3, name: "Sell Coupons", path: "/admin/coupons" },
     { id: 4, name: "Advertise",    path: "/admin/advertisement" },
     { id: 5, name: "Comments",     path: "/admin/comments" },
+    { id: 6, name: "Event Analytics", path: "/admin/eventanalytics" },
   ],
   accounts: [
     { id: 1, name: "Income",          path: "/admin/income" },

@@ -40,6 +40,7 @@ import AdminPortfoilo from './adminside/Portfolio/portfolio';
 import { HelmetProvider } from 'react-helmet-async'
 import PaymentMethod from './adminside/PaymentMethod/paymentmethod';
 import PComments from './adminside/Comments/Comments';
+import EventAnalytics from './adminside/EventAnalytics/EventAnalytics';
 import CustomProjects from './adminside/Projects/CustomProjects';
 import EmailManager from './adminside/EmailManager/EMailManager';
 import EmailInbox from './adminside/EmailManager/EmailLogs';
@@ -188,6 +189,10 @@ const router = createBrowserRouter([
       {
         path: "/admin/comments",
         element: <PComments></PComments>,
+      },
+      {
+        path: "/admin/eventanalytics",
+        element: <EventAnalytics></EventAnalytics>,
       },
       {
         path: "/admin/flowmaker",
