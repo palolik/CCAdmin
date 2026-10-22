@@ -40,7 +40,7 @@ const EventAnalytics = () => {
   }, [url]);
 
   return (
-    <div className="flex flex-col gap-4 p-4">
+    <div className="flex-1 min-w-0 flex flex-col gap-4 p-4">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2.5">
           <span className="w-9 h-9 rounded-lg flex items-center justify-center bg-sky-50 text-sky-600">
