@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
-import { createBrowserRouter, RouterProvider, } from "react-router-dom";
+import { createBrowserRouter, Navigate, RouterProvider, } from "react-router-dom";
 import Admin from './adminside/admin';
 import Home from './adminside/Home/Home';
 import Projects from './adminside/Projects/Projects';
@@ -36,14 +36,14 @@ import EditPlanner from './adminside/Businessplanner/editplan';
 import FormPage from './adminside/Businessplanner/Plannerform';
 import AllHClient from './adminside/Clients/Clients';
 import { base_url } from './config/config';
+import ErrorPage from './userside/ErrorPage/ErrorPage';
 import AdminPortfoilo from './adminside/Portfolio/portfolio';
 import { HelmetProvider } from 'react-helmet-async'
 import PaymentMethod from './adminside/PaymentMethod/paymentmethod';
 import PComments from './adminside/Comments/Comments';
 import EventAnalytics from './adminside/EventAnalytics/EventAnalytics';
 import CustomProjects from './adminside/Projects/CustomProjects';
-import EmailManager from './adminside/EmailManager/EMailManager';
-import EmailInbox from './adminside/EmailManager/EmailLogs';
+import Mail from './adminside/Mail/Mail';
 import EditPackage from './adminside/AddPackages/EditPackage';
 import Applications from './adminside/Applications/Applications';
 import Blog from './adminside/Blogs/Blogs';
@@ -53,6 +53,9 @@ import BlogsPage from './adminside/Blogs/Blogspage';
 import TaskDashboard from './adminside/workdis/taskdeashboard';
 
 const router = createBrowserRouter([
+  {
+  errorElement: <ErrorPage />,
+  children: [
   {
     path: "/admin",
     element: <Admin />,
@@ -265,12 +268,21 @@ const router = createBrowserRouter([
         loader: () => fetch(`${base_url}/adminsupport`),
       },
       {
+        path: "/admin/mail",
+        element: <Navigate to="/admin/mail/inbox" replace />
+      },
+      {
+        path: "/admin/mail/:folder",
+        element: <Mail />
+      },
+      // Old Email Manager links
+      {
         path: "/admin/emailmanager",
-        element: <EmailManager></EmailManager>,
+        element: <Navigate to="/admin/mail/sent" replace />
       },
       {
         path: "/admin/emailinbox",
-        element: <EmailInbox />
+        element: <Navigate to="/admin/mail/inbox" replace />
       },
 
  {
@@ -298,6 +310,10 @@ const router = createBrowserRouter([
       },
 
     ],
+  },
+
+  { path: "*", element: <ErrorPage /> },
+  ],
   },
 ],
 );
