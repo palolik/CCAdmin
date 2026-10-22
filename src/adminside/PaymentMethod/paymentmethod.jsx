@@ -3,6 +3,7 @@ import Swal from "sweetalert2";
 import { RiCloseLargeFill } from "react-icons/ri";
 import { base_url } from "../../config/config";
 import RichTextEditor from "../../userside/utils/PichTextEditor";
+import { ShimmerTable } from "../../userside/utils/Shimmer";
 
 const emptyForm = {
   method: "",
@@ -12,6 +13,7 @@ const emptyForm = {
 
 const PaymentMethod = () => {
   const [payments, setPayments] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editData, setEditData] = useState(emptyForm);
@@ -23,7 +25,8 @@ const PaymentMethod = () => {
     fetch(`${base_url}/payment`)
       .then((res) => res.json())
       .then((data) => setPayments(data))
-      .catch((err) => console.error("Error fetching payments:", err));
+      .catch((err) => console.error("Error fetching payments:", err))
+      .finally(() => setLoading(false));
   }, []);
 
   const handleDelete = (_id) => {
@@ -210,7 +213,9 @@ const PaymentMethod = () => {
             </thead>
 
             <tbody>
-              {payments.length === 0 ? (
+              {loading ? (
+                <ShimmerTable asRows rows={4} cols={4} />
+              ) : payments.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="text-center py-6 text-gray-400">
                     No payment methods added yet.

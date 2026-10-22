@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { MdInsights, MdOpenInNew } from "react-icons/md";
 import { base_url } from "../../config/config";
+import { Shimmer, ShimmerStats } from "../../userside/utils/Shimmer.jsx";
 
 // Cloud Company's look, handed to the embedded dashboard so it matches the
 // admin panel: sky-500 accent on white.
@@ -65,8 +66,9 @@ const EventAnalytics = () => {
 
       <div className="rounded-xl overflow-hidden border border-gray-100 bg-white shadow-md h-[calc(100vh-9rem)] min-h-[500px]">
         {loading ? (
-          <div className="h-full flex items-center justify-center">
-            <div className="w-8 h-8 border-4 border-sky-500 border-t-transparent rounded-full animate-spin" />
+          <div className="h-full flex flex-col gap-4 p-4">
+            <ShimmerStats />
+            <Shimmer className="flex-1 min-h-[200px] w-full rounded-xl" />
           </div>
         ) : src ? (
           <iframe src={src} title="Event Analytics" className="w-full h-full border-0" />

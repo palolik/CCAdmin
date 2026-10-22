@@ -4,10 +4,12 @@ import {
   ResponsiveContainer, Legend
 } from "recharts";
 import { base_url } from "../../config/config";
+import { Shimmer } from "../../userside/utils/Shimmer.jsx";
 
 const HomeChart = ({ selectedMonth }) => {
   const [data, setData] = useState([]);
   const [totalViews, setTotalViews] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchVisitors = async () => {
@@ -24,6 +26,8 @@ const HomeChart = ({ selectedMonth }) => {
         }
       } catch (err) {
         console.error("Error fetching visitor data:", err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchVisitors();
@@ -38,16 +42,20 @@ const HomeChart = ({ selectedMonth }) => {
           <span className="font-bold text-indigo-600">{totalViews}</span>
         </p>
       </div>
-      <ResponsiveContainer width="100%" height={350}>
-        <BarChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="day" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="views" fill="#8884d8" radius={[4, 4, 0, 0]} />
-        </BarChart>
-      </ResponsiveContainer>
+      {loading ? (
+        <Shimmer className="h-[350px] w-full rounded-xl" />
+      ) : (
+        <ResponsiveContainer width="100%" height={350}>
+          <BarChart data={data}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="day" />
+            <YAxis />
+            <Tooltip />
+            <Legend />
+            <Bar dataKey="views" fill="#8884d8" radius={[4, 4, 0, 0]} />
+          </BarChart>
+        </ResponsiveContainer>
+      )}
     </div>
   );
 };

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { base_url } from '../../config/config';
+import { Shimmer, ShimmerForm } from '../../userside/utils/Shimmer.jsx';
 import RichTextEditor from '../../userside/utils/PichTextEditor';
 
 const EditPackage = () => {
@@ -136,10 +137,22 @@ const EditPackage = () => {
     };
 
     if (loading) return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-            <div className="flex items-center gap-3 text-gray-400">
-                <span className="w-5 h-5 border-2 border-gray-300 border-t-violet-500 rounded-full animate-spin" />
-                Loading package...
+        <div className="min-h-screen bg-gray-50 p-6">
+            <div className="mb-8 flex items-center justify-between">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-800">Edit Package</h1>
+                    <p className="text-gray-400 text-sm mt-1">Update the details of this package</p>
+                </div>
+                <Shimmer className="h-9 w-20 rounded-xl" />
+            </div>
+            <div className="flex flex-col xl:flex-row gap-6 items-start">
+                <div className="w-full xl:w-96 bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
+                    <ShimmerForm fields={5} />
+                </div>
+                <div className="flex-1 w-full bg-white border border-gray-200 rounded-2xl shadow-sm p-6">
+                    <Shimmer className="h-3 w-32 rounded mb-4" />
+                    <Shimmer className="h-72 w-full rounded-xl" />
+                </div>
             </div>
         </div>
     );

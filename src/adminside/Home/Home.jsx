@@ -12,6 +12,7 @@ import TasksByDepartmentChart from "./TasksChart.jsx";
 import TaskStatusChart from "./TasksStatusChart.jsx";
 import ClientsTable from "./ClientTable.jsx";
 import EmployeesTable from "./EmployeeTable.jsx";
+import { Shimmer, ShimmerStats } from "../../userside/utils/Shimmer.jsx";
 
 const Home = () => {
   const [stats, setStats] = useState(null);
@@ -27,8 +28,30 @@ const Home = () => {
 
   if (loading) {
     return (
-      <div className="p-10 text-center text-gray-500 animate-pulse">
-        Loading dashboard...
+      <div className="w-full">
+        <div className="hdr">Dashboard</div>
+
+        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 py-10 px-6 lg:px-12">
+          <ShimmerStats
+            count={10}
+            cols="grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+          />
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6 mt-10">
+            {[0, 1, 2, 3].map((i) => (
+              <Shimmer key={i} className="h-[370px] w-full rounded-xl" />
+            ))}
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-10">
+            {[0, 1, 2].map((i) => (
+              <Shimmer key={i} className="h-[370px] w-full rounded-xl" />
+            ))}
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-10">
+            {[0, 1, 2].map((i) => (
+              <Shimmer key={i} className="h-[370px] w-full rounded-xl" />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

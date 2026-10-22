@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { base_url } from '../../config/config';
+import { ShimmerTable } from '../../userside/utils/Shimmer';
 const OurClient = () => {
   const [activeTab, setActiveTab] = useState('read'); // Manage active tab
   const [clients, setClients] = useState([]); // Client data
   const [formData, setFormData] = useState({ name: '', logo: '' }); // Form data
-  const [loading, setLoading] = useState(false); // Loading state
+  const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state
 
   // Fetch clients from backend
@@ -123,8 +124,8 @@ const OurClient = () => {
       {/* Tab Content */}
       {activeTab === 'read' && (
         <div className="overflow-x-auto">
-          {loading ? (
-            <p className="text-center text-gray-500">Loading...</p>
+          {loading && clients.length === 0 ? (
+            <ShimmerTable rows={5} cols={4} />
           ) : error ? (
             <p className="text-center text-red-500">Error: {error}</p>
           ) : clients.length > 0 ? (

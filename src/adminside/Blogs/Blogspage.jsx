@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { base_url } from "../../config/config";
 import BlogJsxRenderer from "./BlogJSxRenderer";
+import { Shimmer, ShimmerDetail, ShimmerList } from "../../userside/utils/Shimmer.jsx";
 
 const BlogsPage = () => {
   const { slug } = useParams();
@@ -51,14 +52,6 @@ const BlogsPage = () => {
     );
   }, [blogs]);
 
-  if (loadingBlogs) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-gray-400">
-        Loading blogs...
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 w-full overflow-x-hidden">
       <div className="w-full max-w-[1600px] mx-auto px-4 lg:px-8 py-10">
@@ -81,9 +74,9 @@ const BlogsPage = () => {
         <div className="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_360px] gap-8 items-start w-full">
           {/* Open Blog */}
           <div className="w-full min-w-0">
-            {loadingActive ? (
-              <div className="w-full bg-white rounded-2xl border border-gray-100 shadow-sm py-24 text-center text-gray-400">
-                Opening blog...
+            {loadingBlogs || loadingActive ? (
+              <div className="w-full bg-white rounded-2xl border border-gray-100 shadow-sm px-4 py-8 sm:px-8">
+                <ShimmerDetail sidebar={false} />
               </div>
             ) : activeBlog ? (
               <BlogJsxRenderer blog={activeBlog} />
@@ -100,13 +93,19 @@ const BlogsPage = () => {
               <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
                 <h2 className="text-lg font-bold text-gray-900">All Blogs</h2>
 
-                <span className="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-semibold">
-                  {sortedBlogs.length}
-                </span>
+                {loadingBlogs ? (
+                  <Shimmer className="h-6 w-10 rounded-full" />
+                ) : (
+                  <span className="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-semibold">
+                    {sortedBlogs.length}
+                  </span>
+                )}
               </div>
 
               <div className="max-h-[calc(100vh-160px)] overflow-y-auto">
-                {sortedBlogs.length === 0 ? (
+                {loadingBlogs ? (
+                  <ShimmerList rows={6} className="px-4" />
+                ) : sortedBlogs.length === 0 ? (
                   <div className="py-10 text-center text-gray-400">
                     No published blogs.
                   </div>

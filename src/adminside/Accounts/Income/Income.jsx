@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import Swal from "sweetalert2";
+import { Shimmer, ShimmerTable } from "../../../userside/utils/Shimmer.jsx";
 import { base_url } from "../../../config/config";
 
 const CATEGORIES = ["General", "Service", "Freelance", "Bonus", "Refund", "Other"];
@@ -202,9 +203,13 @@ const Income = () => {
           ].map(c => (
             <div key={c.label} className={`rounded-lg border px-4 py-3 ${c.color}`}>
               <p className="text-xs text-gray-500 mb-1">{c.label}</p>
-              <p className={`text-lg ${c.color.includes("bold") ? "font-bold" : "font-semibold"} text-gray-800`}>
-                {c.value.toFixed(2)} BDT
-              </p>
+              {loading ? (
+                <Shimmer className="h-7 w-1/2 rounded" />
+              ) : (
+                <p className={`text-lg ${c.color.includes("bold") ? "font-bold" : "font-semibold"} text-gray-800`}>
+                  {c.value.toFixed(2)} BDT
+                </p>
+              )}
             </div>
           ))}
         </div>
@@ -233,7 +238,7 @@ const Income = () => {
         </div>
 
         {loading ? (
-          <div className="py-10 text-center text-gray-400">Loading...</div>
+          <ShimmerTable rows={6} cols={activeTab === "auto" ? 10 : 6} />
 
         ) : activeTab === "auto" ? (
           incomeData.length === 0 ? (

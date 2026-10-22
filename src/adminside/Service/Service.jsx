@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { base_url } from "../../config/config";
+import { ShimmerTable } from "../../userside/utils/Shimmer";
 const Service = () => {
     const [service, setService] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false); // modal toggle
 
     useEffect(() => {
         fetch(`${base_url}/service`)
             .then((res) => res.json())
             .then((data) => setService(data))
-            .catch((error) => console.error("Error fetching services:", error));
+            .catch((error) => console.error("Error fetching services:", error))
+            .finally(() => setLoading(false));
     }, []);
 
     const handleDelete = (_id) => {
@@ -95,6 +98,7 @@ const Service = () => {
                         </tr>
                     </thead>
                     <tbody>
+                        {loading && <ShimmerTable asRows rows={4} cols={4} />}
                         {service.map((s) => (
                             <tr key={s._id} className="text-center border-b">
                                 <td>{s.serviceTitle}</td>

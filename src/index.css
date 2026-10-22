@@ -10,3 +10,30 @@
 .smbut{
     @apply btn btn-xs bg-black text-white hover:bg-[#121242] ;
 }
+/* Loading placeholders (see src/userside/utils/Shimmer.jsx). */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+  background-color: #e5e7eb;
+}
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  animation: shimmer-sweep 1.4s ease-in-out infinite;
+}
+@keyframes shimmer-sweep {
+  100% { transform: translateX(100%); }
+}
+.route-loading-bar {
+  animation: route-loading 1s ease-in-out infinite;
+}
+@keyframes route-loading {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .shimmer::after, .route-loading-bar { animation: none; }
+}

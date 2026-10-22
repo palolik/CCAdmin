@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import Swal from "sweetalert2";
 import { base_url } from "../../../config/config";
+import { Shimmer, ShimmerTable } from "../../../userside/utils/Shimmer.jsx";
 
 const CATEGORIES = ["Food","Transport","Utilities","Marketing","Office","Salary","Software","Other"];
 const emptyForm  = { title:"", amount:"", category:"Other", date:"", note:"" };
@@ -173,7 +174,9 @@ const Expense = () => {
             ].map(s => (
               <div key={s.label} className="exp-stat">
                 <p style={{ margin:"0 0 4px", fontSize:11, color:"#94a3b8", fontWeight:500 }}>{s.label}</p>
-                <p className="exp-syne" style={{ margin:0, fontSize:20, color:"#1e293b", fontWeight:700 }}>{s.value}</p>
+                {loading
+                  ? <Shimmer className="h-7 w-1/2 rounded" />
+                  : <p className="exp-syne" style={{ margin:0, fontSize:20, color:"#1e293b", fontWeight:700 }}>{s.value}</p>}
               </div>
             ))}
           </div>
@@ -191,7 +194,7 @@ const Expense = () => {
           {/* table */}
           <div className="exp-card">
             {loading ? (
-              <div style={{ padding:"56px 0", textAlign:"center", color:"#94a3b8", fontSize:14 }}>Loading…</div>
+              <ShimmerTable rows={6} cols={6} className="!border-0 !rounded-none" />
             ) : filtered.length === 0 ? (
               <div style={{ padding:"56px 0", textAlign:"center", color:"#94a3b8", fontSize:14 }}>No expenses found.</div>
             ) : (

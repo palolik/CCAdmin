@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { base_url } from "../../config/config";
+import { Shimmer, ShimmerForm } from "../../userside/utils/Shimmer.jsx";
 
 const EditPlanner = () => {
   const { id } = useParams();
@@ -127,7 +128,21 @@ const EditPlanner = () => {
     }
   };
 
-  if (loading) return <div className="p-5">Loading...</div>;
+  if (loading)
+    return (
+      <div className="p-6 w-full">
+        <h2 className="text-2xl font-bold mb-4">Edit Planner</h2>
+        <Shimmer className="h-10 w-full rounded mb-5" />
+        <Shimmer className="h-10 w-36 rounded mb-5" />
+        <div className="space-y-5">
+          {[0, 1].map((i) => (
+            <div key={i} className="p-4 border rounded bg-white shadow">
+              <ShimmerForm fields={2} />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
 
   return (
     <div className="p-6 w-full">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { base_url } from "../../config/config";
+import { ShimmerTable } from "../../userside/utils/Shimmer.jsx";
 
 const Blog = () => {
   const [blogs, setBlogs] = useState([]);
@@ -10,9 +11,9 @@ const Blog = () => {
   const [coverPreview, setCoverPreview] = useState(null);
   const [selectedImages, setSelectedImages] = useState([]);
 
+  // loading starts true, so only the first load shows the shimmer;
+  // refetches after create keep the current rows on screen.
   const fetchBlogs = () => {
-    setLoading(true);
-
     fetch(`${base_url}/blogs`)
       .then((res) => res.json())
       .then((data) => {
@@ -224,14 +225,7 @@ const Blog = () => {
 
           <tbody>
             {loading ? (
-              <tr>
-                <td
-                  colSpan="8"
-                  className="text-center py-8 text-gray-400"
-                >
-                  Loading blogs...
-                </td>
-              </tr>
+              <ShimmerTable rows={5} cols={8} asRows />
             ) : blogs.length === 0 ? (
               <tr>
                 <td

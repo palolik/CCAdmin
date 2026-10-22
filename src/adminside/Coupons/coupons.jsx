@@ -2,16 +2,19 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { base_url } from "../../config/config";
+import { ShimmerTable } from "../../userside/utils/Shimmer.jsx";
 const Coupon = () => {
   const [coupons, setCoupons] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Load coupons
   useEffect(() => {
     fetch(`${base_url}/couponshow`)
       .then((res) => res.json())
       .then((data) => setCoupons(data))
-      .catch((error) => console.error("Error fetching coupons:", error));
+      .catch((error) => console.error("Error fetching coupons:", error))
+      .finally(() => setLoading(false));
   }, []);
 
   // Delete coupon
@@ -105,7 +108,9 @@ const Coupon = () => {
               </tr>
             </thead>
             <tbody>
-              {coupons.length === 0 ? (
+              {loading ? (
+                <ShimmerTable rows={5} cols={8} asRows />
+              ) : coupons.length === 0 ? (
                 <tr>
                   <td colSpan="8" className="text-center py-4 text-gray-500">
                     No coupons found.

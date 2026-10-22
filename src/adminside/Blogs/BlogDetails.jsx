@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { base_url } from "../../config/config";
 import BlogJsxRenderer from "./BlogJsxRenderer";
+import { ShimmerDetail } from "../../userside/utils/Shimmer.jsx";
 
 const BlogDetails = () => {
   const { slug } = useParams();
@@ -25,8 +26,8 @@ const BlogDetails = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-gray-400">
-        Loading blog...
+      <div className="w-full min-h-screen bg-white px-4 py-8 sm:px-8">
+        <ShimmerDetail sidebar={false} className="mx-auto max-w-4xl" />
       </div>
     );
   }

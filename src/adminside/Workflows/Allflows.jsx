@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { base_url } from "../../config/config";
+import { ShimmerGrid } from "../../userside/utils/Shimmer";
 const API_BASE = `${base_url}`; 
 
 async function api(path) {
@@ -32,7 +33,7 @@ const Allflows = () => {
        <div className="w-full">
             <div className="hdr">All Flows</div>
 
-        {loading && <p>Loading...</p>}
+        {loading && <ShimmerGrid count={3} cols="grid-cols-1" gap="gap-4" card={{ image: false, lines: 4 }} />}
 
         {!loading && flows.length === 0 && (
           <p className="text-gray-500">No flow templates found.</p>

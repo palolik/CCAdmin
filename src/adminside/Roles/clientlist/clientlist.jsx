@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import Swal from "sweetalert2";
 import { base_url } from "../../../config/config";
+import { ShimmerTable } from "../../../userside/utils/Shimmer";
 
 const lbl = {
   display: "block", fontSize: 11, color: "#94a3b8",
@@ -182,7 +183,7 @@ const Clientlist = () => {
           {/* table card */}
           <div className="cl-card">
             {loading ? (
-              <div style={{ padding:"56px 0", textAlign:"center", color:"#94a3b8", fontSize:14 }}>Loading…</div>
+              <table style={{ width:"100%", borderCollapse:"collapse" }}><tbody><ShimmerTable asRows rows={6} cols={6} /></tbody></table>
             ) : filtered.length === 0 ? (
               <div style={{ padding:"56px 0", textAlign:"center", color:"#94a3b8", fontSize:14 }}>No clients found.</div>
             ) : (

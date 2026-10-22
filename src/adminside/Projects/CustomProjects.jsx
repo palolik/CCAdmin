@@ -3,6 +3,7 @@ import Swal from "sweetalert2";
 import { MdChat } from "react-icons/md";
 import AdminChat from './AdminChat';
 import { base_url } from "../../config/config";
+import { ShimmerTable } from "../../userside/utils/Shimmer";
 
 const statusColors = {
   pending:   "bg-yellow-100 text-yellow-800",
@@ -164,7 +165,12 @@ const CustomProjects = () => {
       .catch(() => Swal.fire("Error", "Could not update status.", "error"));
   };
 
-  if (loading) return <p className="p-6 text-gray-500">Loading...</p>;
+  if (loading) return (
+    <div className="w-full">
+      <div className="hdr">Custom Package Requests</div>
+      <div className="w-full p-5"><ShimmerTable rows={5} cols={8} /></div>
+    </div>
+  );
 
   return (
     <div className="w-full">

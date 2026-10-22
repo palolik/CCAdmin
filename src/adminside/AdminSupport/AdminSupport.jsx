@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { MdChat } from "react-icons/md";
 import Schat from "./Schat";
 import { base_url } from "../../config/config";
+import { ShimmerTable } from "../../userside/utils/Shimmer.jsx";
 const AdminSupport = () => {
   const [supports, setSupports] = useState([]);
   const [activeChats, setActiveChats] = useState([]);
   const [chatVisibility, setChatVisibility] = useState({});
+  const [loading, setLoading] = useState(true);
 
   const loadSupports = () => {
     fetch(`${base_url}/admin/support`)
@@ -14,7 +16,8 @@ const AdminSupport = () => {
         console.log("Support data:", data);
         setSupports(data);
       })
-      .catch((err) => console.error("Error fetching support list:", err));
+      .catch((err) => console.error("Error fetching support list:", err))
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -82,7 +85,9 @@ const AdminSupport = () => {
             </tr>
           </thead>
           <tbody>
-            {supports.length > 0 ? (
+            {loading ? (
+              <ShimmerTable rows={6} cols={6} asRows />
+            ) : supports.length > 0 ? (
               supports.map((chat, index) => (
                 <tr key={chat._id} className="border-b hover:bg-gray-50">
                   <td className="px-4 py-3">{index + 1}</td>

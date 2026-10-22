@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { base_url } from "../../config/config";
+import { ShimmerTable } from "../../userside/utils/Shimmer";
 const AddSocial = () => {
   const [ima, setIma] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     fetch(`${base_url}/socialmedia`)
       .then((res) => res.json())
       .then((data) => setIma(data))
-      .catch((error) => console.error("Error fetching social links:", error));
+      .catch((error) => console.error("Error fetching social links:", error))
+      .finally(() => setLoading(false));
   }, []);
 
   const handleDelete = (_id) => {
@@ -91,6 +94,7 @@ const AddSocial = () => {
             </tr>
           </thead>
           <tbody>
+            {loading && <ShimmerTable asRows rows={4} cols={3} />}
             {ima.map((social) => (
               <tr key={social._id} className="text-center border-b">
                 <td className="flex justify-center">

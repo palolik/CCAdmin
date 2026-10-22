@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { base_url } from "../../config/config";
+import { ShimmerTable } from "../../userside/utils/Shimmer";
 
 const AdminPortfolio = () => {
   const [portfolios, setPortfolios] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [filterType, setFilterType] = useState("all");
 
@@ -16,7 +18,8 @@ const AdminPortfolio = () => {
     fetch(`${base_url}/getportfolio`)
       .then((res) => res.json())
       .then((data) => setPortfolios(data))
-      .catch((error) => console.error("Error fetching portfolios:", error));
+      .catch((error) => console.error("Error fetching portfolios:", error))
+      .finally(() => setLoading(false));
   };
 
   const handleDelete = (_id) => {
@@ -172,7 +175,7 @@ const handleStatusChange = (_id, currentStatus) => {
               </tr>
             </thead>
             <tbody>
-              {filteredPortfolios.map((portfolio) => (
+              {loading ? <ShimmerTable asRows rows={5} cols={7} /> : filteredPortfolios.map((portfolio) => (
                 <tr key={portfolio._id} className="text-center border-b">
                   <td className="px-2 py-2">
                     <img

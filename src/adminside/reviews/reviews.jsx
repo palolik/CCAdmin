@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLoaderData } from "react-router-dom";
 import Swal from "sweetalert2";
+import { Shimmer, ShimmerTable } from "../../userside/utils/Shimmer";
 import {
   BarChart,
   Bar,
@@ -149,8 +150,18 @@ useEffect(() => {
 
   if (loading) {
     return (
-      <div className="p-10 text-center text-gray-500 animate-pulse">
-        Loading reviews...
+      <div className="w-full">
+        <div className="hdr">Reviews</div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 p-5">
+          <div className="bg-white shadow-lg rounded-xl p-5 border">
+            <Shimmer className="h-5 w-48 max-w-full rounded mb-4" />
+            <Shimmer className="w-full h-[320px] rounded-lg" />
+          </div>
+          <ShimmerTable rows={6} cols={3} />
+        </div>
+        <div className="px-5 pb-5">
+          <ShimmerTable rows={5} cols={7} />
+        </div>
       </div>
     );
   }

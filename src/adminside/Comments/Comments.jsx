@@ -1,15 +1,21 @@
 import { useEffect, useState } from "react";
 import { base_url } from '../../config/config';
+import { ShimmerList } from '../../userside/utils/Shimmer.jsx';
 const PComments = () => {
   const [comments, setComments] = useState([]);
   const [replyText, setReplyText] = useState({});
+  const [loading, setLoading] = useState(true);
   const ordersPerPage = 7;
   const [currentPage, setCurrentPage] = useState(1);
 
   const fetchComments = async () => {
-    const res = await fetch(`${base_url}/allcomments`);
-    const data = await res.json();
-    setComments(data);
+    try {
+      const res = await fetch(`${base_url}/allcomments`);
+      const data = await res.json();
+      setComments(data);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -61,6 +67,12 @@ const PComments = () => {
             <div className="hdr">
                 <h1 >Comments</h1>
             </div>
+
+      {loading && (
+        <div className="bg-white m-4 rounded-lg shadow-sm border p-4">
+          <ShimmerList rows={7} />
+        </div>
+      )}
 
       {currentOrders.map((comment) => (
         <div

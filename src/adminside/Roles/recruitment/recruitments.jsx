@@ -4,8 +4,10 @@ import Swal from "sweetalert2";
 
 import { base_url } from "../../../config/config";
 import RichTextEditor from "../../../userside/utils/PichTextEditor";
+import { ShimmerTable } from "../../../userside/utils/Shimmer";
 const RecruitmentAdmin = () => {
   const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
 
   const [title, setTitle] = useState("");
@@ -19,7 +21,8 @@ const RecruitmentAdmin = () => {
     fetch(`${base_url}/recruitment`)
       .then((res) => res.json())
       .then((data) => setJobs(data))
-      .catch((error) => console.error("Error fetching recruitment posts:", error));
+      .catch((error) => console.error("Error fetching recruitment posts:", error))
+      .finally(() => setLoading(false));
   }, []);
 
   const handleDelete = (_id) => {
@@ -115,6 +118,7 @@ const RecruitmentAdmin = () => {
             </tr>
           </thead>
           <tbody>
+            {loading && <ShimmerTable asRows rows={4} cols={7} />}
             {jobs.map((job) => (
               <tr key={job._id} className="text-center border-b">
                 <td className="font-semibold">{job.title}</td>
@@ -156,7 +160,7 @@ const RecruitmentAdmin = () => {
               </tr>
             ))}
 
-            {jobs.length === 0 && (
+            {!loading && jobs.length === 0 && (
               <tr>
                 <td colSpan="7" className="text-center py-8 text-gray-500">
                   No recruitment posts available.

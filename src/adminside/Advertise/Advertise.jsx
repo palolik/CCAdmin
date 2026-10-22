@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { base_url } from "../../config/config";
+import { ShimmerTable } from "../../userside/utils/Shimmer.jsx";
 const Advertise = () => {
   const [ima, setIma] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   // Load advertisements
   useEffect(() => {
     fetch(`${base_url}/advertise`)
       .then((res) => res.json())
       .then((data) => setIma(data))
-      .catch((error) => console.error("Error fetching advertisements:", error));
+      .catch((error) => console.error("Error fetching advertisements:", error))
+      .finally(() => setLoading(false));
   }, []);
 
   // Delete handler
@@ -142,7 +145,8 @@ const handleStatusChange = (adId, newStatus) => {
               </tr>
             </thead>
             <tbody>
-              {ima.map((ad) => (
+              {loading && <ShimmerTable rows={5} cols={8} asRows />}
+              {!loading && ima.map((ad) => (
                 <tr key={ad._id} className="text-center border-b">
                   <td className="flex justify-center">
                     <img
@@ -189,7 +193,7 @@ const handleStatusChange = (adId, newStatus) => {
                   </td>
                 </tr>
               ))}
-              {ima.length === 0 && (
+              {!loading && ima.length === 0 && (
                 <tr>
                   <td colSpan="6" className="text-center py-4 text-gray-500">
                     No advertisements found.

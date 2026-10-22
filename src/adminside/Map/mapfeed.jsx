@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import { base_url } from "../../config/config";
 import { MapPinCheck } from 'lucide-react';
 import { X } from 'lucide-react';
+import { ShimmerTable } from "../../userside/utils/Shimmer";
 
 const worldMap = '/assets/world.svg';
 const MAP_W = 2000;
@@ -11,7 +12,7 @@ const MAP_H = 857;
 
 const Mapfeed = () => {
   const [icons, setIcons]     = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [newIcon, setNewIcon] = useState({
    position: { top: '', left: '' },  data: ''
   });
@@ -102,7 +103,7 @@ const Mapfeed = () => {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={5} className="text-center py-10 text-gray-400 text-sm font-light">Loading...</td></tr>
+                <ShimmerTable asRows rows={4} cols={3} />
               ) : icons.length === 0 ? (
                 <tr><td colSpan={5} className="text-center py-10 text-gray-400 text-sm font-light">No pins added yet.</td></tr>
               ) : icons.map(icon => (

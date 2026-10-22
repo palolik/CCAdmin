@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { base_url } from "../../config/config";
+import { ShimmerDetail } from "../../userside/utils/Shimmer.jsx";
 
 const BlogJsxRenderer = ({ blog }) => {
   const [jsxCode, setJsxCode] = useState("");
@@ -169,8 +170,8 @@ const BlogJsxRenderer = ({ blog }) => {
 
   if (loading) {
     return (
-      <div className="w-full py-20 text-center text-gray-400 bg-white rounded-2xl">
-        Loading blog content...
+      <div className="w-full bg-white rounded-2xl px-4 py-8 sm:px-8">
+        <ShimmerDetail sidebar={false} className="mx-auto max-w-4xl" />
       </div>
     );
   }

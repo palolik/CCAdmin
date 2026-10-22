@@ -8,6 +8,7 @@ import {
 } from 'react-icons/fa';
 import { IoSend } from 'react-icons/io5';
 import { base_url, chat_url } from '../../config/config';
+import { ShimmerList } from '../../userside/utils/Shimmer';
 
 /* ── helpers ─────────────────────────────────────────────────────────────── */
 const isImage = (mime) => mime?.startsWith('image/');
@@ -72,6 +73,7 @@ const SeenLabel = ({ read }) => (
 /* ── main component ──────────────────────────────────────────────────────── */
 const AdminempChat = ({ taskid, emid, dp, name, tname, tdesc, onClose, isVisible, onToggle }) => {
   const [messages, setMessages]           = useState([]);
+  const [loading, setLoading]             = useState(true);
   const [inputValue, setInputValue]       = useState('');
   const [socket, setSocket]               = useState(null);
   const [isSending, setIsSending]         = useState(false);
@@ -128,6 +130,7 @@ const AdminempChat = ({ taskid, emid, dp, name, tname, tdesc, onClose, isVisible
         if (!r.ok) throw new Error();
         setMessages(await r.json());
       } catch { /* silent */ }
+      finally { setLoading(false); }
     };
     load();
     const t = setInterval(load, 300);
@@ -278,6 +281,7 @@ const AdminempChat = ({ taskid, emid, dp, name, tname, tdesc, onClose, isVisible
             className="flex-1 overflow-y-auto px-3 py-3 space-y-3 bg-slate-50"
             style={{ scrollbarWidth: 'thin', scrollbarColor: '#cbd5e1 transparent' }}
           >
+            {loading && <ShimmerList rows={4} />}
             {messages.map((msg, i) => {
               const isManager = msg.sender === 'manager';
               return (

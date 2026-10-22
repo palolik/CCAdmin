@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { base_url } from "../../config/config";
+import { ShimmerTable } from "../../userside/utils/Shimmer";
 const Marketing = () => {
   const [referrals, setReferrals] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Fetch data
   useEffect(() => {
     fetch(`${base_url}/marketing`)
       .then((res) => res.json())
       .then((data) => setReferrals(data))
-      .catch((error) => console.error("Error fetching marketing data:", error));
+      .catch((error) => console.error("Error fetching marketing data:", error))
+      .finally(() => setLoading(false));
   }, []);
 
   // Delete a referral entry
@@ -59,6 +62,7 @@ const Marketing = () => {
             </thead>
 
             <tbody>
+              {loading && <ShimmerTable asRows rows={4} cols={7} />}
               {referrals.map((ref) => (
                 <tr key={ref._id} className="text-center border-b">
                   <td className="px-2 py-2">{ref.rname}</td>
@@ -82,7 +86,7 @@ const Marketing = () => {
                 </tr>
               ))}
 
-              {referrals.length === 0 && (
+              {!loading && referrals.length === 0 && (
                 <tr>
                   <td colSpan="7" className="text-center py-6 text-gray-500">
                     No referral data found.

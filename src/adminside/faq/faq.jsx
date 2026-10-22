@@ -2,15 +2,18 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { base_url } from "../../config/config";
+import { ShimmerTable } from "../../userside/utils/Shimmer";
 const Faqall = () => {
   const [faqs, setFaqs] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     fetch(`${base_url}/faq`)
       .then((res) => res.json())
       .then((data) => setFaqs(data))
-      .catch((error) => console.error("Error fetching FAQs:", error));
+      .catch((error) => console.error("Error fetching FAQs:", error))
+      .finally(() => setLoading(false));
   }, []);
 
   const handleDelete = (_id) => {
@@ -90,6 +93,7 @@ const Faqall = () => {
             </tr>
           </thead>
           <tbody>
+            {loading && <ShimmerTable asRows rows={4} cols={3} />}
             {faqs.map((faq) => (
               <tr key={faq._id} className="text-center border-b">
                 <td className="px-2 py-2">{faq.faqquestion}</td>

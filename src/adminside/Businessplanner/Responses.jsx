@@ -1,15 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { base_url } from "../../config/config";
+import { ShimmerTable } from "../../userside/utils/Shimmer.jsx";
 
 const Responses = () => {
   const [responses, setResponses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch(`${base_url}/getans`)
       .then((res) => res.json())
       .then((data) => setResponses(data))
-      .catch((err) => console.error(err));
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
   }, []);
+
+  if (loading) {
+    return (
+      <div className="w-full">
+        <div className="hdr">Response Table</div>
+        <ShimmerTable rows={6} cols={5} />
+      </div>
+    );
+  }
 
   if (responses.length === 0) {
     return (

@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from "react";
 import { MdClose } from "react-icons/md";
 import { TiArrowMinimise } from "react-icons/ti";
 import { base_url, chat_url } from "../../config/config";
+import { ShimmerList } from "../../userside/utils/Shimmer.jsx";
 
 const SeenLabel = ({ read }) => (
   read
@@ -15,6 +16,7 @@ const Schat = ({ supportId, bId, bName, onClose, isVisible, onToggle }) => {
   const [inputValue, setInputValue] = useState("");
   const [socket, setSocket] = useState(null);
   const [isSending, setIsSending] = useState(false);
+  const [loading, setLoading] = useState(true);
   const chatEndRef = useRef(null);
   const isVisibleRef = useRef(false); // ✅ ref to avoid stale closure in WebSocket
 
@@ -48,6 +50,8 @@ const Schat = ({ supportId, bId, bName, onClose, isVisible, onToggle }) => {
         setMessages(data);
       } catch (err) {
         console.error("Error fetching support chat:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -142,7 +146,8 @@ ws.onmessage = (event) => {
       {isVisible && (
         <>
           <div className="h-[400px] overflow-y-auto p-3 bg-gray-50">
-            {messages.map((msg, idx) => (
+            {loading && <ShimmerList rows={6} />}
+            {!loading && messages.map((msg, idx) => (
               <div
                 key={idx}
                 className={`flex mb-2 ${msg.sender === "manager" ? "justify-end" : "justify-start"}`}

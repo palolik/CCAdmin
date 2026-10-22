@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { base_url } from "../../config/config";
+import { ShimmerGrid } from "../../userside/utils/Shimmer.jsx";
 
 const BlogList = () => {
   const [blogs, setBlogs] = useState([]);
@@ -20,14 +21,6 @@ const BlogList = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-gray-400">
-        Loading blogs...
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-5 py-14">
@@ -46,7 +39,14 @@ const BlogList = () => {
           </p>
         </div>
 
-        {blogs.length === 0 ? (
+        {loading ? (
+          <ShimmerGrid
+            count={6}
+            cols="grid-cols-1 md:grid-cols-2 xl:grid-cols-3"
+            gap="gap-8"
+            card={{ imageClass: "h-56" }}
+          />
+        ) : blogs.length === 0 ? (
           <div className="text-center py-20 text-gray-400">
             No blogs published yet.
           </div>

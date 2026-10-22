@@ -5,6 +5,7 @@ import {
   LineChart, Line, AreaChart, Area,
 } from "recharts";
 import { base_url } from "../../config/config";
+import { Shimmer, ShimmerStats, ShimmerTable } from "../../userside/utils/Shimmer";
 
 // ── Palette ───────────────────────────────────────────────────
 const STATUS_COLORS = {
@@ -76,8 +77,22 @@ const TaskDashboard = () => {
   }, []);
 
   if (loading) return (
-    <div className="flex items-center justify-center h-[80vh] text-gray-400 text-sm">
-      Loading dashboard…
+    <div className="w-full min-h-screen bg-[#f7f8fb]">
+      <div className="hdr">Task Analytics Dashboard</div>
+      <div className="p-6 space-y-6">
+        <ShimmerStats count={4} />
+        {[0, 1, 2].map(r => (
+          <div key={r} className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {[0, 1].map(c => (
+              <Card key={c}>
+                <Shimmer className="h-4 w-40 max-w-full rounded mb-4" />
+                <Shimmer className="w-full h-[220px] rounded-lg" />
+              </Card>
+            ))}
+          </div>
+        ))}
+        <ShimmerTable rows={6} cols={8} />
+      </div>
     </div>
   );
 

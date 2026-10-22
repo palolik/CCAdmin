@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
 import { base_url } from "../../config/config";
+import { Shimmer } from "../../userside/utils/Shimmer.jsx";
 
 const FormPage = () => {
   const { id } = useParams();
@@ -56,7 +57,21 @@ const FormPage = () => {
 
   const progress = ((currentIndex + 1) / visibleQuestions.length) * 100;
 
-  if (!form) return <div className="flex justify-center p-10 text-lg font-medium">Loading...</div>;
+  if (!form)
+    return (
+      <div className="w-full">
+        <div className="hdr">Demo form</div>
+        <Shimmer className="w-full h-2 rounded-full mb-6" />
+        <div className="max-w-xl mx-auto flex flex-col items-center">
+          <Shimmer className="h-6 w-2/3 rounded mb-6" />
+          <Shimmer className="h-12 w-full rounded" />
+        </div>
+        <div className="flex justify-between mt-10 max-w-xl mx-auto w-full">
+          <Shimmer className="h-12 w-28 rounded-lg" />
+          <Shimmer className="h-12 w-28 rounded-lg" />
+        </div>
+      </div>
+    );
 
   return (
      <div className="w-full">

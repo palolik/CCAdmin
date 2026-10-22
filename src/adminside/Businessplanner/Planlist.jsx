@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { base_url } from "../../config/config";
+import { ShimmerTable } from "../../userside/utils/Shimmer.jsx";
 
 const Planlist = () => {
   const [planners, setPlanners] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const getPlanners = async () => {
@@ -14,6 +16,8 @@ const Planlist = () => {
       setPlanners(data);
     } catch (err) {
       console.error("Error fetching planners:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,7 +68,9 @@ const Planlist = () => {
             </tr>
           </thead>
           <tbody>
-            {planners.length > 0 ? (
+            {loading ? (
+              <ShimmerTable rows={5} cols={4} asRows />
+            ) : planners.length > 0 ? (
               planners.map((p) => (
                 <tr key={p._id} className="text-center">
                   <td className="p-3 border">{p.title}</td>

@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { base_url } from "../../../config/config";
+import { ShimmerTable } from "../../../userside/utils/Shimmer";
 const Adminlist = () => {
   const [roles, setRoles] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [roleForm, setRoleForm] = useState({
     rname: "",
     remail: "",
@@ -31,6 +33,8 @@ const availableTabs = [
       setRoles(data);
     } catch (error) {
       console.error("Error fetching roles:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -257,7 +261,7 @@ const availableTabs = [
             </tr>
           </thead>
           <tbody>
-            {roles.map((r) => (
+            {loading ? <ShimmerTable asRows rows={5} cols={7} /> : roles.map((r) => (
               <tr key={r._id} className="border-b hover:bg-gray-50 text-center">
                 <td className="px-2 py-2">{r.rname}</td>
                 <td className="px-2 py-2">{r.remail}</td>

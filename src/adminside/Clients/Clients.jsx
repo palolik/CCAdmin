@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { base_url } from "../../config/config";
+import { ShimmerTable } from "../../userside/utils/Shimmer.jsx";
 const AllHClient = () => {
   const [clients, setClients] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // Fetch All Clients
   useEffect(() => {
@@ -11,7 +13,8 @@ const AllHClient = () => {
       .then((data) => {
         setClients(data);
       })
-      .catch((err) => console.error("Error fetching clients:", err));
+      .catch((err) => console.error("Error fetching clients:", err))
+      .finally(() => setLoading(false));
   }, []);
 
   // Delete Client
@@ -115,7 +118,8 @@ const AllHClient = () => {
             </tr>
           </thead>
           <tbody>
-            {clients.map((item) => (
+            {loading && <ShimmerTable rows={5} cols={4} asRows />}
+            {!loading && clients.map((item) => (
               <tr key={item._id}>
                 <td>
                   <img
@@ -147,7 +151,7 @@ const AllHClient = () => {
               </tr>
             ))}
 
-            {clients.length === 0 && (
+            {!loading && clients.length === 0 && (
               <tr>
                 <td colSpan="4" className="text-center py-3">
                   No clients found.

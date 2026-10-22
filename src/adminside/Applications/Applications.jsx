@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { base_url } from "../../config/config";
+import { Shimmer, ShimmerTable } from "../../userside/utils/Shimmer.jsx";
 
 const Applications = () => {
   const [applications, setApplications] = useState([]);
@@ -37,14 +38,6 @@ const Applications = () => {
     return `${base_url}/${cleanPath}`;
   };
 
-  if (loading) {
-    return (
-      <div className="p-10 text-center text-gray-500 animate-pulse">
-        Loading applications...
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen w-full">
       <div className="hdr">
@@ -60,9 +53,13 @@ const Applications = () => {
                 All Applications
               </span>
 
-              <span className="bg-violet-50 text-violet-500 text-xs font-bold px-2.5 py-0.5 rounded-full">
-                {filtered.length}
-              </span>
+              {loading ? (
+                <Shimmer className="h-5 w-8 rounded-full" />
+              ) : (
+                <span className="bg-violet-50 text-violet-500 text-xs font-bold px-2.5 py-0.5 rounded-full">
+                  {filtered.length}
+                </span>
+              )}
             </div>
 
             <input
@@ -106,7 +103,9 @@ const Applications = () => {
               </thead>
 
               <tbody>
-                {filtered.length === 0 ? (
+                {loading ? (
+                  <ShimmerTable rows={6} cols={6} asRows />
+                ) : filtered.length === 0 ? (
                   <tr>
                     <td
                       colSpan="6"
