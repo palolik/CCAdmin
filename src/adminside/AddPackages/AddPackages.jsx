@@ -3,6 +3,7 @@ import Swal from 'sweetalert2';
 import { base_url } from '../../config/config';
 import RichTextEditor from '../../userside/utils/PichTextEditor';
 import { Shimmer, ShimmerForm } from '../../userside/utils/Shimmer.jsx';
+import PackageSeoFields, { emptySeo, appendSeo } from './PackageSeoFields';
 
 const AddPackages = () => {
     const [categories, setCategories] = useState([]);
@@ -13,6 +14,8 @@ const AddPackages = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [coverFile, setCoverFile] = useState(null);
     const [coverPreview, setCoverPreview] = useState(null);
+    const [seo, setSeo] = useState(emptySeo);
+    const [packageName, setPackageName] = useState('');
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -63,6 +66,7 @@ const AddPackages = () => {
             getTrimmedValue(`content${i + 1}`)
         ).filter(Boolean);
         formData.append('packageContents', JSON.stringify(contents));
+        appendSeo(formData, seo);
 
         if (coverFile) {
             formData.append('packageCover', coverFile); // multer reads this field
@@ -81,6 +85,8 @@ const AddPackages = () => {
                 setPackageRequirements("");
                 setCoverFile(null);
                 setCoverPreview(null);
+                setSeo(emptySeo);
+                setPackageName('');
             } else {
                 Swal.fire({ title: "Error!", text: "There was an issue adding the package.", icon: "error" });
             }
@@ -193,11 +199,12 @@ const AddPackages = () => {
 
                                 <div>
                                     <label className={labelCls}>Package Name</label>
-                                    <input name="packageName" className={inputCls} type="text" placeholder="e.g. Premium Design Package" required />
+                                    <input name="packageName" className={inputCls} type="text" placeholder="e.g. Premium Design Package" required
+                                        onChange={e => setPackageName(e.target.value)} />
                                 </div>
                                 <div>
-                                    <label className={labelCls}>Package Price ($)</label>
-                                    <input name="packagePrice" className={inputCls} type="text" placeholder="e.g. 99" required />
+                                    <label className={labelCls}>Package Price (৳ BDT)</label>
+                                    <input name="packagePrice" className={inputCls} type="text" placeholder="e.g. 18000" required />
                                 </div>
                             </div>
                         </div>
@@ -215,11 +222,15 @@ const AddPackages = () => {
                                     <input name="expressDeliveryTime" className={inputCls} type="text" placeholder="e.g. 2 days" />
                                 </div>
                                 <div>
-                                    <label className={labelCls}>Express Delivery Price ($)</label>
-                                    <input name="expressDeliveryPrice" className={inputCls} type="text" placeholder="e.g. 20" />
+                                    <label className={labelCls}>Express Delivery Price (৳ BDT)</label>
+                                    <input name="expressDeliveryPrice" className={inputCls} type="text" placeholder="e.g. 5000" />
+                                    <p className="text-[11px] text-gray-400 mt-1">Set express time to 0 to hide the express option.</p>
                                 </div>
                             </div>
                         </div>
+
+                        <PackageSeoFields seo={seo} onChange={setSeo} packageName={packageName}
+                            inputCls={inputCls} labelCls={labelCls} sectionTitle={sectionTitle} />
                     </div>
 
                     {/* Right Column */}

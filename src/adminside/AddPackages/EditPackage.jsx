@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import { base_url } from '../../config/config';
 import { Shimmer, ShimmerForm } from '../../userside/utils/Shimmer.jsx';
 import RichTextEditor from '../../userside/utils/PichTextEditor';
+import PackageSeoFields, { emptySeo, appendSeo, seoFromPackage } from './PackageSeoFields';
 
 const EditPackage = () => {
     const { id } = useParams();
@@ -26,6 +27,7 @@ const EditPackage = () => {
     });
     const [packageDetails, setPackageDetails] = useState('');
     const [packageRequirements, setPackageRequirements] = useState('');
+    const [seo, setSeo] = useState(emptySeo);
 
     // Image state
     const [existingCover, setExistingCover] = useState(null); // URL from DB
@@ -64,6 +66,7 @@ const EditPackage = () => {
                 setPackageDetails(pkg.packageDetails || '');
                 setPackageRequirements(pkg.packageRequirements || '');
                 setExistingCover(pkg.packageCover || null);
+                setSeo(seoFromPackage(pkg));
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -111,6 +114,7 @@ const EditPackage = () => {
         data.append('packageDetails', packageDetails);
         data.append('packageRequirements', packageRequirements);
         data.append('packageContents', JSON.stringify(formData.packageContents.filter(Boolean)));
+        appendSeo(data, seo);
 
         // Only append file if user picked a new one
         if (newCoverFile) {
@@ -289,10 +293,10 @@ const EditPackage = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label className={labelCls}>Package Price ($)</label>
+                                    <label className={labelCls}>Package Price (৳ BDT)</label>
                                     <input
                                         className={inputCls} type="text"
-                                        placeholder="e.g. 99"
+                                        placeholder="e.g. 18000"
                                         value={formData.packagePrice}
                                         onChange={e => handleChange('packagePrice', e.target.value)}
                                         required
@@ -318,13 +322,17 @@ const EditPackage = () => {
                                         onChange={e => handleChange('expressDeliveryTime', e.target.value)} />
                                 </div>
                                 <div>
-                                    <label className={labelCls}>Express Delivery Price ($)</label>
-                                    <input className={inputCls} type="text" placeholder="e.g. 20"
+                                    <label className={labelCls}>Express Delivery Price (৳ BDT)</label>
+                                    <input className={inputCls} type="text" placeholder="e.g. 5000"
                                         value={formData.expressDeliveryPrice}
                                         onChange={e => handleChange('expressDeliveryPrice', e.target.value)} />
+                                    <p className="text-[11px] text-gray-400 mt-1">Set express time to 0 to hide the express option.</p>
                                 </div>
                             </div>
                         </div>
+
+                        <PackageSeoFields seo={seo} onChange={setSeo} packageName={formData.packageName}
+                            inputCls={inputCls} labelCls={labelCls} sectionTitle={sectionTitle} />
                     </div>
 
                     {/* Right Column */}

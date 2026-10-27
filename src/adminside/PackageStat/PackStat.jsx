@@ -274,7 +274,7 @@ const PackStat = () => {
                           <div className="space-y-0.5">
                             <div className="flex items-center gap-1.5">
                               <span className="text-emerald-600 font-bold">
-                                ${pack.packagePrice}
+                                ৳{pack.packagePrice}
                               </span>
                               <span className="text-xs text-slate-400">
                                 · {pack.deliveryTime}d
@@ -283,7 +283,7 @@ const PackStat = () => {
                             {pack.expressDeliveryPrice && (
                               <div className="flex items-center gap-1.5">
                                 <span className="text-amber-600 font-semibold text-xs">
-                                  ⚡ ${pack.expressDeliveryPrice}
+                                  ⚡ ৳{pack.expressDeliveryPrice}
                                 </span>
                                 <span className="text-xs text-slate-400">
                                   · {pack.expressDeliveryTime}d

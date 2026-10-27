@@ -29,7 +29,7 @@ const ClientsList = ({ data = [] }) => (
           <div className="w-1/2 flex flex-row gap-1">
               <div className="w-1/2 text-center">
             <p className="font-bold text-gray-700">{client.orders}</p>
-            <p className="font-bold text-indigo-600">${client.totalSpent}</p>
+            <p className="font-bold text-indigo-600">৳{client.totalSpent}</p>
           </div>
 
          

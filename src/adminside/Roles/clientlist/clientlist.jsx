@@ -316,7 +316,7 @@ const Clientlist = () => {
                                           {order.projectTitle || "Untitled"}
                                         </p>
                                         <div style={{ display:"flex", gap:8, alignItems:"center" }}>
-                                          <span style={{ color:"#16a34a", fontWeight:700 }}>${order.sellPrice}</span>
+                                          <span style={{ color:"#16a34a", fontWeight:700 }}>৳{order.sellPrice}</span>
                                           {order.status && (
                                             <span style={{
                                               fontSize:11, fontWeight:600, padding:"1px 8px",
