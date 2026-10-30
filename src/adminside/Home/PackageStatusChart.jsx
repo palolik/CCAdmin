@@ -1,9 +1,9 @@
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 const STATUS_COLORS = {
-  pending: "#f59e0b",
+  pending: "#94a3b8",
   started: "#3b82f6",
-  completed: "#10b981",
+  completed: "#1e3a8a",
 };
 
 const PackageStatusChart = ({ statusCounts = {} }) => {
@@ -28,7 +28,7 @@ const PackageStatusChart = ({ statusCounts = {} }) => {
             paddingAngle={4}
           >
             {data.map((entry, i) => (
-              <Cell key={i} fill={STATUS_COLORS[entry.status] || "#6366f1"} />
+              <Cell key={i} fill={STATUS_COLORS[entry.status] || "#3b82f6"} />
             ))}
           </Pie>
           <Tooltip />

@@ -9,7 +9,7 @@ const ClientsList = ({ data = [] }) => (
     <div className="flex flex-col gap-3">
       {data.map((client, i) => (
         <div key={i} className="flex items-center justify-between bg-gray-50 hover:bg-gray-100 transition-colors rounded-xl px-4 py-3">
-          
+
           {/* Avatar + Name */}
           <div className="flex items-center gap-3 w-1/3">
             <img
@@ -23,16 +23,16 @@ const ClientsList = ({ data = [] }) => (
             </div>
           </div>
 
-       
 
-     
+
+
           <div className="w-1/2 flex flex-row gap-1">
               <div className="w-1/2 text-center">
             <p className="font-bold text-gray-700">{client.orders}</p>
             <p className="font-bold text-indigo-600">৳{client.totalSpent}</p>
           </div>
 
-         
+
           <div className="w-1/2 flex flex-col justify-end">
           <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${atypeBadge[client.atype] || "bg-gray-100 text-gray-600"}`}>
               {client.atype}
@@ -43,7 +43,7 @@ const ClientsList = ({ data = [] }) => (
             </span>
           </div>
           </div>
-        
+
 
         </div>
       ))}

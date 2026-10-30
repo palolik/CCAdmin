@@ -24,8 +24,7 @@ const AllHClient = () => {
       text: "This cannot be undone!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
+
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
@@ -44,7 +43,7 @@ const AllHClient = () => {
     });
   };
 
- 
+
   const handleAddPost = async (e) => {
     e.preventDefault();
     const form = e.target;
@@ -162,7 +161,7 @@ const AllHClient = () => {
         </table>
       </div>
             </div>
-    
+
     </div>
   );
 };

@@ -28,8 +28,7 @@ const AdminPortfolio = () => {
       text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
+
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
@@ -71,7 +70,7 @@ const handleStatusChange = (_id, currentStatus) => {
   }).then((result) => {
     if (result.isConfirmed) {
       const { status, note } = result.value;
-      
+
       fetch(`${base_url}/portfolio/${_id}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -88,8 +87,8 @@ const handleStatusChange = (_id, currentStatus) => {
               message += `\n\nNote: ${note}`;
             }
             Swal.fire("Updated!", message, "success");
-            
-      
+
+
             setPortfolios((prev) =>
               prev.map((p) => (p._id === _id ? { ...p, status, statusNote: note } : p))
             );
@@ -238,7 +237,7 @@ const handleStatusChange = (_id, currentStatus) => {
           </table>
         </div>
 
- 
+
         {showForm && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md relative max-h-[90vh] overflow-y-auto">

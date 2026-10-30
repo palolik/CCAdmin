@@ -8,8 +8,43 @@
 }
 
 .smbut{
-    @apply btn btn-xs bg-black text-white hover:bg-[#121242] ;
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-xs font-medium bg-ink-900 text-white hover:bg-ink-700 transition-colors;
 }
+
+/* Shared admin buttons: black, compact, 8px corners, medium weight.
+   .btn-cc-primary   main action      (black)
+   .btn-cc-secondary neutral / cancel (light slate)
+   .btn-cc-danger    delete / reject  (red tint) */
+.btn-cc        { @apply inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed; }
+.btn-cc-primary   { @apply btn-cc bg-ink-900 text-white hover:bg-ink-700; }
+.btn-cc-secondary { @apply btn-cc bg-ink-100 text-ink-700 hover:bg-ink-200; }
+.btn-cc-danger    { @apply btn-cc bg-danger-50 text-danger-600 hover:bg-danger-100; }
+
+/* daisyUI .btn at its default size: same compact height as the rest. */
+.btn:not(.btn-xs):not(.btn-sm):not(.btn-lg) {
+    min-height: 2.125rem;
+    height: 2.125rem;
+    padding: 0 0.875rem;
+    font-size: 0.8125rem;
+}
+
+/* Same focus ring on every button. */
+button:focus-visible, .btn:focus-visible {
+    @apply outline-none ring-2 ring-ink-400 ring-offset-1;
+}
+
+/* SweetAlert popups: same compact black buttons. A colour passed per call
+   (confirmButtonColor, used for red delete/reject confirms) still wins. */
+.swal2-styled {
+    border-radius: 0.5rem !important;
+    font-weight: 500 !important;
+    font-size: 0.8125rem !important;
+    padding: 0.4375rem 1rem !important;
+    box-shadow: none !important;
+}
+.swal2-styled.swal2-confirm { background-color: theme('colors.ink.900'); }
+.swal2-styled.swal2-cancel  { background-color: theme('colors.ink.200'); color: theme('colors.ink.700') !important; }
+.swal2-styled.swal2-deny    { background-color: theme('colors.danger.600'); }
 /* Loading placeholders (see src/userside/utils/Shimmer.jsx). */
 .shimmer {
   position: relative;

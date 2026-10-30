@@ -235,7 +235,7 @@ const handleSend = async () => {
        const endpoint = packageType === 'custom'
   ? `${base_url}/updateordercustomcontents/${orderId}`  // custom → custom endpoint
   : `${base_url}/updateordercontents/${orderId}`;        // regular → regular endpoint
-      
+
           const res = await fetch(endpoint,  {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -268,13 +268,13 @@ const handleSend = async () => {
         <div className="flex items-center gap-1">
           <button
             onClick={onToggle}
-            className="p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-slate-600 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-600 transition-colors"
           >
             {isVisible ? <TiArrowMinimise size={16} /> : <FaChevronDown size={13} />}
           </button>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-md text-slate-400 hover:text-red-400 hover:bg-slate-600 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-600 transition-colors"
           >
             <MdClose size={16} />
           </button>
@@ -346,7 +346,7 @@ const handleSend = async () => {
                     <span className="max-w-[100px] truncate">{f.name}</span>
                     <button
                       onClick={() => setAttachedFiles(p => p.filter((_, j) => j !== i))}
-                      className="ml-0.5 text-slate-400 hover:text-red-500 font-bold"
+                      className="ml-0.5 text-slate-400 hover:text-red-500 font-medium"
                     >×</button>
                   </span>
                 ))}
@@ -375,7 +375,7 @@ const handleSend = async () => {
     e.stopPropagation();
     fileInputRef.current?.click();
   }}
-  className="flex-shrink-0 p-2 rounded-lg text-slate-400 hover:text-blue-500 hover:bg-slate-100 transition-colors"
+  className="flex-shrink-0 p-2 rounded-lg text-slate-400 hover:text-ink-900 hover:bg-slate-100 transition-colors"
   title="Attach files"
 >
   <FaPaperclip size={15} />
@@ -393,10 +393,10 @@ const handleSend = async () => {
               <button
                 onClick={handleSend}
                 disabled={(!inputValue.trim() && !attachedFiles.length) || isSending}
-                className={`flex-shrink-0 px-4 py-2 text-sm font-semibold rounded-lg transition-all duration-150 ${
+                className={`flex-shrink-0 px-3 py-1.5 text-[13px] font-medium rounded-lg transition-all duration-150 ${
                   (!inputValue.trim() && !attachedFiles.length) || isSending
                     ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                    : 'bg-slate-800 text-white hover:bg-slate-700 active:scale-95 shadow-sm'
+                    : 'bg-ink-900 text-white hover:bg-slate-700 active:scale-95 shadow-sm'
                 }`}
               >
                 Send

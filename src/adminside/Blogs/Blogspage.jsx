@@ -119,7 +119,7 @@ const BlogsPage = () => {
                         type="button"
                         onClick={() => navigate(`/blogs/${blog.slug}`)}
                         className={`w-full text-left p-4 border-b border-gray-100 transition-all ${
-                          isActive ? "bg-blue-50" : "bg-white hover:bg-gray-50"
+                          isActive ? "bg-ink-100" : "bg-white hover:bg-gray-50"
                         }`}
                       >
                         <div className="flex gap-3">

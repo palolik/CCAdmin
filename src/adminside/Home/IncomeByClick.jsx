@@ -1,5 +1,5 @@
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LabelList } from "recharts";
-const COLORS = ["#6366f1","#f59e0b","#10b981","#ef4444","#3b82f6","#ec4899","#8b5cf6","#14b8a6"];
+const COLORS = ["#1d4ed8", "#60a5fa", "#334155", "#94a3b8", "#1e3a8a", "#93c5fd", "#64748b", "#cbd5e1"];
 
 const PackageClicksChart = ({ data = [] }) => {
   const shortened = data.map(d => ({
@@ -16,7 +16,7 @@ const PackageClicksChart = ({ data = [] }) => {
           <YAxis type="category" dataKey="shortName" width={130} tick={{ fontSize: 12 }} />
           <Tooltip />
           <Bar dataKey="clicks" radius={[0, 6, 6, 0]}>
-            <LabelList dataKey="clicks" position="right" style={{ fontSize: 12, fill: "#374151" }} />
+            <LabelList dataKey="clicks" position="right" style={{ fontSize: 12, fill: "#334155" }} />
             {shortened.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
           </Bar>
         </BarChart>

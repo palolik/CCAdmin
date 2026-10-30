@@ -9,18 +9,18 @@ const lbl = {
   marginBottom: 4, fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase",
 };
 const inp = {
-  width: "100%", border: "1px solid #e2e5ee", borderRadius: 9,
+  width: "100%", border: "1px solid #e2e8f0", borderRadius: 9,
   padding: "9px 13px", fontSize: 13.5, fontFamily: "inherit",
   background: "#fafbfd", outline: "none", boxSizing: "border-box", color: "#1e293b",
 };
 const inpFocus = {
-  ...inp, borderColor: "#6366f1", boxShadow: "0 0 0 3px rgba(99,102,241,.12)", background: "#fff",
+  ...inp, borderColor: "#3b82f6", boxShadow: "0 0 0 3px rgba(59, 130, 246,.12)", background: "#fff",
 };
 
 const atypeBadge = {
-  free:       { bg: "#f0fdf4", color: "#16a34a" },
+  free:       { bg: "#eff6ff", color: "#2563eb" },
   premium:    { bg: "#eff6ff", color: "#2563eb" },
-  enterprise: { bg: "#faf5ff", color: "#9333ea" },
+  enterprise: { bg: "#eff6ff", color: "#2563eb" },
 };
 
 // online = last active within 3 minutes
@@ -59,7 +59,7 @@ const Clientlist = () => {
     Swal.fire({
       title: "Delete this client?", text: "This cannot be undone.",
       icon: "warning", showCancelButton: true,
-      confirmButtonColor: "#ef4444", confirmButtonText: "Delete",
+      confirmButtonColor: "#dc2626", confirmButtonText: "Delete",
     }).then(({ isConfirmed }) => {
       if (!isConfirmed) return;
       fetch(`${base_url}/delclient/${_id}`, { method: "DELETE" })
@@ -121,21 +121,21 @@ const Clientlist = () => {
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@600;700&display=swap');
         .cl-wrap   { font-family:'DM Sans',sans-serif; background:#f7f8fb; min-height:100vh; }
         .cl-syne   { font-family:'Syne',sans-serif; }
-        .cl-card   { background:#fff; border:1px solid #e8eaf0; border-radius:16px; overflow:hidden; }
-        .cl-row    { border-bottom:1px solid #f0f2f7; transition:background .15s; }
+        .cl-card   { background:#fff; border:1px solid #e2e8f0; border-radius:16px; overflow:hidden; }
+        .cl-row    { border-bottom:1px solid #eff6ff; transition:background .15s; }
         .cl-row:hover { background:#fafbfd; }
         .cl-row:last-child { border-bottom:none; }
         .cl-avatar {
           width:42px; height:42px; border-radius:50%;
-          object-fit:cover; border:2px solid #e8eaf0; flex-shrink:0;
+          object-fit:cover; border:2px solid #e2e8f0; flex-shrink:0;
         }
         .cl-search {
-          border:1px solid #e2e5ee; border-radius:9px; padding:8px 14px;
+          border:1px solid #e2e8f0; border-radius:9px; padding:8px 14px;
           font-size:13px; font-family:'DM Sans',sans-serif;
           background:#fafbfd; outline:none; width:240px; color:#1e293b;
           transition:border-color .2s, box-shadow .2s;
         }
-        .cl-search:focus { border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,.1); background:#fff; }
+        .cl-search:focus { border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59, 130, 246,.1); background:#fff; }
         .cl-editbtn {
           padding:5px 14px; border-radius:7px; border:none;
           background:#eff6ff; color:#2563eb; font-weight:500;
@@ -152,7 +152,7 @@ const Clientlist = () => {
         .cl-delbtn:hover { background:#fee2e2; }
         @keyframes cl-drop { from { opacity:0; transform:translateY(-6px) } to { opacity:1; transform:none } }
         .cl-order-pill {
-          display:inline-block; background:#f8fafc; border:1px solid #e8eaf0;
+          display:inline-block; background:#f8fafc; border:1px solid #e2e8f0;
           border-radius:8px; padding:4px 10px; font-size:12px; color:#475569;
           margin:2px 0;
         }
@@ -189,7 +189,7 @@ const Clientlist = () => {
             ) : (
               <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13.5 }}>
                 <thead>
-                  <tr style={{ borderBottom:"2px solid #f0f2f7" }}>
+                  <tr style={{ borderBottom:"2px solid #eff6ff" }}>
                     {["Client","Contact","Details","Status","Orders",""].map(h => (
                       <th key={h} style={{ textAlign:"left", padding:"12px 20px", fontSize:11, fontWeight:600, color:"#94a3b8", letterSpacing:"0.07em", textTransform:"uppercase" }}>
                         {h}
@@ -247,12 +247,12 @@ const Clientlist = () => {
                                 <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:5 }}>
                                   <span style={{
                                     width:8, height:8, borderRadius:"50%", flexShrink:0,
-                                    background: online ? "#22c55e" : "#d1d5db",
-                                    boxShadow: online ? "0 0 0 3px rgba(34,197,94,.2)" : "none",
+                                    background: online ? "#3b82f6" : "#cbd5e1",
+                                    boxShadow: online ? "0 0 0 3px rgba(59, 130, 246,.2)" : "none",
                                   }} />
                                   <span style={{
                                     fontSize:12, fontWeight:600,
-                                    color: online ? "#16a34a" : "#9ca3af",
+                                    color: online ? "#2563eb" : "#94a3b8",
                                   }}>
                                     {online ? "Online" : "Offline"}
                                   </span>
@@ -285,8 +285,8 @@ const Clientlist = () => {
                                   style={{
                                     display:"flex", alignItems:"center", gap:6,
                                     background:"#f1f5f9", border:"none", borderRadius:8,
-                                    padding:"5px 12px", cursor:"pointer", fontSize:12,
-                                    fontWeight:600, color:"#475569", fontFamily:"inherit",
+                                    padding:"4px 10px", cursor:"pointer", fontSize:12,
+                                    fontWeight:500, color:"#475569", fontFamily:"inherit",
                                   }}
                                   onMouseEnter={e => e.currentTarget.style.background="#e2e8f0"}
                                   onMouseLeave={e => e.currentTarget.style.background="#f1f5f9"}
@@ -309,14 +309,14 @@ const Clientlist = () => {
                                   <div style={{ marginTop:10, display:"flex", flexDirection:"column", gap:6 }}>
                                     {client.orders.map((order, idx) => (
                                       <div key={idx} style={{
-                                        background:"#f8fafc", border:"1px solid #e8eaf0",
+                                        background:"#f8fafc", border:"1px solid #e2e8f0",
                                         borderRadius:10, padding:"8px 12px", fontSize:12.5,
                                       }}>
                                         <p style={{ margin:"0 0 3px", fontWeight:600, color:"#1e293b" }}>
                                           {order.projectTitle || "Untitled"}
                                         </p>
                                         <div style={{ display:"flex", gap:8, alignItems:"center" }}>
-                                          <span style={{ color:"#16a34a", fontWeight:700 }}>৳{order.sellPrice}</span>
+                                          <span style={{ color:"#2563eb", fontWeight:700 }}>৳{order.sellPrice}</span>
                                           {order.status && (
                                             <span style={{
                                               fontSize:11, fontWeight:600, padding:"1px 8px",
@@ -414,11 +414,11 @@ const Clientlist = () => {
 
               <div style={{ display:"flex", gap:10, marginTop:24 }}>
                 <button type="button" onClick={() => setShowEdit(false)}
-                  style={{ flex:1, padding:"10px 0", borderRadius:9, border:"none", background:"#f1f3f8", color:"#475569", fontWeight:500, cursor:"pointer", fontSize:13 }}>
+                  style={{ flex:1, padding:"8px 0", borderRadius:8, border:"none", background:"#f1f5f9", color:"#475569", fontWeight:500, cursor:"pointer", fontSize:12 }}>
                   Cancel
                 </button>
                 <button type="submit"
-                  style={{ flex:2, padding:"10px 0", borderRadius:9, border:"none", background:"#1e293b", color:"#fff", fontWeight:600, cursor:"pointer", fontSize:13 }}>
+                  style={{ flex:2, padding:"8px 0", borderRadius:8, border:"none", background:"#0f172a", color:"#fff", fontWeight:500, cursor:"pointer", fontSize:12 }}>
                   Save Changes
                 </button>
               </div>

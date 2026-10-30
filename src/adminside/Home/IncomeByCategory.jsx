@@ -9,7 +9,7 @@ import {
   Cell,
 } from "recharts";
 
-const COLORS = ["#6366f1", "#f59e0b", "#10b981", "#ef4444", "#3b82f6", "#ec4899"];
+const COLORS = ["#1d4ed8", "#60a5fa", "#334155", "#94a3b8", "#1e3a8a", "#93c5fd", "#64748b", "#cbd5e1"];
 
 const IncomeByCategoryChart = ({
   data = [],

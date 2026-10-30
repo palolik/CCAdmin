@@ -84,7 +84,7 @@ const PackageSeoFields = ({ seo, onChange, packageName, inputCls, labelCls, sect
                     <div className="flex items-center justify-between mb-2">
                         <label className={`${labelCls} mb-0`}>FAQ</label>
                         <button type="button" onClick={() => set('faqs', [...seo.faqs, { q: '', a: '' }])}
-                            className="text-xs font-semibold text-violet-600 hover:text-violet-700">
+                            className="text-xs font-medium text-ink-900 hover:text-ink-900">
                             + Add question
                         </button>
                     </div>

@@ -41,7 +41,7 @@ const BlogDetails = () => {
   }
 
   return (
- 
+
   <div className="w-full min-h-screen bg-white overflow-x-hidden">
     <BlogJsxRenderer blog={blog} />
   </div>

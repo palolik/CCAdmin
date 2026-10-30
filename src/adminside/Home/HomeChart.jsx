@@ -52,7 +52,7 @@ const HomeChart = ({ selectedMonth }) => {
             <YAxis />
             <Tooltip />
             <Legend />
-            <Bar dataKey="views" fill="#8884d8" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="views" fill="#3b82f6" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       )}

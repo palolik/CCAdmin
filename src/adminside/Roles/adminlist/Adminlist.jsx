@@ -101,8 +101,7 @@ const availableTabs = [
       text: "This cannot be undone!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
+
       confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
@@ -140,7 +139,7 @@ const availableTabs = [
                     <div className='hdr'>Admin List</div>
     <div className="w-full px-6 py-6">
       <div className="flex justify-end items-center mb-6">
-       
+
         <button
           className="btn btn-primary"
           onClick={() => setShowForm(true)}

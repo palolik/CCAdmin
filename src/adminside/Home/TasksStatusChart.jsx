@@ -1,9 +1,9 @@
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 
 const STATUS_COLORS = {
-  "Done":          "#10b981",
-  "pending":       "#f59e0b",
-  "not activated": "#94a3b8",
+  "Done":          "#1e3a8a",
+  "pending":       "#94a3b8",
+  "not activated": "#cbd5e1",
   "in-progress":   "#3b82f6",
 };
 
@@ -25,7 +25,7 @@ const TaskStatusChart = ({ data = [] }) => (
           {data.map((entry, i) => (
             <Cell
               key={i}
-              fill={STATUS_COLORS[entry.status] || "#6366f1"}
+              fill={STATUS_COLORS[entry.status] || "#3b82f6"}
             />
           ))}
         </Pie>

@@ -89,7 +89,7 @@ const BlogJsxRenderer = ({ blog }) => {
 
     .prose p {
       line-height: 1.8;
-      color: #374151;
+      color: #334155;
       margin-bottom: 1rem;
     }
 
@@ -101,7 +101,7 @@ const BlogJsxRenderer = ({ blog }) => {
 
     .prose li {
       margin-bottom: 0.5rem;
-      color: #374151;
+      color: #334155;
     }
 
     .prose blockquote {

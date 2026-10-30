@@ -119,7 +119,7 @@ const ASignin = () => {
 
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white font-semibold py-2 rounded-md mt-4 hover:bg-blue-600 focus:ring-2 focus:ring-blue-400 transition-all"
+            className="w-full bg-ink-900 text-white font-medium py-1.5 rounded-lg mt-4 hover:bg-ink-700 focus:ring-2 focus:ring-ink-300 transition-all"
           >
             Sign In
           </button>

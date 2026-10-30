@@ -183,7 +183,7 @@ ws.onmessage = (event) => {
             <button
               onClick={handleSend}
               disabled={!inputValue.trim() || isSending}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 text-sm rounded-r"
+              className="bg-ink-900 hover:bg-ink-700 text-white px-3 text-[13px] rounded-r"
             >
               Send
             </button>

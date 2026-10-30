@@ -34,8 +34,8 @@ const IncomeByMonthChart = ({
         <AreaChart data={data}>
           <defs>
             <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
+              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
             </linearGradient>
           </defs>
 
@@ -50,7 +50,7 @@ const IncomeByMonthChart = ({
           <Area
             type="monotone"
             dataKey={dataKey}
-            stroke="#6366f1"
+            stroke="#3b82f6"
             fill={`url(#${gradientId})`}
             strokeWidth={2}
           />

@@ -81,19 +81,19 @@ const Planlist = () => {
                   <td className="p-3 border space-x-3">
                     <button
                       onClick={() => navigate(`/admin/editplanner/${p._id}`)}
-                      className="px-3 py-1 bg-blue-600 text-white rounded"
+                      className="px-3 py-1 bg-ink-900 text-white rounded-lg"
                     >
                       Edit
                     </button>
                     <button
                       onClick={() => navigate(`/admin/planform/${p._id}`)}
-                      className="px-3 py-1 bg-green-600 text-white rounded"
+                      className="px-3 py-1 bg-ink-900 text-white rounded-lg"
                     >
                      form
                     </button>
                     <button
                       onClick={() => deletePlanner(p._id)}
-                      className="px-3 py-1 bg-red-600 text-white rounded"
+                      className="px-3 py-1 bg-red-600 text-white rounded-lg"
                     >
                       Delete
                     </button>

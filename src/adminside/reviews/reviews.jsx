@@ -14,14 +14,7 @@ import {
 } from "recharts";
 import { base_url } from "../../config/config";
 
-const COLORS = [
-  "#6366f1",
-  "#10b981",
-  "#f59e0b",
-  "#ef4444",
-  "#3b82f6",
-  "#ec4899",
-];
+const COLORS = ["#1d4ed8", "#60a5fa", "#334155", "#94a3b8", "#1e3a8a", "#93c5fd", "#64748b", "#cbd5e1"];
 
 const Reviews = () => {
   const loaderreviews = useLoaderData();
@@ -89,8 +82,7 @@ useEffect(() => {
       text: "This feedback will be permanently deleted!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
+
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {

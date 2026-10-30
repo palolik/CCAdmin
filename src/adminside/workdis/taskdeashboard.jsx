@@ -9,14 +9,14 @@ import { Shimmer, ShimmerStats, ShimmerTable } from "../../userside/utils/Shimme
 
 // ── Palette ───────────────────────────────────────────────────
 const STATUS_COLORS = {
-  pending:    "#f97316",
-  Accepted:   "#3b82f6",
-  VerifyTask: "#a855f7",
-  Completed:  "#22c55e",
-  Done:       "#10b981",
+  pending:    "#94a3b8",
+  Accepted:   "#60a5fa",
+  VerifyTask: "#2563eb",
+  Completed:  "#1e40af",
+  Done:       "#334155",
 };
 
-const BAR_COLORS = ["#3b82f6","#a855f7","#f97316","#22c55e","#ef4444","#06b6d4","#f59e0b"];
+const BAR_COLORS = ["#1d4ed8", "#60a5fa", "#334155", "#94a3b8", "#1e3a8a", "#93c5fd", "#64748b", "#cbd5e1"];
 
 // ── Small helpers ─────────────────────────────────────────────
 const fmt = (ds) => {
@@ -175,9 +175,9 @@ const TaskDashboard = () => {
         {/* ── KPI Row ── */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard label="Total Tasks"      value={tasks.length}       color="#3b82f6" icon="📋" />
-          <StatCard label="Completion Rate"  value={completionRate+"%"} color="#22c55e" icon="✅" sub={`${tasks.filter(t=>t.tstatus==="Done"||t.tstatus==="Completed").length} of ${tasks.length} done`} />
-          <StatCard label="Total Hours"      value={totalHours+"h"}     color="#a855f7" icon="⏱"  sub="Across all tasks" />
-          <StatCard label="Total CC Budget"  value={totalCC+" CC"}      color="#f97316" icon="💰" sub="Cloud Credits allocated" />
+          <StatCard label="Completion Rate"  value={completionRate+"%"} color="#3b82f6" icon="✅" sub={`${tasks.filter(t=>t.tstatus==="Done"||t.tstatus==="Completed").length} of ${tasks.length} done`} />
+          <StatCard label="Total Hours"      value={totalHours+"h"}     color="#3b82f6" icon="⏱"  sub="Across all tasks" />
+          <StatCard label="Total CC Budget"  value={totalCC+" CC"}      color="#64748b" icon="💰" sub="Cloud Credits allocated" />
         </div>
 
         {/* ── Alert Row ── */}
@@ -266,10 +266,10 @@ const TaskDashboard = () => {
             <SectionTitle>Tasks by Department</SectionTitle>
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={depData} margin={{ top:5, right:10, left:-20, bottom:5 }} barSize={28}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                <XAxis dataKey="name" tick={{ fontSize:11, fill:"#9ca3af" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize:11, fill:"#9ca3af" }} axisLine={false} tickLine={false} allowDecimals={false} />
-                <Tooltip content={<CustomTooltip />} cursor={{ fill:"#f3f4f6" }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                <XAxis dataKey="name" tick={{ fontSize:11, fill:"#94a3b8" }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize:11, fill:"#94a3b8" }} axisLine={false} tickLine={false} allowDecimals={false} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill:"#f1f5f9" }} />
                 <Bar dataKey="count" name="Tasks" radius={[6,6,0,0]}>
                   {depData.map((_, i) => <Cell key={i} fill={BAR_COLORS[i % BAR_COLORS.length]} />)}
                 </Bar>
@@ -286,11 +286,11 @@ const TaskDashboard = () => {
             <SectionTitle>Hours Allocated per Task</SectionTitle>
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={timeData} margin={{ top:5, right:10, left:-20, bottom:40 }} barSize={22}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                <XAxis dataKey="name" tick={{ fontSize:10, fill:"#9ca3af" }} angle={-30} textAnchor="end"
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                <XAxis dataKey="name" tick={{ fontSize:10, fill:"#94a3b8" }} angle={-30} textAnchor="end"
                   axisLine={false} tickLine={false} interval={0} />
-                <YAxis tick={{ fontSize:11, fill:"#9ca3af" }} axisLine={false} tickLine={false} unit="h" />
-                <Tooltip content={<CustomTooltip />} cursor={{ fill:"#f3f4f6" }} />
+                <YAxis tick={{ fontSize:11, fill:"#94a3b8" }} axisLine={false} tickLine={false} unit="h" />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill:"#f1f5f9" }} />
                 <Bar dataKey="hours" name="Hours" radius={[6,6,0,0]}>
                   {timeData.map((_, i) => <Cell key={i} fill={BAR_COLORS[i % BAR_COLORS.length]} />)}
                 </Bar>
@@ -303,10 +303,10 @@ const TaskDashboard = () => {
             <SectionTitle>CC Budget per Task (Ranked)</SectionTitle>
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={ccData} layout="vertical" margin={{ top:5, right:30, left:10, bottom:5 }} barSize={16}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" horizontal={false} />
-                <XAxis type="number" tick={{ fontSize:11, fill:"#9ca3af" }} axisLine={false} tickLine={false} />
-                <YAxis dataKey="name" type="category" tick={{ fontSize:10, fill:"#9ca3af" }} axisLine={false} tickLine={false} width={90} />
-                <Tooltip content={<CustomTooltip />} cursor={{ fill:"#f3f4f6" }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" horizontal={false} />
+                <XAxis type="number" tick={{ fontSize:11, fill:"#94a3b8" }} axisLine={false} tickLine={false} />
+                <YAxis dataKey="name" type="category" tick={{ fontSize:10, fill:"#94a3b8" }} axisLine={false} tickLine={false} width={90} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill:"#f1f5f9" }} />
                 <Bar dataKey="cc" name="CC" radius={[0,6,6,0]}>
                   {ccData.map((_, i) => <Cell key={i} fill={BAR_COLORS[i % BAR_COLORS.length]} />)}
                 </Bar>
@@ -334,9 +334,9 @@ const TaskDashboard = () => {
                       <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                  <XAxis dataKey="date" tick={{ fontSize:11, fill:"#9ca3af" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize:11, fill:"#9ca3af" }} axisLine={false} tickLine={false} allowDecimals={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                  <XAxis dataKey="date" tick={{ fontSize:11, fill:"#94a3b8" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize:11, fill:"#94a3b8" }} axisLine={false} tickLine={false} allowDecimals={false} />
                   <Tooltip content={<CustomTooltip />} />
                   <Area type="monotone" dataKey="count" name="Tasks Created" stroke="#3b82f6" strokeWidth={2.5}
                     fill="url(#tlGrad)" dot={{ r:4, fill:"#3b82f6", strokeWidth:0 }} />
@@ -355,13 +355,13 @@ const TaskDashboard = () => {
             ) : (
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={empData} margin={{ top:5, right:10, left:-20, bottom:5 }} barSize={20}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" vertical={false} />
-                  <XAxis dataKey="name" tick={{ fontSize:11, fill:"#9ca3af" }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize:11, fill:"#9ca3af" }} axisLine={false} tickLine={false} allowDecimals={false} />
-                  <Tooltip content={<CustomTooltip />} cursor={{ fill:"#f3f4f6" }} />
-                  <Legend wrapperStyle={{ fontSize:11, color:"#9ca3af" }} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                  <XAxis dataKey="name" tick={{ fontSize:11, fill:"#94a3b8" }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize:11, fill:"#94a3b8" }} axisLine={false} tickLine={false} allowDecimals={false} />
+                  <Tooltip content={<CustomTooltip />} cursor={{ fill:"#f1f5f9" }} />
+                  <Legend wrapperStyle={{ fontSize:11, color:"#94a3b8" }} />
                   <Bar dataKey="tasks" name="Tasks" fill="#3b82f6" radius={[6,6,0,0]} />
-                  <Bar dataKey="hours" name="Hours" fill="#a855f7" radius={[6,6,0,0]} />
+                  <Bar dataKey="hours" name="Hours" fill="#94a3b8" radius={[6,6,0,0]} />
                 </BarChart>
               </ResponsiveContainer>
             )}
@@ -382,8 +382,8 @@ const TaskDashboard = () => {
               </thead>
               <tbody>
                 {tasks.map((t, i) => {
-                  const st = { pending:"#f97316", Accepted:"#3b82f6", VerifyTask:"#a855f7", Completed:"#22c55e", Done:"#10b981" };
-                  const stBg = { pending:"#fff7ed", Accepted:"#eff6ff", VerifyTask:"#fdf4ff", Completed:"#f0fdf4", Done:"#ecfdf5" };
+                  const st = { pending:"#64748b", Accepted:"#3b82f6", VerifyTask:"#3b82f6", Completed:"#3b82f6", Done:"#3b82f6" };
+                  const stBg = { pending:"#f8fafc", Accepted:"#eff6ff", VerifyTask:"#eff6ff", Completed:"#eff6ff", Done:"#eff6ff" };
                   return (
                     <tr key={t._id} className={`border-b border-gray-50 hover:bg-gray-50/60 transition-colors ${i%2===0?"bg-white":"bg-gray-50/30"}`}>
                       <td className="py-3 px-3">

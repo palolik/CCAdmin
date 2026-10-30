@@ -110,7 +110,7 @@ const Planner = () => {
 
       <button
         onClick={addQuestion}
-        className="px-4 py-2 bg-blue-600 text-white rounded mb-5"
+        className="px-3 py-1.5 bg-ink-900 text-white rounded-lg mb-5"
       >
         + Add Question
       </button>
@@ -124,7 +124,7 @@ const Planner = () => {
               </h3>
               <button
                 onClick={() => removeQuestion(q.id)}
-                className="text-red-500 font-semibold"
+                className="text-red-500 font-medium"
               >
                 Delete
               </button>
@@ -175,7 +175,7 @@ const Planner = () => {
 
                 <button
                   onClick={() => addOption(q.id)}
-                  className="text-blue-600"
+                  className="text-ink-900"
                 >
                   + Add Option
                 </button>
@@ -228,7 +228,7 @@ const Planner = () => {
 
       <button
         onClick={saveQuestions}
-        className="mt-6 px-6 py-3 bg-green-600 text-white rounded shadow"
+        className="mt-6 px-3 py-1.5 bg-ink-900 text-white rounded-lg shadow"
       >
         Save Planner
       </button>

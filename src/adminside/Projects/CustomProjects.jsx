@@ -6,12 +6,12 @@ import { base_url } from "../../config/config";
 import { ShimmerTable } from "../../userside/utils/Shimmer";
 
 const statusColors = {
-  pending:   "bg-yellow-100 text-yellow-800",
-  approved:  "bg-blue-100 text-blue-800",
-  started:   "bg-green-100 text-green-800",
-  completed: "bg-purple-100 text-purple-800",
-  rejected:  "bg-red-100 text-red-800",
-  cancelled: "bg-gray-100 text-gray-600",
+  pending:   "bg-slate-100 text-slate-700",
+  approved:  "bg-blue-50 text-blue-700",
+  started:   "bg-blue-100 text-blue-800",
+  completed: "bg-blue-600 text-white",
+  rejected:  "bg-red-50 text-red-700",
+  cancelled: "bg-slate-100 text-slate-500",
 };
 
 const formatDate = (dateString) => {
@@ -264,7 +264,7 @@ const CustomProjects = () => {
                       <div className="flex flex-col gap-1">
                         <button
                           onClick={() => editingId === req._id ? setEditingId(null) : handleEdit(req)}
-                          className={`btn btn-xs ${editingId === req._id ? "bg-gray-200 text-gray-700" : "bg-blue-500 text-white hover:bg-blue-600"}`}
+                          className={`btn btn-xs ${editingId === req._id ? "bg-gray-200 text-gray-700" : "bg-ink-900 text-white hover:bg-ink-700"}`}
                         >
                           {editingId === req._id ? "Close" : "Review"}
                         </button>
@@ -403,7 +403,7 @@ const CustomProjects = () => {
                             </button>
                             <button
                               onClick={() => handleSave(req._id)}
-                              className="btn btn-sm bg-blue-600 text-white hover:bg-blue-700"
+                              className="btn btn-sm bg-ink-900 text-white hover:bg-ink-700"
                             >
                               Save Changes
                             </button>

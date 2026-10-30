@@ -92,10 +92,10 @@ const PComments = () => {
 
             <button
               onClick={() => toggleStatus(comment._id, comment.status)}
-              className={`px-3 py-1 text-xs rounded ${
+              className={`px-3 py-1 text-xs rounded-lg ${
                 comment.status === "show"
                   ? "bg-red-100 text-red-600"
-                  : "bg-green-100 text-green-600"
+                  : "bg-ink-100 text-ink-900"
               }`}
             >
               {comment.status === "show" ? "Hide" : "Show"}
@@ -142,7 +142,7 @@ const PComments = () => {
             />
             <button
               onClick={() => submitReply(comment._id)}
-              className="px-4 py-2 bg-gray-900 text-white text-sm rounded hover:bg-gray-800"
+              className="px-3 py-1.5 bg-gray-900 text-white text-[13px] rounded-lg hover:bg-gray-800"
             >
               Reply
             </button>
@@ -155,7 +155,7 @@ const PComments = () => {
         <button
           onClick={() => handlePageChange(currentPage - 1)}
           disabled={currentPage === 1}
-          className="px-3 py-1 border rounded disabled:opacity-40"
+          className="px-3 py-1 border rounded-lg disabled:opacity-40"
         >
           Previous
         </button>
@@ -165,7 +165,7 @@ const PComments = () => {
         <button
           onClick={() => handlePageChange(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className="px-3 py-1 border rounded disabled:opacity-40"
+          className="px-3 py-1 border rounded-lg disabled:opacity-40"
         >
           Next
         </button>

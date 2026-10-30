@@ -81,7 +81,7 @@ export default function MailModal({ title, onClose, children, dirty = false, bus
             onClick={requestClose}
             disabled={busy}
             aria-label="Close"
-            className="p-1 rounded-md text-gray-400 hover:text-indigo-600 disabled:opacity-50"
+            className="p-1 rounded-lg text-gray-400 hover:text-ink-900 disabled:opacity-50"
           >
             <FiX className="w-5 h-5" />
           </button>

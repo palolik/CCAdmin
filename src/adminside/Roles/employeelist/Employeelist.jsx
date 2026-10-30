@@ -10,13 +10,13 @@ const lbl = {
   marginBottom: 4, fontWeight: 500, letterSpacing: "0.04em", textTransform: "uppercase",
 };
 const inp = {
-  width: "100%", border: "1px solid #e2e5ee", borderRadius: 9,
+  width: "100%", border: "1px solid #e2e8f0", borderRadius: 9,
   padding: "9px 13px", fontSize: 13.5, fontFamily: "inherit",
   background: "#fafbfd", outline: "none", boxSizing: "border-box", color: "#1e293b",
   transition: "border-color .2s, box-shadow .2s",
 };
 const inpFocus = {
-  ...inp, borderColor: "#6366f1", boxShadow: "0 0 0 3px rgba(99,102,241,.12)", background: "#fff",
+  ...inp, borderColor: "#3b82f6", boxShadow: "0 0 0 3px rgba(59, 130, 246,.12)", background: "#fff",
 };
 
 const departmentData = [
@@ -33,7 +33,7 @@ const subdepartmentData = {
 
 const depColor = {
   "Web development": { bg: "#eff6ff", color: "#2563eb" },
-  "Graphic design":  { bg: "#fdf4ff", color: "#9333ea" },
+  "Graphic design":  { bg: "#eff6ff", color: "#2563eb" },
 };
 
 
@@ -153,7 +153,7 @@ const handleToggleReady = async (_id, currentValue) => {
     Swal.fire({
       title: "Delete this employee?", text: "This cannot be undone.",
       icon: "warning", showCancelButton: true,
-      confirmButtonColor: "#ef4444", confirmButtonText: "Delete",
+      confirmButtonColor: "#dc2626", confirmButtonText: "Delete",
     }).then(({ isConfirmed }) => {
       if (!isConfirmed) return;
       fetch(`${base_url}/delemployee/${_id}`, { method: "DELETE" })
@@ -188,22 +188,22 @@ const handleToggleReady = async (_id, currentValue) => {
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@600;700&display=swap');
         .el-wrap  { font-family:'DM Sans',sans-serif; background:#f7f8fb; min-height:100vh; }
         .el-syne  { font-family:'Syne',sans-serif; }
-        .el-card  { background:#fff; border:1px solid #e8eaf0; border-radius:16px; overflow:hidden; }
-        .el-stat  { background:#fff; border:1px solid #e8eaf0; border-radius:14px; padding:16px 20px; }
-        .el-row   { border-bottom:1px solid #f0f2f7; transition:background .15s; }
+        .el-card  { background:#fff; border:1px solid #e2e8f0; border-radius:16px; overflow:hidden; }
+        .el-stat  { background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:16px 20px; }
+        .el-row   { border-bottom:1px solid #eff6ff; transition:background .15s; }
         .el-row:hover { background:#fafbfd; }
         .el-row:last-child { border-bottom:none; }
-        .el-avatar { width:44px; height:44px; border-radius:12px; object-fit:cover; border:1.5px solid #e8eaf0; flex-shrink:0; }
+        .el-avatar { width:44px; height:44px; border-radius:12px; object-fit:cover; border:1.5px solid #e2e8f0; flex-shrink:0; }
         .el-search {
-          border:1px solid #e2e5ee; border-radius:9px; padding:8px 14px;
+          border:1px solid #e2e8f0; border-radius:9px; padding:8px 14px;
           font-size:13px; font-family:'DM Sans',sans-serif;
           background:#fafbfd; outline:none; width:220px; color:#1e293b;
           transition:border-color .2s, box-shadow .2s;
         }
-        .el-search:focus { border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,.1); background:#fff; }
+        .el-search:focus { border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59, 130, 246,.1); background:#fff; }
         .el-chip {
           padding:5px 14px; border-radius:999px; font-size:12.5px; font-weight:500;
-          border:1.5px solid #e2e5ee; background:#fff; color:#64748b;
+          border:1.5px solid #e2e8f0; background:#fff; color:#64748b;
           cursor:pointer; transition:all .15s; font-family:'DM Sans',sans-serif;
         }
         .el-chip:hover,.el-chip.on { border-color:#1e293b; background:#1e293b; color:#fff; }
@@ -221,10 +221,10 @@ const handleToggleReady = async (_id, currentValue) => {
         .el-delbtn:hover { background:#fee2e2; }
         .el-toggle {
   position:relative; width:38px; height:22px; border-radius:999px;
-  background:#d1d5db; cursor:pointer; transition:background .2s;
+  background:#cbd5e1; cursor:pointer; transition:background .2s;
   border:none; padding:0; flex-shrink:0;
 }
-.el-toggle.on { background:#16a34a; }
+.el-toggle.on { background:#2563eb; }
 .el-toggle::after {
   content:""; position:absolute; top:2px; left:2px;
   width:18px; height:18px; border-radius:50%;
@@ -245,7 +245,7 @@ const handleToggleReady = async (_id, currentValue) => {
           <div style={{ display:"grid", gridTemplateColumns:"repeat(4,1fr)", gap:14, marginBottom:22 }}>
             {[
               { label:"Total Employees", value: employees.length,  color:"#1e293b" },
-              { label:"Online Now",      value: onlineCount,       color:"#16a34a" },
+              { label:"Online Now",      value: onlineCount,       color:"#2563eb" },
               { label:"Offline",         value: offlineCount,      color:"#94a3b8" },
               { label:"Departments",     value: departmentData.length, color:"#2563eb" },
             ].map(s => (
@@ -283,7 +283,7 @@ const handleToggleReady = async (_id, currentValue) => {
             ) : (
               <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13.5 }}>
                 <thead>
-                  <tr style={{ borderBottom:"2px solid #f0f2f7" }}>
+                  <tr style={{ borderBottom:"2px solid #eff6ff" }}>
                     {["Employee","Contact","Department","is Ready","Banking","Stats","Status",""].map(h => (
                       <th key={h} style={{ textAlign:"left", padding:"12px 18px", fontSize:11, fontWeight:600, color:"#94a3b8", letterSpacing:"0.07em", textTransform:"uppercase" }}>
                         {h}
@@ -308,7 +308,7 @@ const handleToggleReady = async (_id, currentValue) => {
                               <span style={{
                                 position:"absolute", bottom:0, right:0,
                                 width:10, height:10, borderRadius:"50%",
-                                background: online ? "#22c55e" : "#d1d5db",
+                                background: online ? "#3b82f6" : "#cbd5e1",
                                 border:"2px solid #fff",
                               }} />
                             </div>
@@ -334,7 +334,7 @@ const handleToggleReady = async (_id, currentValue) => {
                           <p style={{ margin:0, fontSize:12, color:"#64748b" }}>{member.rsubdep || "—"}</p>
                           <p style={{ margin:"2px 0 0", fontSize:11, color:"#94a3b8" }}>{member.esprts || "—"}</p>
                         </td>
-   
+
                       <td style={{ padding:"14px 18px" }}>
   <div style={{ display:"flex", alignItems:"center", gap:10 }}>
     <button
@@ -345,7 +345,7 @@ const handleToggleReady = async (_id, currentValue) => {
     />
     <span style={{
       fontSize:12, fontWeight:600,
-      color: member.isReady ? "#16a34a" : "#94a3b8",
+      color: member.isReady ? "#2563eb" : "#94a3b8",
     }}>
       {member.isReady ? "Ready" : "Not ready"}
     </span>
@@ -377,10 +377,10 @@ const handleToggleReady = async (_id, currentValue) => {
                           <div style={{ display:"flex", alignItems:"center", gap:6, marginBottom:4 }}>
                             <span style={{
                               width:8, height:8, borderRadius:"50%", flexShrink:0,
-                              background: online ? "#22c55e" : "#d1d5db",
-                              boxShadow: online ? "0 0 0 3px rgba(34,197,94,.2)" : "none",
+                              background: online ? "#3b82f6" : "#cbd5e1",
+                              boxShadow: online ? "0 0 0 3px rgba(59, 130, 246,.2)" : "none",
                             }} />
-                            <span style={{ fontSize:12, fontWeight:600, color: online ? "#16a34a" : "#9ca3af" }}>
+                            <span style={{ fontSize:12, fontWeight:600, color: online ? "#2563eb" : "#94a3b8" }}>
                               {online ? "Online" : "Offline"}
                             </span>
                           </div>
@@ -492,11 +492,11 @@ const handleToggleReady = async (_id, currentValue) => {
 
               <div style={{ display:"flex", gap:10 }}>
                 <button type="button" onClick={() => setShowForm(false)}
-                  style={{ flex:1, padding:"10px 0", borderRadius:9, border:"none", background:"#f1f3f8", color:"#475569", fontWeight:500, cursor:"pointer", fontSize:13 }}>
+                  style={{ flex:1, padding:"8px 0", borderRadius:8, border:"none", background:"#f1f5f9", color:"#475569", fontWeight:500, cursor:"pointer", fontSize:12 }}>
                   Cancel
                 </button>
                 <button type="submit"
-                  style={{ flex:2, padding:"10px 0", borderRadius:9, border:"none", background:"#1e293b", color:"#fff", fontWeight:600, cursor:"pointer", fontSize:13 }}>
+                  style={{ flex:2, padding:"8px 0", borderRadius:8, border:"none", background:"#0f172a", color:"#fff", fontWeight:500, cursor:"pointer", fontSize:12 }}>
                   Add Employee
                 </button>
               </div>

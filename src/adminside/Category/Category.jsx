@@ -24,8 +24,7 @@ const Cetagory = () => {
             text: "This action cannot be undone.",
             icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: "#ef4444",
-            cancelButtonColor: "#6b7280",
+            confirmButtonColor: "#dc2626",
             confirmButtonText: "Delete",
         }).then((result) => {
             if (result.isConfirmed) {
@@ -101,7 +100,7 @@ const Cetagory = () => {
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full bg-violet-600 hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold text-sm py-2.5 rounded-xl transition flex items-center justify-center gap-2"
+                            className="w-full bg-ink-900 hover:bg-ink-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium text-[13px] py-1.5 rounded-lg transition flex items-center justify-center gap-2"
                         >
                             {isSubmitting ? (
                                 <>

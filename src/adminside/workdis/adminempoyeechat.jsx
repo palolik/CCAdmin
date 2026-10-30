@@ -245,10 +245,10 @@ const AdminempChat = ({ taskid, emid, dp, name, tname, tdesc, onClose, isVisible
           </div>
         </div>
         <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
-          <button onClick={onToggle} className="p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-slate-600 transition-colors">
+          <button onClick={onToggle} className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-600 transition-colors">
             <TiArrowMinimise size={15} />
           </button>
-          <button onClick={onClose} className="p-1.5 rounded-md text-slate-400 hover:text-red-400 hover:bg-slate-600 transition-colors">
+          <button onClick={onClose} className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-slate-600 transition-colors">
             <MdClose size={15} />
           </button>
         </div>
@@ -330,7 +330,7 @@ const AdminempChat = ({ taskid, emid, dp, name, tname, tdesc, onClose, isVisible
                   <span className="max-w-[90px] truncate">{f.name}</span>
                   <button
                     onClick={() => setAttachedFiles(p => p.filter((_, j) => j !== i))}
-                    className="ml-0.5 text-slate-400 hover:text-red-500 font-bold leading-none"
+                    className="ml-0.5 text-slate-400 hover:text-red-500 font-medium leading-none"
                   >×</button>
                 </span>
               ))}
@@ -350,7 +350,7 @@ const AdminempChat = ({ taskid, emid, dp, name, tname, tdesc, onClose, isVisible
             <button
               type="button"
               onClick={e => { e.preventDefault(); e.stopPropagation(); fileInputRef.current?.click(); }}
-              className="flex-shrink-0 p-2 rounded-lg text-slate-400 hover:text-blue-500 hover:bg-slate-100 transition-colors"
+              className="flex-shrink-0 p-2 rounded-lg text-slate-400 hover:text-ink-900 hover:bg-slate-100 transition-colors"
               title="Attach files"
             >
               <FaPaperclip size={14} />
@@ -369,7 +369,7 @@ const AdminempChat = ({ taskid, emid, dp, name, tname, tdesc, onClose, isVisible
               className={`flex-shrink-0 p-2 rounded-lg transition-all duration-150 ${
                 (!inputValue.trim() && !attachedFiles.length) || isSending
                   ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                  : 'bg-slate-800 text-white hover:bg-slate-700 active:scale-95 shadow-sm'
+                  : 'bg-ink-900 text-white hover:bg-slate-700 active:scale-95 shadow-sm'
               }`}
             >
               <IoSend size={14} />

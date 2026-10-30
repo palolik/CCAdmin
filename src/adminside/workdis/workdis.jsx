@@ -10,65 +10,20 @@ import RichTextEditor from '../../userside/utils/PichTextEditor';
 import { base_url } from "../../config/config";
 import AdminempChat from "./adminempoyeechat";
 import CountdownTimer from "../../userside/utils/CountdownTimer";
+import { departmentData, subdepartmentData } from "./departments";
 
-const departmentData = [
-  { department: "Web Development",        subDepartments: ["Frontend", "Backend", "Full Stack", "CMS Development"] },
-  { department: "Graphic Design",         subDepartments: ["Social Media Design", "Post Design", "Logo Design", "UI/UX Design", "Print Design"] },
-  { department: "Digital Marketing",      subDepartments: ["Cloud Company Marketing", "SEO", "Social Media Marketing", "Content Marketing", "Email Marketing", "Paid Ads (PPC)"] },
-  { department: "Mobile App Development", subDepartments: ["Android Development", "iOS Development", "Cross-Platform Development"] },
-  { department: "Video & Animation",      subDepartments: ["2D Animation", "3D Animation", "Explainer Videos", "Video Editing", "Motion Graphics"] },
-  { department: "Content Writing",        subDepartments: ["Blog Writing", "Copywriting", "Technical Writing", "Product Descriptions"] },
-  { department: "Data & Analytics",       subDepartments: ["Data Analysis", "Data Visualization", "Machine Learning", "AI Model Training"] },
-  { department: "IT & Support",           subDepartments: ["Server Management", "Cloud Support", "Networking", "Technical Support"] },
-];
-
-const subdepartmentData = {
-  "Frontend":["React","Angular","Vue.js","Next.js","Tailwind CSS"],
-  "Backend":["Laravel","Node.js","PHP","Python","Express.js"],
-  "Full Stack":["MERN Stack","MEAN Stack","LAMP Stack"],
-  "CMS Development":["WordPress","Shopify","Wix","Joomla"],
-  "Social Media Design":["DP","Cover","Instagram Posts","Story Templates"],
-  "Post Design":["Banner","Flyer","Poster","Brochure"],
-  "Logo Design":["Logo Creation","Branding","Icon Design"],
-  "UI/UX Design":["Wireframing","Prototyping","Figma","Adobe XD"],
-  "Print Design":["Business Cards","Letterheads","Magazine Layouts"],
-  "Cloud Company Marketing":["Brand Promotion","Campaigns","Analytics"],
-  "SEO":["On-Page SEO","Off-Page SEO","Keyword Research","Technical SEO"],
-  "Social Media Marketing":["Facebook Ads","Instagram Growth","LinkedIn Marketing"],
-  "Content Marketing":["Blog Strategy","Content Planning","Copy Optimization"],
-  "Email Marketing":["Mailchimp","Automation","Cold Outreach"],
-  "Paid Ads (PPC)":["Google Ads","YouTube Ads","Facebook Ads"],
-  "Android Development":["Kotlin","Java","Android Studio"],
-  "iOS Development":["Swift","Objective-C","Xcode"],
-  "Cross-Platform Development":["Flutter","React Native","Ionic"],
-  "2D Animation":["Character Animation","Explainer Animations"],
-  "3D Animation":["Modeling","Rendering","Rigging"],
-  "Explainer Videos":["Storyboard","Voice Over","Motion Graphics"],
-  "Video Editing":["Premiere Pro","After Effects","DaVinci Resolve"],
-  "Motion Graphics":["Text Animation","Logo Animation","Transitions"],
-  "Blog Writing":["SEO Blogs","Technical Blogs","Long-form Articles"],
-  "Copywriting":["Sales Copy","Website Copy","Ad Copy"],
-  "Technical Writing":["API Docs","Software Manuals","User Guides"],
-  "Product Descriptions":["E-commerce Copy","Amazon Listings"],
-  "Data Analysis":["Excel","Python","Power BI","SQL"],
-  "Data Visualization":["Tableau","Google Data Studio","D3.js"],
-  "Machine Learning":["TensorFlow","Scikit-learn","Keras"],
-  "AI Model Training":["Data Labeling","Model Tuning","Evaluation"],
-  "Server Management":["Linux","cPanel","AWS EC2"],
-  "Cloud Support":["AWS","Azure","Google Cloud"],
-  "Networking":["Cisco","Network Setup","Troubleshooting"],
-  "Technical Support":["Remote Support","System Maintenance","Bug Fixing"],
-};
 
 const statusStyle = {
-  pending:    { bg:"#fff7ed", color:"#c2410c", border:"#fed7aa" },
+  draft:      { bg:"#f1f5f9", color:"#475569", border:"#cbd5e1" },
+  pending:    { bg:"#f8fafc", color:"#334155", border:"#e2e8f0" },
   Accepted:   { bg:"#eff6ff", color:"#1d4ed8", border:"#bfdbfe" },
-  Completed:  { bg:"#f0fdf4", color:"#15803d", border:"#bbf7d0" },
-  VerifyTask: { bg:"#fdf4ff", color:"#7e22ce", border:"#e9d5ff" },
+  VerifyTask: { bg:"#dbeafe", color:"#1e40af", border:"#93c5fd" },
+  Completed:  { bg:"#2563eb", color:"#ffffff", border:"#2563eb" },
+  Done:       { bg:"#1e293b", color:"#ffffff", border:"#1e293b" },
 };
 
 const lbl = { display:"block", fontSize:11, color:"#94a3b8", marginBottom:4, fontWeight:500, letterSpacing:"0.04em", textTransform:"uppercase" };
-const inp = { width:"100%", border:"1px solid #e2e5ee", borderRadius:8, padding:"8px 12px", fontSize:13.5, fontFamily:"inherit", background:"#fafbfd", outline:"none", boxSizing:"border-box", color:"#1e293b" };
+const inp = { width:"100%", border:"1px solid #e2e8f0", borderRadius:8, padding:"8px 12px", fontSize:13.5, fontFamily:"inherit", background:"#fafbfd", outline:"none", boxSizing:"border-box", color:"#1e293b" };
 
 const formatDate = (ds) => {
   if (!ds || ds === "NA") return "—";
@@ -77,217 +32,354 @@ const formatDate = (ds) => {
   return d.toLocaleString("en-US", { month:"short", day:"numeric", hour:"numeric", minute:"2-digit", hour12:true });
 };
 
-// ── TaskRow — receives all handlers as props ─────────────────
-const TaskRow = ({ task, onDelete, onChatClick, onExtraTime, onVerify, onExtendTime, onReassign, unreadCount }) => {
-  const [open, setOpen] = useState(false);
-  const st = statusStyle[task.tstatus] || { bg:"#f8fafc", color:"#64748b", border:"#e2e8f0" };
+const DEFAULT_DP = "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+
+// Board columns, left to right. Backlog holds drafts: name-only tasks that
+// employees can't see until they're filled in and moved to To Do. "not activated" (follow-up tasks waiting on
+// their parent) only shows when there is one.
+const columns = [
+  { status:"draft",         title:"Backlog" },
+  { status:"not activated", title:"Not Activated" },
+  { status:"pending",       title:"To Do" },
+  { status:"Accepted",      title:"In Progress" },
+  { status:"VerifyTask",    title:"In Review" },
+  { status:"Completed",     title:"Completed" },
+  { status:"Done",          title:"Done" },
+];
+
+const deadlineOf = (task) => new Date(new Date(task.tat).getTime() + Number(task.ttime) * 3600000);
+
+// ── TaskCard — one draggable card on the board ───────────────
+const TaskCard = ({ task, onOpen, onDelete, onChatClick, onVerify, onExtendTime, onReassign, unreadCount, onDragStart, onDragEnd, dragging }) => {
+  const stop = (fn) => (e) => { e.stopPropagation(); fn(); };
 
   return (
-    <>
-      <tr
-        className="border-b border-gray-100 hover:bg-gray-50/80 transition-colors cursor-pointer"
-        onClick={() => setOpen(o => !o)}
-      >
-        {/* Task Name */}
-        <td style={{ padding:"14px 16px" }}>
-          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
-            <span style={{
-              fontSize:11, color:"#94a3b8", transition:"transform .2s",
-              display:"inline-block", transform: open ? "rotate(90deg)" : "rotate(0deg)",
-            }}>▶</span>
-            <div>
-              <p style={{ margin:0, fontWeight:600, fontSize:13.5, color:"#1e293b" }}>{task.tname}</p>
-              <p style={{ margin:0, fontSize:11, color:"#94a3b8", marginTop:2, fontFamily:"monospace" }}>
-                {task._id?.slice(-8)}
-              </p>
-            </div>
+    <div
+      className="wd-task"
+      draggable
+      onDragStart={e => onDragStart(e, task._id)}
+      onDragEnd={onDragEnd}
+      onClick={() => onOpen(task._id)}
+      style={{ opacity: dragging ? .4 : 1 }}
+    >
+      <p style={{ margin:0, fontWeight:600, fontSize:13.5, color:"#1e293b", lineHeight:1.35 }}>{task.tname}</p>
+      <p style={{ margin:"4px 0 0", fontSize:11, color:"#94a3b8" }}>{task.rdep} · {task.rsubdep}{task.esprts ? ` · ${task.esprts}` : ""}</p>
+
+      <div style={{ display:"flex", gap:6, marginTop:10, flexWrap:"wrap" }}>
+        <span className="wd-pill" style={{ background:"#eff6ff", color:"#2563eb", borderColor:"#bfdbfe" }}>⏱ {task.ttime}h</span>
+        <span className="wd-pill" style={{ background:"#eff6ff", color:"#2563eb", borderColor:"#bfdbfe" }}>💰 {task.tcc} CC</span>
+        {task.tmoretime && <span className="wd-pill" style={{ background:"#f8fafc", color:"#334155", borderColor:"#e2e8f0" }}>More time asked</span>}
+      </div>
+
+      {task.tstatus === "draft" && missingFields(task).length > 0 && (
+        <p style={{ margin:"8px 0 0", fontSize:11, color:"#334155" }}>Needs {missingFields(task).join(", ")}</p>
+      )}
+
+      {task.tstatus === "Accepted" && task.tat && task.tat !== "NA" && (
+        <div style={{ marginTop:10, fontSize:12 }}>
+          <CountdownTimer targetDate={deadlineOf(task)} />
+        </div>
+      )}
+
+      {task.timeranout && task.tstatus === "Accepted" && (
+        <div style={{ marginTop:8 }}>
+          <p className="text-red-600 font-semibold text-xs" style={{ margin:"0 0 4px" }}>⏰ Time Ran Out</p>
+          <div className="flex gap-1">
+            <button onClick={stop(() => onExtendTime(task._id, task.tcc))} className="smbut">⏱ Extend</button>
+            <button onClick={stop(() => onReassign(task._id))} className="smbut">🔄 Reassign</button>
           </div>
-        </td>
+        </div>
+      )}
 
-        {/* Department */}
-        <td style={{ padding:"14px 16px" }}>
-          <p style={{ margin:0, fontSize:13, color:"#334155" }}>{task.rdep}</p>
-          <p style={{ margin:"2px 0 0", fontSize:11, color:"#94a3b8" }}>{task.rsubdep} · {task.esprts}</p>
-        </td>
+      {task.tstatus === "VerifyTask" && (
+        <div className="flex gap-1" style={{ marginTop:8 }}>
+          <button onClick={stop(() => onVerify(task._id, "approve"))} className="smbut">✓ Approve</button>
+          <button onClick={stop(() => onVerify(task._id, "reject"))} className="smbut">✗ Reject</button>
+        </div>
+      )}
 
-        {/* Time / CC */}
-        <td style={{ padding:"14px 16px" }}>
-          <div className="flex flex-col gap-1">
-            <span style={{ fontSize:12, background:"#f0fdf4", color:"#16a34a", border:"1px solid #bbf7d0", borderRadius:999, padding:"2px 10px", fontWeight:600 }}>
-              ⏱ {task.ttime}h
-            </span>
-            <span style={{ fontSize:12, background:"#eff6ff", color:"#2563eb", border:"1px solid #bfdbfe", borderRadius:999, padding:"2px 10px", fontWeight:600 }}>
-              💰 {task.tcc} CC
-            </span>
-          </div>
-        </td>
-
-        {/* Time Remaining + Time Ran Out actions */}
-        <td style={{ padding:"14px 16px" }}>
-          <CountdownTimer
-            targetDate={new Date(new Date(task.tat).getTime() + Number(task.ttime) * 60 * 60 * 1000)}
-          />
-          {task.timeranout && task.tstatus === "Accepted" && (
-            <div className="mt-2 space-y-1">
-              <p className="text-red-600 font-semibold text-xs">⏰ Time Ran Out</p>
-              <div className="flex gap-1">
-                <button
-                  onClick={e => { e.stopPropagation(); onExtendTime(task._id, task.tcc); }}
-                  className="smbut"
-                >
-                  ⏱ Extend
-                </button>
-                <button
-                  onClick={e => { e.stopPropagation(); onReassign(task._id); }}
-                  className="smbut"
-                >
-                  🔄 Reassign
-                </button>
-              </div>
-            </div>
-          )}
-        </td>
-
-        {/* Assigned To */}
-        <td style={{ padding:"14px 16px" }}>
+      <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginTop:12, gap:8 }}>
+        <div style={{ display:"flex", alignItems:"center", gap:7, minWidth:0 }}>
           {task.apname ? (
-            <div style={{ display:"flex", alignItems:"center", gap:8 }}>
+            <>
               <img
-                src={task.apdp || "https://cdn-icons-png.flaticon.com/512/847/847969.png"}
-                style={{ width:30, height:30, borderRadius:"50%", objectFit:"cover", border:"1.5px solid #e8eaf0" }}
-                onError={e => { e.target.src="https://cdn-icons-png.flaticon.com/512/847/847969.png"; }}
+                src={task.apdp || DEFAULT_DP}
+                title={task.apname}
+                style={{ width:24, height:24, borderRadius:"50%", objectFit:"cover", border:"1.5px solid #e2e8f0", flexShrink:0 }}
+                onError={e => { e.target.src = DEFAULT_DP; }}
               />
-              <div>
-                <p style={{ margin:0, fontSize:13, fontWeight:500, color:"#334155" }}>{task.apname}</p>
-                <p style={{ margin:0, fontSize:10, color:"#94a3b8", fontFamily:"monospace" }}>{task.taptr?.slice(-6)}</p>
-              </div>
-            </div>
+              <span style={{ fontSize:12, color:"#334155", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{task.apname}</span>
+            </>
           ) : (
             <span style={{ fontSize:12, color:"#cbd5e1", fontStyle:"italic" }}>Unassigned</span>
           )}
-        </td>
+        </div>
+        <span style={{ fontSize:10.5, color:"#94a3b8", fontFamily:"monospace", flexShrink:0 }}>{task._id?.slice(-6)}</span>
+      </div>
 
-        {/* Status + Verify actions */}
-        <td style={{ padding:"14px 16px" }}>
-          <span style={{
-            fontSize:11.5, fontWeight:600, padding:"3px 12px", borderRadius:999,
-            background: st.bg, color: st.color, border:`1px solid ${st.border}`
-          }}>
-            {task.tstatus}
-          </span>
+      <div style={{ display:"flex", gap:6, marginTop:10 }}>
+        <button
+          onClick={stop(() => onChatClick(task._id))}
+          style={{ position:"relative", flex:1, display:"flex", alignItems:"center", justifyContent:"center", gap:5, padding:"4px 0", borderRadius:8, border:"none",
+            background:"#f1f5f9", color:"#2563eb", fontWeight:500, fontSize:12, cursor:"pointer" }}
+        >
+          <MdChat size={13} /> Chat
+          {unreadCount > 0 && (
+            <span style={{
+              position:"absolute", top:-7, right:-7,
+              background:"#ef4444", color:"#fff",
+              fontSize:9, fontWeight:700,
+              padding:"2px 5px", borderRadius:999,
+              lineHeight:1, minWidth:16, textAlign:"center",
+            }}>
+              {unreadCount}
+            </span>
+          )}
+        </button>
+        <button
+          onClick={stop(() => onDelete(task._id))}
+          style={{ padding:"4px 10px", borderRadius:8, border:"none",
+            background:"#fef2f2", color:"#ef4444", fontWeight:500, fontSize:12, cursor:"pointer" }}
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  );
+};
 
-          {task.tstatus === "VerifyTask" && (
-            <div className="flex gap-1 mt-2" onClick={e => e.stopPropagation()}>
-              <button onClick={() => onVerify(task._id, "approve")} className="smbut">
-                ✓ Approve
-              </button>
-              <button onClick={() => onVerify(task._id, "reject")} className="smbut">
-                ✗ Reject
-              </button>
+// Fields a task needs before it can leave the Backlog (same list the server checks).
+const requiredFields = { tname:"name", rdep:"department", rsubdep:"sub department", ttime:"time", tcc:"CC" };
+const missingFields = (task) => Object.entries(requiredFields)
+  .filter(([field]) => !String(task[field] ?? "").trim())
+  .map(([, label]) => label);
+
+const editableFrom = (task) => ({
+  tname:  task.tname  || "",
+  tdesc:  task.tdesc  || "",
+  rdep:   task.rdep   || "",
+  rsubdep:task.rsubdep|| "",
+  esprts: task.esprts || "",
+  ttime:  task.ttime  ?? "",
+  tcc:    task.tcc    ?? "",
+  tfid:   task.tfid   || "",
+  taptr:  task.taptr && task.taptr !== "NA" ? task.taptr : "",
+});
+
+// Keeps a saved value selectable even when it isn't in the preset lists.
+const withCurrent = (options, current) => (current && !options.includes(current) ? [current, ...options] : options);
+
+// ── TaskDetails — edit popup opened by clicking a card ────────
+const TaskDetails = ({ task, employees, onClose, onSave, onExtraTime }) => {
+  const st = statusStyle[task.tstatus] || { bg:"#f8fafc", color:"#64748b", border:"#e2e8f0" };
+  const column = columns.find(c => c.status === task.tstatus);
+  const [form, setForm] = useState(() => editableFrom(task));
+  const [saving, setSaving] = useState(false);
+  const canAssign = ["draft","pending"].includes(task.tstatus);
+
+  const initial = editableFrom(task);
+  const dirty = Object.keys(form).some(k => String(form[k]) !== String(initial[k]));
+  const set = (field) => (e) => setForm(f => ({ ...f, [field]: e.target.value }));
+
+  const departments    = withCurrent(departmentData.map(d => d.department), form.rdep);
+  const subDepartments = withCurrent(departmentData.find(d => d.department === form.rdep)?.subDepartments || [], form.rsubdep);
+  const expertise      = withCurrent(subdepartmentData[form.rsubdep] || [], form.esprts);
+
+  const save = async (e) => {
+    e.preventDefault();
+    const changes = Object.fromEntries(Object.entries(form).filter(([k, v]) => String(v) !== String(initial[k])));
+    if (changes.taptr !== undefined) {
+      const emp = employees.find(em => em._id === changes.taptr);
+      Object.assign(changes, { apname: emp?.rname || "", apdp: emp?.rppic || "" });
+    }
+    setSaving(true);
+    try {
+      await onSave(task._id, changes);
+      Swal.fire({ icon:"success", title:"Saved", timer:1200, showConfirmButton:false });
+    } catch (err) {
+      Swal.fire("Error!", err.message, "error");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const missing = task.tstatus === "draft" ? missingFields(form) : [];
+
+  return createPortal(
+    <div
+      onClick={e => e.target === e.currentTarget && onClose()}
+      style={{ position:"fixed", inset:0, background:"rgba(15,23,42,.5)", backdropFilter:"blur(4px)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:1050, padding:16 }}
+    >
+      <form onSubmit={save} style={{ background:"#fff", borderRadius:18, padding:28, width:"100%", maxWidth:760, maxHeight:"90vh", overflowY:"auto", boxShadow:"0 24px 60px rgba(0,0,0,.2)", fontFamily:"'DM Sans',sans-serif", animation:"wd-up .2s ease" }}>
+        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", gap:16, marginBottom:14 }}>
+          <div style={{ display:"flex", alignItems:"center", gap:10 }}>
+            <span style={{ fontSize:11.5, fontWeight:600, padding:"3px 12px", borderRadius:999, background:st.bg, color:st.color, border:`1px solid ${st.border}` }}>
+              {column?.title || task.tstatus}
+            </span>
+            <span style={{ fontSize:11, color:"#94a3b8", fontFamily:"monospace" }}>{task._id}</span>
+          </div>
+          <button type="button" onClick={onClose} style={{ background:"none", border:"none", cursor:"pointer", fontSize:20, color:"#94a3b8", padding:0 }}>✕</button>
+        </div>
+
+        <input
+          value={form.tname}
+          onChange={set("tname")}
+          required
+          placeholder="Task name"
+          className="wd-syne"
+          style={{ ...inp, fontSize:18, fontWeight:700, border:"1px solid transparent", background:"transparent", padding:"6px 8px", marginLeft:-8, width:"calc(100% + 8px)" }}
+          onFocus={e => { e.target.style.borderColor = "#3b82f6"; e.target.style.background = "#fff"; }}
+          onBlur={e => { e.target.style.borderColor = "transparent"; e.target.style.background = "transparent"; }}
+        />
+
+        {missing.length > 0 && (
+          <p style={{ fontSize:12, color:"#334155", background:"#f8fafc", border:"1px solid #e2e8f0", borderRadius:8, padding:"6px 10px", margin:"8px 0 0" }}>
+            Fill in {missing.join(", ")} before moving it to To Do.
+          </p>
+        )}
+
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(150px, 1fr))", gap:12, marginTop:18 }}>
+          <div>
+            <label style={lbl}>Department</label>
+            <select value={form.rdep} onChange={e => setForm(f => ({ ...f, rdep:e.target.value, rsubdep:"", esprts:"" }))} style={inp}>
+              <option value="">Select</option>
+              {departments.map(d => <option key={d}>{d}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={lbl}>Sub Department</label>
+            <select value={form.rsubdep} onChange={e => setForm(f => ({ ...f, rsubdep:e.target.value, esprts:"" }))} disabled={!form.rdep} style={{ ...inp, opacity: form.rdep ? 1 : .5 }}>
+              <option value="">Select</option>
+              {subDepartments.map(s => <option key={s}>{s}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={lbl}>Expertise</label>
+            <select value={form.esprts} onChange={set("esprts")} disabled={!form.rsubdep} style={{ ...inp, opacity: form.rsubdep ? 1 : .5 }}>
+              <option value="">Select</option>
+              {expertise.map(x => <option key={x}>{x}</option>)}
+            </select>
+          </div>
+          <div>
+            <label style={lbl}>Time (hours)</label>
+            <input type="number" min="0" value={form.ttime} onChange={set("ttime")} style={inp} placeholder="e.g. 8" />
+          </div>
+          <div>
+            <label style={lbl}>Allocated CC</label>
+            <input type="number" min="0" value={form.tcc} onChange={set("tcc")} style={inp} placeholder="e.g. 50" />
+          </div>
+          <div>
+            <label style={lbl}>Follow-up For</label>
+            <input value={form.tfid} onChange={set("tfid")} style={inp} placeholder="Order or Task ID" />
+          </div>
+          <div>
+            <label style={lbl}>Assignee</label>
+            <select
+              value={form.taptr}
+              onChange={set("taptr")}
+              disabled={!canAssign}
+              title={canAssign ? "" : "Already started; use Reassign on the card"}
+              style={{ ...inp, opacity: canAssign ? 1 : .6 }}
+            >
+              <option value="">{canAssign ? "Open for all" : task.apname || "—"}</option>
+              {canAssign && employees.map(emp => <option key={emp._id} value={emp._id}>{emp.rname}</option>)}
+            </select>
+          </div>
+        </div>
+
+        <p style={{ ...lbl, marginTop:18, marginBottom:6 }}>Description</p>
+        <div style={{ height:220, marginBottom:52 }}>
+          <RichTextEditor name="tdesc" value={form.tdesc} onChange={v => setForm(f => ({ ...f, tdesc: v === "<p><br></p>" ? "" : v }))} />
+        </div>
+
+        <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(200px, 1fr))", gap:16 }}>
+          <div>
+            <p style={lbl}>Timing</p>
+            <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
+              {[
+                ["Created",   formatDate(task.tmt)],
+                ["Accepted",  formatDate(task.tat)],
+                ["Completed", formatDate(task.completedAt)],
+                ["Deadline",  task.tat && task.tat !== "NA" ? formatDate(deadlineOf(task)) : "—"],
+              ].map(([label, val]) => (
+                <div key={label} style={{ display:"flex", justifyContent:"space-between", fontSize:12, borderBottom:"1px solid #eff6ff", paddingBottom:3 }}>
+                  <span style={{ color:"#94a3b8" }}>{label}</span>
+                  <span style={{ color:"#334155", fontWeight:500 }}>{val}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {task.tmoretime && (
+            <div>
+              <p style={lbl}>More Time Request</p>
+              <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
+                <span style={{ fontSize:12, color:"#334155", background:"#f8fafc", border:"1px solid #e2e8f0", borderRadius:999, padding:"2px 10px", width:"fit-content" }}>
+                  Employee requested extra time
+                </span>
+                <select
+                  style={{ ...inp, fontSize:12 }}
+                  onChange={e => { if (e.target.value) onExtraTime(task._id, e.target.value); }}
+                  defaultValue=""
+                >
+                  <option value="">+ Add Extra Time</option>
+                  {["5","10","15","20"].map(h => <option key={h} value={h}>+{h} hours</option>)}
+                </select>
+              </div>
             </div>
           )}
-        </td>
+        </div>
 
-        {/* Actions */}
-        <td style={{ padding:"14px 16px" }} onClick={e => e.stopPropagation()}>
-          <div style={{ display:"flex", gap:6 }}>
-            <button
-              onClick={() => onChatClick(task._id)}
-              style={{ position:"relative", display:"flex", alignItems:"center", gap:5, padding:"5px 12px", borderRadius:7, border:"none",
-                background:"#eff6ff", color:"#2563eb", fontWeight:500, fontSize:12, cursor:"pointer" }}
-            >
-              <MdChat size={13} /> Chat
-              {unreadCount > 0 && (
-                <span style={{
-                  position:"absolute", top:-7, right:-7,
-                  background:"#ef4444", color:"#fff",
-                  fontSize:9, fontWeight:700,
-                  padding:"2px 5px", borderRadius:999,
-                  lineHeight:1, minWidth:16, textAlign:"center",
-                }}>
-                  {unreadCount}
-                </span>
-              )}
-            </button>
-            <button
-              onClick={() => onDelete(task._id)}
-              style={{ padding:"5px 12px", borderRadius:7, border:"none",
-                background:"#fef2f2", color:"#ef4444", fontWeight:500, fontSize:12, cursor:"pointer" }}
-            >
-              Delete
-            </button>
-          </div>
-        </td>
-      </tr>
+        <div style={{ display:"flex", gap:10, marginTop:24, position:"sticky", bottom:-28, background:"#fff", padding:"12px 0 4px" }}>
+          <button type="button" onClick={onClose} style={{ flex:1, padding:"8px 0", borderRadius:8, border:"none", background:"#f1f5f9", color:"#475569", fontWeight:500, cursor:"pointer", fontSize:12 }}>Close</button>
+          <button type="submit" disabled={!dirty || saving} style={{ flex:2, padding:"8px 0", borderRadius:8, border:"none", background: dirty ? "#0f172a" : "#cbd5e1", color:"#fff", fontWeight:500, cursor: dirty ? "pointer" : "default", fontSize:12 }}>
+            {saving ? "Saving…" : "Save changes"}
+          </button>
+        </div>
+      </form>
+    </div>
+  , document.body);
+};
 
-      {/* Expanded row */}
-      {open && (
-        <tr style={{ background:"#fafbfd" }}>
-          <td colSpan={7} style={{ padding:"0 16px 16px 44px", borderBottom:"2px solid #e8eaf0" }}>
-            <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:16, paddingTop:14 }}>
+// ── QuickAdd — create backlog tasks by name, one after another ─
+const QuickAdd = ({ onCreate }) => {
+  const [open, setOpen] = useState(false);
+  const [name, setName] = useState("");
+  const [busy, setBusy] = useState(false);
+  const inputRef = useRef(null);
 
-              <div style={{ gridColumn:"1 / -1" }}>
-                <p style={{ ...lbl, marginBottom:6 }}>Task Description</p>
-                {task.tdesc ? (
-                  <div
-                    className="prose max-w-none break-words [&>ul]:list-disc [&>ul]:pl-5 [&>ol]:list-decimal [&>ol]:pl-5"
-                    style={{ fontSize:13, color:"#475569", lineHeight:1.7, background:"#fff", border:"1px solid #e8eaf0", borderRadius:10, padding:"10px 14px" }}
-                    dangerouslySetInnerHTML={{ __html: task.tdesc }}
-                  />
-                ) : (
-                  <span style={{ fontSize:12, color:"#cbd5e1", fontStyle:"italic" }}>No description</span>
-                )}
-              </div>
+  // Stay in the box after each Enter so several tasks can be typed in a row.
+  useEffect(() => { if (open && !busy) inputRef.current?.focus(); }, [open, busy]);
 
-              <div>
-                <p style={lbl}>Timing</p>
-                <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
-                  {[
-                    ["Created",   formatDate(task.tmt)],
-                    ["Accepted",  formatDate(task.tat)],
-                    ["Completed", formatDate(task.completedAt)],
-                    ["Deadline",  task.tat && task.tat !== "NA"
-                      ? formatDate(new Date(new Date(task.tat).getTime() + Number(task.ttime) * 3600000))
-                      : "—"],
-                  ].map(([label, val]) => (
-                    <div key={label} style={{ display:"flex", justifyContent:"space-between", fontSize:12, borderBottom:"1px solid #f0f2f7", paddingBottom:3 }}>
-                      <span style={{ color:"#94a3b8" }}>{label}</span>
-                      <span style={{ color:"#334155", fontWeight:500 }}>{val}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
+  const submit = async (e) => {
+    e.preventDefault();
+    const tname = name.trim();
+    if (!tname || busy) return;
+    setBusy(true);
+    const ok = await onCreate(tname);
+    setBusy(false);
+    if (ok) setName("");
+  };
 
-              <div>
-                <p style={lbl}>Follow-up For</p>
-                <p style={{ fontSize:13, color:"#475569", fontFamily:"monospace", background:"#f8fafc", border:"1px solid #e8eaf0", borderRadius:8, padding:"8px 12px", margin:0 }}>
-                  {task.tfid || "—"}
-                </p>
-              </div>
-
-              {task.tmoretime && (
-                <div>
-                  <p style={lbl}>More Time Request</p>
-                  <div style={{ display:"flex", flexDirection:"column", gap:6 }}>
-                    <span style={{ fontSize:12, color:"#c2410c", background:"#fff7ed", border:"1px solid #fed7aa", borderRadius:999, padding:"2px 10px", width:"fit-content" }}>
-                      Employee requested extra time
-                    </span>
-                    <select
-                      style={{ ...inp, fontSize:12 }}
-                      onChange={e => { if (e.target.value) onExtraTime(task._id, e.target.value); }}
-                      defaultValue=""
-                    >
-                      <option value="">+ Add Extra Time</option>
-                      {["5","10","15","20"].map(h => <option key={h} value={h}>+{h} hours</option>)}
-                    </select>
-                  </div>
-                </div>
-              )}
-            </div>
-          </td>
-        </tr>
-      )}
-    </>
+  if (!open) {
+    return (
+      <button type="button" className="wd-quick" onClick={() => setOpen(true)}>+ Create task</button>
+    );
+  }
+  return (
+    <form onSubmit={submit} style={{ display:"flex", flexDirection:"column", gap:6 }}>
+      <input
+        ref={inputRef}
+        value={name}
+        onChange={e => setName(e.target.value)}
+        onKeyDown={e => { if (e.key === "Escape") { setOpen(false); setName(""); } }}
+        onBlur={() => { if (!name.trim()) setOpen(false); }}
+        placeholder="What needs to be done?"
+        readOnly={busy}
+        style={{ ...inp, background:"#fff", borderColor:"#3b82f6", boxShadow:"0 0 0 3px rgba(59, 130, 246,.1)" }}
+      />
+      <p style={{ margin:0, fontSize:10.5, color:"#94a3b8" }}>Enter to add · Esc to close</p>
+    </form>
   );
 };
 
@@ -304,16 +396,18 @@ const WorkDis = () => {
   const [selectedExpertise, setSelectedExpertise]         = useState("");
   const [availableExpertise, setAvailableExpertise]       = useState([]);
   const [search, setSearch]                               = useState("");
-  const [filterStatus, setFilterStatus]                   = useState("All");
   const [focused, setFocused]                             = useState(null);
   const [unreadCounts, setUnreadCounts]                   = useState({});
   const [employees, setEmployees]                         = useState([]);
 const [selectedEmployee, setSelectedEmployee] = useState(""); // "" = open for all
+  const [openTaskId, setOpenTaskId]                       = useState(null);
+  const [draggingId, setDraggingId]                       = useState(null);
+  const [dragOverStatus, setDragOverStatus]               = useState(null);
   const tasksRef = useRef([]);
   tasksRef.current = tasks;
 
   const fi = (name) => focused === name
-    ? { ...inp, borderColor:"#6366f1", boxShadow:"0 0 0 3px rgba(99,102,241,.1)", background:"#fff" }
+    ? { ...inp, borderColor:"#3b82f6", boxShadow:"0 0 0 3px rgba(59, 130, 246,.1)", background:"#fff" }
     : inp;
 
   const formatDateTime = (date) => date.toISOString();
@@ -378,8 +472,7 @@ const [selectedEmployee, setSelectedEmployee] = useState(""); // "" = open for a
       text: isApprove ? "Task will be marked as Completed." : "Task will be sent back to Accepted.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: isApprove ? "#002141" : "rgb(255, 71, 71)",
-      cancelButtonColor: "#aaa",
+      confirmButtonColor: isApprove ? undefined : "#dc2626",
       confirmButtonText: isApprove ? "Yes, Approve!" : "Yes, Reject!"
     }).then((result) => {
       if (result.isConfirmed) {
@@ -405,14 +498,13 @@ const [selectedEmployee, setSelectedEmployee] = useState(""); // "" = open for a
     const { value: formValues } = await Swal.fire({
       title: "Extend Time",
       html: `
-        <label style="font-size:13px;color:#555;display:block;text-align:left;margin-bottom:2px">Extra Hours</label>
+        <label style="font-size:13px;color:#475569;display:block;text-align:left;margin-bottom:2px">Extra Hours</label>
         <input id="extraTime" type="number" min="1" placeholder="e.g. 2" class="swal2-input" />
-        <label style="font-size:13px;color:#555;display:block;text-align:left;margin-bottom:2px">Reduced CC (current: ${currentCC})</label>
+        <label style="font-size:13px;color:#475569;display:block;text-align:left;margin-bottom:2px">Reduced CC (current: ${currentCC})</label>
         <input id="reducedCC" type="number" min="0" max="${currentCC}" placeholder="e.g. ${Math.floor(currentCC * 0.8)}" class="swal2-input" />
       `,
       showCancelButton: true,
-      confirmButtonColor: "#002141",
-      cancelButtonColor: "rgb(255, 71, 71)",
+
       confirmButtonText: "Extend",
       preConfirm: () => {
         const extraTime = document.getElementById("extraTime").value;
@@ -457,7 +549,7 @@ const [selectedEmployee, setSelectedEmployee] = useState(""); // "" = open for a
       inputOptions: Object.fromEntries(employees.map(e => [e._id, e.rname])),
       inputPlaceholder: "Select employee",
       showCancelButton: true,
-      confirmButtonColor: "#002141",
+
       confirmButtonText: "Reassign",
     });
 
@@ -540,7 +632,7 @@ const handleAddPost = async (e) => {
   }
 };
   const handleDelete = (_id) => {
-    Swal.fire({ title:"Delete this task?", text:"This cannot be undone.", icon:"warning", showCancelButton:true, confirmButtonColor:"#ef4444", confirmButtonText:"Delete" })
+    Swal.fire({ title:"Delete this task?", text:"This cannot be undone.", icon:"warning", showCancelButton:true, confirmButtonColor: "#dc2626", confirmButtonText:"Delete" })
     .then(({ isConfirmed }) => {
       if (!isConfirmed) return;
       fetch(`${base_url}/deltask/${_id}`, { method:"DELETE" })
@@ -586,17 +678,90 @@ const handleAddPost = async (e) => {
     }
   };
 
+  // ── Board drag & drop ─────────────────────────────────────
+  const handleDragStart = (e, taskId) => {
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", taskId);
+    setDraggingId(taskId);
+  };
+
+  const handleDragEnd = () => { setDraggingId(null); setDragOverStatus(null); };
+
+  const handleDrop = (e, status) => {
+    e.preventDefault();
+    const taskId = e.dataTransfer.getData("text/plain") || draggingId;
+    handleDragEnd();
+    if (taskId) moveTask(taskId, status);
+  };
+
+  // Optimistic: the card moves at once and goes back if the server refuses.
+  const moveTask = async (taskId, status) => {
+    const task = tasksRef.current.find(t => t._id === taskId);
+    if (!task || task.tstatus === status) return;
+
+    const needsEmployee = ["Accepted","VerifyTask","Completed","Done"].includes(status);
+    if (needsEmployee && (!task.taptr || task.taptr === "NA")) {
+      Swal.fire("Unassigned task", "Assign this task to an employee before moving it there.", "warning");
+      return;
+    }
+
+    setTasks(prev => prev.map(t => t._id === taskId ? { ...t, tstatus: status } : t));
+    try {
+      const res = await fetch(`${base_url}/taskstatus/${taskId}`, {
+        method: "PUT",
+        headers: authHeaders(),
+        body: JSON.stringify({ status }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.message || `Could not move task (${res.status})`);
+      if (data.task) setTasks(prev => prev.map(t => t._id === taskId ? { ...t, ...data.task, _id: t._id } : t));
+      if (data.nextActivatedTaskId) fetchTasks();
+    } catch (err) {
+      setTasks(prev => prev.map(t => t._id === taskId ? { ...t, tstatus: task.tstatus } : t));
+      Swal.fire("Error!", err.message, "error");
+    }
+  };
+
+  const authHeaders = () => ({ "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("adminToken")}` });
+
+  const handleSaveTask = async (taskId, changes) => {
+    const res = await fetch(`${base_url}/task/${taskId}`, { method: "PUT", headers: authHeaders(), body: JSON.stringify(changes) });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.message || `Could not save task (${res.status})`);
+    setTasks(prev => prev.map(t => t._id === taskId ? { ...t, ...data.task, _id: t._id } : t));
+  };
+
+  // Backlog quick add: name only, everything else is filled in later.
+  const handleQuickCreate = async (tname) => {
+    const draft = {
+      tname, tdesc: "", rdep: "", rsubdep: "", esprts: "", ttime: "", tcc: "", tfid: "",
+      taptr: "NA", apname: "", apdp: "", directAssigned: false,
+      tmt: formatDateTime(new Date()), tdt: "NA", tstatus: "draft",
+    };
+    try {
+      const res = await fetch(`${base_url}/addtask`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(draft) });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.insertedId) throw new Error(data.message || "Could not create task");
+      setTasks(prev => [...prev, { ...draft, _id: data.insertedId }]);
+      return true;
+    } catch (err) {
+      Swal.fire("Error", err.message, "error");
+      return false;
+    }
+  };
+
   // ── Filters ───────────────────────────────────────────────
-  const statuses = ["All","pending","Accepted","VerifyTask","Completed","Done"];
   const filtered = tasks.filter(t => {
     const q = search.toLowerCase();
-    const matchSearch = (t.tname||"").toLowerCase().includes(q) || (t._id||"").toLowerCase().includes(q) || (t.apname||"").toLowerCase().includes(q);
-    const matchStatus = filterStatus === "All" || t.tstatus === filterStatus;
-    return matchSearch && matchStatus;
+    return (t.tname||"").toLowerCase().includes(q) || (t._id||"").toLowerCase().includes(q) || (t.apname||"").toLowerCase().includes(q);
   });
+
+  const visibleColumns = columns.filter(c => c.status !== "not activated" || tasks.some(t => t.tstatus === "not activated"));
+  const openTask = tasks.find(t => t._id === openTaskId);
 
   const counts = {
     All:        tasks.length,
+    draft:      tasks.filter(t=>t.tstatus==="draft").length,
     pending:    tasks.filter(t=>t.tstatus==="pending").length,
     Accepted:   tasks.filter(t=>t.tstatus==="Accepted").length,
     VerifyTask: tasks.filter(t=>t.tstatus==="VerifyTask").length,
@@ -610,12 +775,18 @@ const handleAddPost = async (e) => {
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@600;700&display=swap');
         .wd-wrap { font-family:'DM Sans',sans-serif; background:#f7f8fb; min-height:100vh; }
         .wd-syne { font-family:'Syne',sans-serif; }
-        .wd-card { background:#fff; border:1px solid #e8eaf0; border-radius:16px; overflow:hidden; }
-        .wd-search { border:1px solid #e2e5ee; border-radius:9px; padding:8px 14px; font-size:13px; font-family:'DM Sans',sans-serif; background:#fafbfd; outline:none; width:220px; color:#1e293b; transition:border-color .2s; }
-        .wd-search:focus { border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,.1); background:#fff; }
-        .wd-chip { padding:5px 14px; border-radius:999px; font-size:12.5px; font-weight:500; border:1.5px solid #e2e5ee; background:#fff; color:#64748b; cursor:pointer; transition:all .15s; font-family:'DM Sans',sans-serif; }
-        .wd-chip:hover,.wd-chip.on { border-color:#1e293b; background:#1e293b; color:#fff; }
-        .wd-addbtn { padding:9px 20px; border-radius:9px; border:none; background:#1e293b; color:#fff; font-weight:600; font-size:13px; font-family:'DM Sans',sans-serif; cursor:pointer; transition:background .2s; }
+        .wd-search { border:1px solid #e2e8f0; border-radius:9px; padding:8px 14px; font-size:13px; font-family:'DM Sans',sans-serif; background:#fafbfd; outline:none; width:220px; color:#1e293b; transition:border-color .2s; }
+        .wd-search:focus { border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59, 130, 246,.1); background:#fff; }
+        .wd-board { display:flex; gap:14px; overflow-x:auto; padding-bottom:12px; align-items:flex-start; }
+        .wd-col { flex:0 0 280px; background:#f1f5f9; border:1.5px solid transparent; border-radius:14px; padding:12px 10px; transition:background .15s, border-color .15s; }
+        .wd-col.over { background:#dbeafe; border-color:#3b82f6; }
+        .wd-task { background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:12px 14px; cursor:grab; box-shadow:0 1px 2px rgba(15,23,42,.05); transition:box-shadow .15s, opacity .15s; }
+        .wd-task:hover { box-shadow:0 4px 12px rgba(15,23,42,.1); }
+        .wd-task:active { cursor:grabbing; }
+        .wd-quick { width:100%; text-align:left; padding:8px 10px; border:none; border-radius:8px; background:transparent; color:#64748b; font-size:12.5px; font-weight:500; font-family:'DM Sans',sans-serif; cursor:pointer; }
+        .wd-quick:hover { background:#e2e8f0; color:#1e293b; }
+        .wd-pill { font-size:11.5px; font-weight:600; border:1px solid; border-radius:999px; padding:1px 9px; }
+        .wd-addbtn { padding:7px 14px; border-radius:8px; border:none; background:#0f172a; color:#fff; font-weight:500; font-size:12.5px; font-family:'DM Sans',sans-serif; cursor:pointer; transition:background .2s; }
         .wd-addbtn:hover { background:#334155; }
         @keyframes wd-up { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:none } }
       `}</style>
@@ -626,70 +797,88 @@ const handleAddPost = async (e) => {
         <div style={{ padding:"20px 28px 28px" }}>
 
           {/* Stat Cards */}
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(6,1fr)", gap:14, marginBottom:22 }}>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(130px, 1fr))", gap:14, marginBottom:22 }}>
             {[
               { label:"Total Tasks",  value: counts.All,        color:"#1e293b" },
-              { label:"Pending",      value: counts.pending,    color:"#c2410c" },
+              { label:"Backlog",      value: counts.draft,      color:"#475569" },
+              { label:"Pending",      value: counts.pending,    color:"#334155" },
               { label:"Accepted",     value: counts.Accepted,   color:"#1d4ed8" },
-              { label:"Verify",       value: counts.VerifyTask, color:"#7e22ce" },
-              { label:"Completed",    value: counts.Completed,  color:"#15803d" },
-              { label:"Done",         value: counts.Done,       color:"#15803d" },
+              { label:"Verify",       value: counts.VerifyTask, color:"#1d4ed8" },
+              { label:"Completed",    value: counts.Completed,  color:"#1d4ed8" },
+              { label:"Done",         value: counts.Done,       color:"#1d4ed8" },
             ].map(s => (
-              <div key={s.label} style={{ background:"#fff", border:"1px solid #e8eaf0", borderRadius:14, padding:"16px 20px" }}>
+              <div key={s.label} style={{ background:"#fff", border:"1px solid #e2e8f0", borderRadius:14, padding:"16px 20px" }}>
                 <p style={{ margin:0, fontSize:11, color:"#94a3b8", fontWeight:500, marginBottom:4 }}>{s.label}</p>
                 <p className="wd-syne" style={{ margin:0, fontSize:22, fontWeight:700, color: s.color }}>{s.value}</p>
               </div>
             ))}
           </div>
 
-          {/* Search + Filter */}
+          {/* Search */}
           <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:18, flexWrap:"wrap", gap:10 }}>
-            <div style={{ display:"flex", alignItems:"center", gap:10, flexWrap:"wrap" }}>
-              <input className="wd-search" placeholder="Search name, ID, employee…" value={search} onChange={e => setSearch(e.target.value)} />
-              <div style={{ display:"flex", gap:6, flexWrap:"wrap" }}>
-                {statuses.map(s => (
-                  <button key={s} className={`wd-chip ${filterStatus===s?"on":""}`} onClick={() => setFilterStatus(s)}>
-                    {s} <span style={{ opacity:.6, marginLeft:3 }}>{counts[s]}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
+            <input className="wd-search" placeholder="Search name, ID, employee…" value={search} onChange={e => setSearch(e.target.value)} />
             <button className="wd-addbtn" onClick={() => setShowForm(true)}>+ Add Task</button>
           </div>
 
-          {/* Table */}
-          <div className="wd-card">
-            {filtered.length === 0 ? (
-              <div style={{ padding:"56px 0", textAlign:"center", color:"#94a3b8", fontSize:14 }}>No tasks found.</div>
-            ) : (
-              <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13.5 }}>
-                <thead>
-                  <tr style={{ borderBottom:"2px solid #f0f2f7" }}>
-                    {["Task","Department","Time / CC","Time Remaining","Assigned To","Status","Actions"].map(h => (
-                      <th key={h} style={{ textAlign:"left", padding:"12px 16px", fontSize:11, fontWeight:600, color:"#94a3b8", letterSpacing:"0.07em", textTransform:"uppercase" }}>{h}</th>
+          {/* Board */}
+          <div className="wd-board">
+            {visibleColumns.map(col => {
+              const colTasks = filtered.filter(t => t.tstatus === col.status);
+              const st = statusStyle[col.status] || { color:"#64748b" };
+              return (
+                <div
+                  key={col.status}
+                  className={`wd-col ${dragOverStatus === col.status ? "over" : ""}`}
+                  onDragOver={e => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; if (dragOverStatus !== col.status) setDragOverStatus(col.status); }}
+                  onDragLeave={e => { if (!e.currentTarget.contains(e.relatedTarget)) setDragOverStatus(null); }}
+                  onDrop={e => handleDrop(e, col.status)}
+                >
+                  <div style={{ display:"flex", alignItems:"center", gap:8, padding:"4px 4px 12px" }}>
+                    <span style={{ width:8, height:8, borderRadius:"50%", background: st.color === "#ffffff" ? st.bg : st.color }} />
+                    <span style={{ fontSize:11.5, fontWeight:600, color:"#475569", letterSpacing:"0.06em", textTransform:"uppercase" }}>{col.title}</span>
+                    <span style={{ fontSize:11.5, color:"#94a3b8", background:"#e2e8f0", borderRadius:999, padding:"0 8px" }}>{colTasks.length}</span>
+                  </div>
+                  <div style={{ display:"flex", flexDirection:"column", gap:10, minHeight:80 }}>
+                    {colTasks.map(task => (
+                      <TaskCard
+                        key={task._id}
+                        task={task}
+                        onOpen={setOpenTaskId}
+                        onDelete={handleDelete}
+                        onChatClick={handleChatClick}
+                        onVerify={handleVerifyTask}
+                        onExtendTime={handleExtendTime}
+                        onReassign={handleReassign}
+                        unreadCount={unreadCounts[task._id] || 0}
+                        onDragStart={handleDragStart}
+                        onDragEnd={handleDragEnd}
+                        dragging={draggingId === task._id}
+                      />
                     ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map(task => (
-                    <TaskRow
-                      key={task._id}
-                      task={task}
-                      onDelete={handleDelete}
-                      onChatClick={handleChatClick}
-                      onExtraTime={handleExtraTime}
-                      onVerify={handleVerifyTask}
-                      onExtendTime={handleExtendTime}
-                      onReassign={handleReassign}
-                      unreadCount={unreadCounts[task._id] || 0}
-                    />
-                  ))}
-                </tbody>
-              </table>
-            )}
+                    {colTasks.length === 0 && col.status !== "draft" && (
+                      <div style={{ padding:"20px 0", textAlign:"center", color:"#cbd5e1", fontSize:12, border:"1.5px dashed #e2e8f0", borderRadius:10 }}>
+                        Drop tasks here
+                      </div>
+                    )}
+                    {col.status === "draft" && <QuickAdd onCreate={handleQuickCreate} />}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
+
+      {openTask && (
+        <TaskDetails
+          key={openTask._id}
+          task={openTask}
+          employees={employees}
+          onClose={() => setOpenTaskId(null)}
+          onSave={handleSaveTask}
+          onExtraTime={handleExtraTime}
+        />
+      )}
 
       {/* Add Task Modal */}
       {showForm && createPortal(
@@ -782,14 +971,14 @@ const handleAddPost = async (e) => {
         />
         <div style={{ flex:1 }}>
           <p style={{ margin:0, fontSize:13, fontWeight:600, color:"#1e3a8a" }}>{emp.rname}</p>
-       
+
         </div>
         <button
           type="button"
           onClick={() => setSelectedEmployee("")}
           style={{
             border:"none", background:"transparent",
-            color:"#1d4ed8", fontSize:12, cursor:"pointer", fontWeight:600,
+            color:"#0f172a", fontSize:12, cursor:"pointer", fontWeight:500,
           }}
         >
           Clear
@@ -807,8 +996,8 @@ const handleAddPost = async (e) => {
               </div>
 
               <div style={{ display:"flex", gap:10 }}>
-                <button type="button" onClick={()=>setShowForm(false)} style={{ flex:1, padding:"10px 0", borderRadius:9, border:"none", background:"#f1f3f8", color:"#475569", fontWeight:500, cursor:"pointer", fontSize:13 }}>Cancel</button>
-                <button type="submit" style={{ flex:2, padding:"10px 0", borderRadius:9, border:"none", background:"#1e293b", color:"#fff", fontWeight:600, cursor:"pointer", fontSize:13 }}>Add Task</button>
+                <button type="button" onClick={()=>setShowForm(false)} style={{ flex:1, padding:"8px 0", borderRadius:8, border:"none", background:"#f1f5f9", color:"#475569", fontWeight:500, cursor:"pointer", fontSize:12 }}>Cancel</button>
+                <button type="submit" style={{ flex:2, padding:"8px 0", borderRadius:8, border:"none", background:"#0f172a", color:"#fff", fontWeight:500, cursor:"pointer", fontSize:12 }}>Add Task</button>
               </div>
             </form>
           </div>

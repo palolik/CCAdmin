@@ -7,31 +7,31 @@ const TableData = ({ data }) => {
     const [hours, setHours] = useState(0);
     const [minutes, setMinutes] = useState(0);
     const [seconds, setSeconds] = useState(0);
-  
+
     const targetDate = new Date("April 15, 2024, 12:00 PM");
-  
+
     const calculateTimeLeft = () => {
       const currentDate = new Date();
       const timeLeft = targetDate - currentDate;
-  
+
       const daysLeft = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
       const hoursLeft = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutesLeft = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
       const secondsLeft = Math.floor((timeLeft % (1000 * 60)) / 1000);
-  
+
       setDays(daysLeft);
       setHours(hoursLeft);
       setMinutes(minutesLeft);
       setSeconds(secondsLeft);
     };
-  
+
     useEffect(() => {
       const intervalId = setInterval(calculateTimeLeft, 1000);
-  
+
       return () => clearInterval(intervalId);
     }, []);
     return (
-     
+
         <tr>
             <td colSpan={7}>
                 <div className="flex flex-row items-center ">

@@ -98,7 +98,7 @@ const Income = () => {
     const confirm = await Swal.fire({
       title: "Delete this entry?", text: "This action cannot be undone.",
       icon: "warning", showCancelButton: true,
-      confirmButtonText: "Delete", confirmButtonColor: "#ef4444",
+      confirmButtonText: "Delete", confirmButtonColor: "#dc2626",
     });
     if (!confirm.isConfirmed) return;
     try {
@@ -156,7 +156,7 @@ const Income = () => {
     const confirm = await Swal.fire({
       title: "Delete this order income?", text: "This cannot be undone.",
       icon: "warning", showCancelButton: true,
-      confirmButtonText: "Delete", confirmButtonColor: "#ef4444",
+      confirmButtonText: "Delete", confirmButtonColor: "#dc2626",
     });
     if (!confirm.isConfirmed) return;
     try {
@@ -219,8 +219,8 @@ const Income = () => {
           <div className="flex gap-2">
             {["auto", "manual"].map(tab => (
               <button key={tab} onClick={() => setActiveTab(tab)}
-                className={`px-4 py-1.5 rounded text-sm font-medium transition-colors ${
-                  activeTab === tab ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                className={`px-3 py-1.5 rounded-lg text-[13px] font-medium transition-colors ${
+                  activeTab === tab ? "bg-ink-900 text-white" : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 }`}
               >
                 {tab === "auto" ? "Order Income" : "Manual Income"}
@@ -229,7 +229,7 @@ const Income = () => {
           </div>
           <div className="flex gap-2">
             {activeTab === "manual" && (
-              <button onClick={openAdd} className="smbut bg-green-500 hover:bg-green-600 text-white">
+              <button onClick={openAdd} className="smbut bg-ink-900 hover:bg-ink-700 text-white">
                 + Add Entry
               </button>
             )}
@@ -291,13 +291,13 @@ const Income = () => {
                         <div className="flex justify-center gap-2">
                           <button
                             onClick={() => openAutoEdit(income)}
-                            className="text-xs px-3 py-1 rounded bg-blue-100 text-blue-600 hover:bg-blue-200"
+                            className="text-xs px-3 py-1 rounded-lg bg-ink-100 text-ink-900 hover:bg-ink-200"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => handleAutoDelete(income._id)}
-                            className="text-xs px-3 py-1 rounded bg-red-100 text-red-500 hover:bg-red-200"
+                            className="text-xs px-3 py-1 rounded-lg bg-red-100 text-red-500 hover:bg-red-200"
                           >
                             Delete
                           </button>
@@ -343,11 +343,11 @@ const Income = () => {
                       <td className="px-2 py-2">
                         <div className="flex justify-center gap-2">
                           <button onClick={() => openEdit(item)}
-                            className="text-xs px-3 py-1 rounded bg-blue-100 text-blue-600 hover:bg-blue-200">
+                            className="text-xs px-3 py-1 rounded-lg bg-ink-100 text-ink-900 hover:bg-ink-200">
                             Edit
                           </button>
                           <button onClick={() => handleDelete(item._id)}
-                            className="text-xs px-3 py-1 rounded bg-red-100 text-red-500 hover:bg-red-200">
+                            className="text-xs px-3 py-1 rounded-lg bg-red-100 text-red-500 hover:bg-red-200">
                             Delete
                           </button>
                         </div>
@@ -397,9 +397,9 @@ const Income = () => {
             </div>
             <div className="flex justify-end gap-2 mt-5">
               <button onClick={closeModal}
-                className="px-4 py-2 text-sm rounded bg-gray-100 text-gray-600 hover:bg-gray-200">Cancel</button>
+                className="px-3 py-1.5 text-[13px] rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200">Cancel</button>
               <button onClick={handleSave} disabled={saving}
-                className="px-4 py-2 text-sm rounded bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50">
+                className="px-3 py-1.5 text-[13px] rounded-lg bg-ink-900 text-white hover:bg-ink-700 disabled:opacity-50">
                 {saving ? "Saving..." : editTarget ? "Update" : "Add"}
               </button>
             </div>
@@ -460,9 +460,9 @@ const Income = () => {
             </div>
             <div className="flex justify-end gap-2 mt-5">
               <button onClick={closeAutoModal}
-                className="px-4 py-2 text-sm rounded bg-gray-100 text-gray-600 hover:bg-gray-200">Cancel</button>
+                className="px-3 py-1.5 text-[13px] rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200">Cancel</button>
               <button onClick={handleAutoSave} disabled={autoSaving}
-                className="px-4 py-2 text-sm rounded bg-blue-500 text-white hover:bg-blue-600 disabled:opacity-50">
+                className="px-3 py-1.5 text-[13px] rounded-lg bg-ink-900 text-white hover:bg-ink-700 disabled:opacity-50">
                 {autoSaving ? "Saving..." : "Update"}
               </button>
             </div>

@@ -7,7 +7,7 @@ import { Shimmer, ShimmerStats } from "../../userside/utils/Shimmer.jsx";
 // admin panel: sky-500 accent on white.
 const embedTheme = {
   mode: "light",
-  primary: "#0ea5e9",
+  primary: "#3b82f6",
   bg: "#ffffff",
 };
 

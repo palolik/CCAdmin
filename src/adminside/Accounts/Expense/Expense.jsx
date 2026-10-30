@@ -14,16 +14,16 @@ const lbl = {
   marginBottom:4, fontWeight:500, letterSpacing:"0.03em",
 };
 const inp = {
-  width:"100%", border:"1px solid #e2e5ee", borderRadius:8,
+  width:"100%", border:"1px solid #e2e8f0", borderRadius:8,
   padding:"9px 12px", fontSize:13.5, fontFamily:"inherit",
   background:"#fafbfd", outline:"none", boxSizing:"border-box",
   color:"#1e293b",
 };
 
 const catColors = {
-  Food:"#ea580c",Transport:"#0284c7",Utilities:"#0d9488",
-  Marketing:"#9333ea",Office:"#4338ca",Salary:"#16a34a",
-  Software:"#2563eb",Other:"#64748b",
+  Food:"#1d4ed8",Transport:"#60a5fa",Utilities:"#334155",
+  Marketing:"#94a3b8",Office:"#1e3a8a",Salary:"#93c5fd",
+  Software:"#64748b",Other:"#cbd5e1",
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -102,7 +102,7 @@ const Expense = () => {
   // ── delete ────────────────────────────────────────────────────────────────
   const handleDelete = (id) => {
     Swal.fire({ title:"Delete expense?", text:"This cannot be undone.", icon:"warning",
-      showCancelButton:true, confirmButtonColor:"#ef4444", confirmButtonText:"Delete" })
+      showCancelButton:true, confirmButtonColor: "#dc2626", confirmButtonText:"Delete" })
     .then(async ({ isConfirmed }) => {
       if (!isConfirmed) return;
       const res  = await fetch(`${base_url}/delexpense/${id}`, { method:"DELETE" });
@@ -134,16 +134,16 @@ const Expense = () => {
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@600;700&display=swap');
         .exp-syne { font-family:'Syne',sans-serif; }
         .exp-sans { font-family:'DM Sans',sans-serif; }
-        .exp-stat { background:#fff; border:1px solid #e8eaf0; border-radius:14px; padding:18px 22px; transition:box-shadow .2s; }
+        .exp-stat { background:#fff; border:1px solid #e2e8f0; border-radius:14px; padding:18px 22px; transition:box-shadow .2s; }
         .exp-stat:hover { box-shadow:0 4px 20px rgba(0,0,0,.07); }
-        .exp-card { background:#fff; border:1px solid #e8eaf0; border-radius:14px; overflow:hidden; }
-        .exp-row  { border-bottom:1px solid #f0f2f7; transition:background .15s; }
+        .exp-card { background:#fff; border:1px solid #e2e8f0; border-radius:14px; overflow:hidden; }
+        .exp-row  { border-bottom:1px solid #eff6ff; transition:background .15s; }
         .exp-row:hover { background:#fafbfd; }
         .exp-row:last-child { border-bottom:none; }
-        .exp-chip { padding:5px 14px; border-radius:999px; font-size:12.5px; font-weight:500; border:1.5px solid #e2e5ee; background:#fff; color:#64748b; cursor:pointer; transition:all .15s; font-family:'DM Sans',sans-serif; }
+        .exp-chip { padding:5px 14px; border-radius:999px; font-size:12.5px; font-weight:500; border:1.5px solid #e2e8f0; background:#fff; color:#64748b; cursor:pointer; transition:all .15s; font-family:'DM Sans',sans-serif; }
         .exp-chip:hover,.exp-chip.on { border-color:#1e293b; background:#1e293b; color:#fff; }
-        .exp-search { border:1px solid #e2e5ee; border-radius:9px; padding:8px 14px; font-size:13px; font-family:'DM Sans',sans-serif; background:#fafbfd; outline:none; width:220px; }
-        .exp-search:focus { border-color:#6366f1; box-shadow:0 0 0 3px rgba(99,102,241,.1); }
+        .exp-search { border:1px solid #e2e8f0; border-radius:9px; padding:8px 14px; font-size:13px; font-family:'DM Sans',sans-serif; background:#fafbfd; outline:none; width:220px; }
+        .exp-search:focus { border-color:#3b82f6; box-shadow:0 0 0 3px rgba(59, 130, 246,.1); }
       `}</style>
 
       <div className="exp-sans w-full" style={{ background:"#f7f8fb", minHeight:"100vh" }}>
@@ -153,11 +153,11 @@ const Expense = () => {
       <div className="hdr">Expense Record</div>
           <div style={{ display:"flex", gap:8 }}>
             <button onClick={exportToExcel}
-              style={{ padding:"9px 18px", borderRadius:9, border:"none", background:"#f1f3f8", color:"#475569", fontWeight:500, cursor:"pointer", fontSize:13 }}>
+              style={{ padding:"7px 14px", borderRadius:8, border:"none", background:"#f1f5f9", color:"#475569", fontWeight:500, cursor:"pointer", fontSize:12 }}>
               ↓ Export
             </button>
             <button onClick={openAdd}
-              style={{ padding:"9px 20px", borderRadius:9, border:"none", background:"#1e293b", color:"#fff", fontWeight:600, cursor:"pointer", fontSize:13 }}>
+              style={{ padding:"7px 16px", borderRadius:8, border:"none", background:"#0f172a", color:"#fff", fontWeight:500, cursor:"pointer", fontSize:12 }}>
               + Add Expense
             </button>
           </div>
@@ -200,7 +200,7 @@ const Expense = () => {
             ) : (
               <table style={{ width:"100%", borderCollapse:"collapse", fontSize:13.5 }}>
                 <thead>
-                  <tr style={{ borderBottom:"2px solid #f0f2f7" }}>
+                  <tr style={{ borderBottom:"2px solid #eff6ff" }}>
                     {["Title","Category","Amount","Date","Note",""].map(h => (
                       <th key={h} style={{ textAlign:"left", padding:"12px 18px", fontSize:11, fontWeight:600, color:"#94a3b8", letterSpacing:"0.07em", textTransform:"uppercase" }}>{h}</th>
                     ))}
@@ -216,7 +216,7 @@ const Expense = () => {
                           {exp.category}
                         </span>
                       </td>
-                      <td style={{ padding:"12px 18px", fontWeight:600, color:"#16a34a" }}>{Number(exp.amount).toFixed(2)}</td>
+                      <td style={{ padding:"12px 18px", fontWeight:600, color:"#2563eb" }}>{Number(exp.amount).toFixed(2)}</td>
                       <td style={{ padding:"12px 18px", fontSize:12, color:"#94a3b8" }}>
                         {exp.date ? new Date(exp.date).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"}) : "—"}
                       </td>
@@ -224,11 +224,11 @@ const Expense = () => {
                       <td style={{ padding:"12px 18px" }}>
                         <div style={{ display:"flex", gap:8 }}>
                           <button onClick={()=>openEdit(exp)}
-                            style={{ padding:"5px 14px", borderRadius:7, border:"none", background:"#f1f5f9", color:"#475569", fontWeight:500, cursor:"pointer", fontSize:12 }}>
+                            style={{ padding:"4px 11px", borderRadius:8, border:"none", background:"#f1f5f9", color:"#475569", fontWeight:500, cursor:"pointer", fontSize:12 }}>
                             Edit
                           </button>
                           <button onClick={()=>handleDelete(exp._id)}
-                            style={{ padding:"5px 14px", borderRadius:7, border:"none", background:"#fef2f2", color:"#ef4444", fontWeight:500, cursor:"pointer", fontSize:12 }}>
+                            style={{ padding:"4px 11px", borderRadius:8, border:"none", background:"#fef2f2", color:"#ef4444", fontWeight:500, cursor:"pointer", fontSize:12 }}>
                             Delete
                           </button>
                         </div>
@@ -300,11 +300,11 @@ const Expense = () => {
             {/* modal actions */}
             <div style={{ display:"flex", gap:10, marginTop:24 }}>
               <button onClick={closeModal}
-                style={{ flex:1, padding:"10px 0", borderRadius:9, border:"none", background:"#f1f3f8", color:"#475569", fontWeight:500, cursor:"pointer", fontSize:13 }}>
+                style={{ flex:1, padding:"8px 0", borderRadius:8, border:"none", background:"#f1f5f9", color:"#475569", fontWeight:500, cursor:"pointer", fontSize:12 }}>
                 Cancel
               </button>
               <button onClick={handleSave} disabled={saving}
-                style={{ flex:2, padding:"10px 0", borderRadius:9, border:"none", background:saving?"#94a3b8":"#1e293b", color:"#fff", fontWeight:600, cursor:saving?"not-allowed":"pointer", fontSize:13 }}>
+                style={{ flex:2, padding:"8px 0", borderRadius:8, border:"none", background:saving?"#94a3b8":"#0f172a", color:"#fff", fontWeight:500, cursor:saving?"not-allowed":"pointer", fontSize:12 }}>
                 {saving ? "Saving…" : editing ? "Update" : "Add Expense"}
               </button>
             </div>

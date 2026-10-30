@@ -185,7 +185,7 @@ const AddPackages = () => {
                                                 <button
                                                     type="button"
                                                     onClick={handleRemoveFile}
-                                                    className="bg-white text-red-500 text-xs font-semibold px-3 py-1.5 rounded-lg shadow hover:bg-red-50 transition"
+                                                    className="bg-white text-red-500 text-xs font-medium px-3 py-1.5 rounded-lg shadow hover:bg-red-50 transition"
                                                 >
                                                     Remove
                                                 </button>
@@ -267,7 +267,7 @@ const AddPackages = () => {
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full bg-violet-600 hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-semibold py-3 rounded-2xl transition flex items-center justify-center gap-2 text-sm"
+                            className="w-full bg-ink-900 hover:bg-ink-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium py-1.5 rounded-lg transition flex items-center justify-center gap-2 text-[13px]"
                         >
                             {isSubmitting ? (
                                 <>

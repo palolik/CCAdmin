@@ -154,7 +154,7 @@ const FormPage = () => {
         <button
           disabled={currentIndex === 0}
           onClick={() => setCurrentIndex((i) => i - 1)}
-          className="px-6 py-3 bg-gray-300 text-gray-700 rounded-lg disabled:opacity-50"
+          className="px-3 py-1.5 bg-gray-300 text-gray-700 rounded-lg disabled:opacity-50"
         >
           Previous
         </button>
@@ -162,14 +162,14 @@ const FormPage = () => {
         {currentIndex < visibleQuestions.length - 1 ? (
           <button
             onClick={() => setCurrentIndex((i) => i + 1)}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg"
+            className="px-3 py-1.5 bg-ink-900 text-white rounded-lg"
           >
             Next
           </button>
         ) : (
           <button
             onClick={handleSubmit}
-            className="px-6 py-3 bg-green-600 text-white rounded-lg"
+            className="px-3 py-1.5 bg-ink-900 text-white rounded-lg"
           >
             Submit
           </button>

@@ -57,7 +57,7 @@ export const emailDocument = (email) => {
   const body = email?.html
     ? email.html
     : `<pre style="white-space:pre-wrap;font-family:inherit;margin:0">${escapeHtml(email?.text || "")}</pre>`;
-  return `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="${CSP}"><style>body{font-family:system-ui,sans-serif;font-size:14px;color:#1f2937;background:#fff;margin:16px;word-wrap:break-word}img{max-width:100%;height:auto}</style></head><body>${body}</body></html>`;
+  return `<!doctype html><html><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="${CSP}"><style>body{font-family:system-ui,sans-serif;font-size:14px;color:#1e293b;background:#fff;margin:16px;word-wrap:break-word}img{max-width:100%;height:auto}</style></head><body>${body}</body></html>`;
 };
 
 // Composer values for replying to an email.
@@ -77,7 +77,7 @@ export const toastSuccess = (title) => {
 };
 
 export const toastError = (text) => {
-  Swal.fire({ icon: "error", title: "Error", text, confirmButtonColor: "#4f46e5" });
+  Swal.fire({ icon: "error", title: "Error", text });
 };
 
 // Resolves true only when the confirm button is clicked.
@@ -88,8 +88,8 @@ export const confirmAction = ({ title = "Are you sure?", text, confirmText = "Ye
     icon: "warning",
     showCancelButton: true,
     focusCancel,
-    confirmButtonColor: danger ? "#ef4444" : "#4f46e5",
-    cancelButtonColor: "#14b8a6",
+    confirmButtonColor: danger ? "#dc2626" : undefined,
+    cancelButtonColor: "#3b82f6",
     confirmButtonText: confirmText,
     cancelButtonText: cancelText,
   }).then((result) => result.isConfirmed);

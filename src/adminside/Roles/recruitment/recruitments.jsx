@@ -31,8 +31,7 @@ const RecruitmentAdmin = () => {
       text: "This job post will be permanently removed.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
+
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
@@ -132,11 +131,11 @@ const RecruitmentAdmin = () => {
                                       __html:  job.descriptions,
                                     }}
                                   />
-              
+
               </td>
 
                 <td className="max-w-xs truncate">
-              
+
                <div
                                     className="prose prose-sm max-w-none text-slate-700 [&>ul]:list-disc [&>ul]:pl-5 [&>ol]:list-decimal [&>ol]:pl-5"
                                     dangerouslySetInnerHTML={{

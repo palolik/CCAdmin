@@ -112,8 +112,8 @@ const OurClient = () => {
           <button
             key={tab}
             onClick={() => handleTabChange(tab)}
-            className={`px-4 py-2 mx-2 rounded ${
-              activeTab === tab ? 'bg-blue-500 text-white' : 'bg-gray-200'
+            className={`px-3 py-1.5 mx-2 rounded-lg ${
+              activeTab === tab ? 'bg-ink-900 text-white' : 'bg-gray-200'
             }`}
           >
             {tab === 'read' ? 'View Clients' : 'Add/Edit Client'}
@@ -153,13 +153,13 @@ const OurClient = () => {
                     <td className="border px-4 py-2 space-x-2">
                       <button
                         onClick={() => handleEdit(client)}
-                        className="px-2 py-1 bg-yellow-500 text-white rounded"
+                        className="px-2 py-1 bg-yellow-500 text-white rounded-lg"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDelete(client._id)}
-                        className="px-2 py-1 bg-red-500 text-white rounded"
+                        className="px-2 py-1 bg-red-500 text-white rounded-lg"
                       >
                         Delete
                       </button>
@@ -204,13 +204,13 @@ const OurClient = () => {
           <div className="flex space-x-2">
             <button
               onClick={handleSave}
-              className="px-4 py-2 bg-blue-500 text-white rounded"
+              className="px-3 py-1.5 bg-ink-900 text-white rounded-lg"
             >
               Save
             </button>
             <button
               onClick={() => setActiveTab('read')}
-              className="px-4 py-2 bg-gray-300 text-gray-700 rounded"
+              className="px-3 py-1.5 bg-gray-300 text-gray-700 rounded-lg"
             >
               Cancel
             </button>

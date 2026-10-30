@@ -73,7 +73,6 @@ const sections = {
   orders: [
     { id: 1, name: "Projects",          path: "/admin/projects" },
     { id: 2, name: "Custom projects",   path: "/admin/customprojects" },
-    { id: 3, name: "Support Chat",      path: "/admin/support" },
   ],
     tasks: [
       { id: 1, name: "Dashboard", path: "/admin/taskdashboard" },
@@ -248,7 +247,7 @@ const Sidebar = () => {
     >
       <button
         onClick={() => setCollapsed((c) => !c)}
-        className="absolute -right-3 top-6 z-50 w-6 h-6 rounded-full bg-black
+        className="absolute -right-3 top-6 z-50 w-6 h-6 rounded-full bg-ink-900
           text-white flex items-center justify-center shadow-lg hover:bg-black transition-colors"
       >
         {collapsed ? <MdChevronRight size={16} /> : <MdChevronLeft size={16} />}
@@ -287,6 +286,23 @@ const Sidebar = () => {
         </Link>
       )}
 
+      {/* Support Chat sits at the top level, under Event Analytics. It still
+          needs the "orders" tab permission it had inside the Orders menu. */}
+      {allowedTabs.includes("orders") && (
+        <Link
+          to="/admin/support"
+          title={collapsed ? "Support Chat" : ""}
+          className={`flex items-center gap-3 mx-2 mb-1 px-3 py-2.5 rounded-lg transition-colors
+            ${currentPath === "/admin/support"
+              ? "bg-sky-500/20 text-sky-300"
+              : "text-gray-300 hover:bg-white/5 hover:text-white"}
+            ${collapsed ? "justify-center" : ""}`}
+        >
+          <span className="flex-shrink-0 text-sky-400"><MdSupportAgent size={20} /></span>
+          {!collapsed && <span className="text-sm font-semibold tracking-wide">Support Chat</span>}
+        </Link>
+      )}
+
       <div className="mx-3 border-t border-white/5 mb-2" />
 
       <div className="flex-1 overflow-y-auto overflow-x-hidden px-2 pb-4">
@@ -306,7 +322,7 @@ const Sidebar = () => {
                   }
                 }}
                 title={collapsed ? sectionLabel(key) : ""}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg
+                className={`w-full flex items-center gap-3 px-3 py-1.5 rounded-lg
                   text-gray-400 hover:bg-white/5 hover:text-white transition-colors
                   ${collapsed ? "justify-center" : "justify-between"}
                   ${collapsed && flyoutSection === key ? "bg-white/10 text-white" : ""}
@@ -375,7 +391,7 @@ const Sidebar = () => {
       <button
         onClick={handleLogout}
         title={collapsed ? "Log out" : ""}
-        className={`flex items-center gap-3 mx-2 my-3 px-3 py-2.5 rounded-lg
+        className={`flex items-center gap-3 mx-2 my-3 px-3 py-1.5 rounded-lg
           text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors
           ${collapsed ? "justify-center" : ""}`}
       >

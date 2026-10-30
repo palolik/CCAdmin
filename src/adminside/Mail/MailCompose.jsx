@@ -216,7 +216,7 @@ export default function MailCompose({ api, mailboxes, initial, onClose, onSettle
                 type="button"
                 disabled={submitting}
                 onClick={() => { setBulk(value); setResults([]); }}
-                className={`flex-1 sm:flex-none px-4 py-1.5 rounded-md text-sm font-semibold transition-colors ${bulk === value ? "bg-indigo-600 text-white" : "text-gray-600 hover:bg-gray-100"}`}
+                className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg text-[13px] font-medium transition-colors ${bulk === value ? "bg-ink-900 text-white" : "text-gray-600 hover:bg-gray-100"}`}
               >
                 {label}
               </button>
@@ -288,7 +288,7 @@ export default function MailCompose({ api, mailboxes, initial, onClose, onSettle
             <div className="flex items-end justify-between">
               <label className="mlabel" htmlFor="mail-to">To</label>
               {!showCopies && !form.cc && !form.bcc && (
-                <button type="button" className="mb-1 text-xs font-semibold text-teal-600 hover:underline" onClick={() => setShowCopies(true)}>
+                <button type="button" className="mb-1 text-xs font-medium text-ink-900 hover:underline" onClick={() => setShowCopies(true)}>
                   Cc / Bcc
                 </button>
               )}

@@ -157,7 +157,7 @@ const EditPlanner = () => {
 
       <button
         onClick={addQuestion}
-        className="px-4 py-2 bg-blue-600 text-white rounded mb-5"
+        className="px-3 py-1.5 bg-ink-900 text-white rounded-lg mb-5"
       >
         + Add Question
       </button>
@@ -204,7 +204,7 @@ const EditPlanner = () => {
                     <button className="text-red-500" onClick={() => removeOption(q.id, opt.id)}>✖</button>
                   </div>
                 ))}
-                <button className="text-blue-600" onClick={() => addOption(q.id)}>
+                <button className="text-ink-900" onClick={() => addOption(q.id)}>
                   + Add Option
                 </button>
               </div>
@@ -253,7 +253,7 @@ const EditPlanner = () => {
 
       <button
         onClick={savePlanner}
-        className="mt-6 px-6 py-3 bg-green-600 text-white rounded"
+        className="mt-6 px-3 py-1.5 bg-ink-900 text-white rounded-lg"
       >
         Save Changes
       </button>

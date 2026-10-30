@@ -28,8 +28,7 @@ const Mapfeed = () => {
 
   const handleDelete = (_id) => {
     Swal.fire({ title: "Are you sure?", icon: "warning",
-      showCancelButton: true, confirmButtonColor: "#3b82f6", cancelButtonColor: "#ef4444",
-      confirmButtonText: "Yes, delete it!" })
+      showCancelButton: true, confirmButtonText: "Yes, delete it!" })
     .then(async (result) => {
       if (!result.isConfirmed) return;
       const res  = await fetch(`${base_url}/delmap/${_id}`, { method: 'DELETE' });
@@ -111,7 +110,7 @@ const Mapfeed = () => {
                   <td className="px-4 py-3 text-xs text-gray-500 font-mono">
                     T:{icon.position.top} L:{icon.position.left}
                   </td>
-               
+
                   <td className="px-4 py-3 text-sm text-gray-500 max-w-[180px] truncate">{icon.data}</td>
                   <td className="px-4 py-3">
                     <div className="flex gap-2">
@@ -153,7 +152,7 @@ const Mapfeed = () => {
             ))}
           </div>
           <button type="submit"
-            className="bg-blue-500 hover:bg-blue-600 text-white font-medium text-sm px-8 py-2.5 rounded-xl transition-all">
+            className="bg-ink-900 hover:bg-ink-700 text-white font-medium text-[13px] px-8 py-1.5 rounded-lg transition-all">
             Add Pin
           </button>
           <p className="text-xs text-gray-400 font-light mt-3">

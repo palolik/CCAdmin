@@ -103,7 +103,7 @@ const AdminSupport = () => {
                   </td>
                   <td className="px-4 py-3">
                     <button
-                      className="relative flex items-center gap-1 bg-blue-300 hover:bg-blue-400 text-black px-3 py-1 rounded text-xs"
+                      className="relative flex items-center gap-1 bg-blue-300 hover:bg-blue-400 text-black px-3 py-1 rounded-lg text-xs"
                       onClick={() => handleChatClick(chat._id)}
                     >
                       Chat <MdChat />

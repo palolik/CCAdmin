@@ -21,8 +21,7 @@ const AddSocial = () => {
       text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
+
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
@@ -74,7 +73,7 @@ const AddSocial = () => {
 
     <div className="relative px-6 py-4">
       <div className="flex justify-end items-center mb-4">
-       
+
         <button
           onClick={() => setShowForm(true)}
           className="smbut"
@@ -119,7 +118,7 @@ const AddSocial = () => {
         </table>
       </div>
 
-     
+
       {showForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md relative">

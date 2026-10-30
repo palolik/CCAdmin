@@ -62,8 +62,7 @@ const PackStat = () => {
       text: "This action cannot be undone.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#ef4444",
-      cancelButtonColor: "#6b7280",
+      confirmButtonColor: "#dc2626",
       confirmButtonText: "Yes, delete it",
       cancelButtonText: "Cancel",
       customClass: { popup: "rounded-2xl" },
@@ -192,9 +191,9 @@ const PackStat = () => {
               <button
                 key={s}
                 onClick={() => setFilterStatus(s)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition-all ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium capitalize transition-all ${
                   filterStatus === s
-                    ? "bg-blue-600 text-white shadow"
+                    ? "bg-ink-900 text-white shadow"
                     : "bg-slate-100 text-slate-500 hover:bg-slate-200"
                 }`}
               >
@@ -215,7 +214,7 @@ const PackStat = () => {
                     "Package",
                     "Pricing",
                     "Performance",
-                    
+
                     "Contents",
                     "Status",
                     "Actions",
@@ -316,7 +315,7 @@ const PackStat = () => {
                           </div>
                         </td>
 
-              
+
 
                         {/* Contents */}
                         <td className="px-4 py-3">
@@ -386,7 +385,7 @@ const PackStat = () => {
                             </Link>
                             <button
                               onClick={() => handleDelete(pack._id)}
-                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 text-xs font-semibold hover:bg-rose-600 hover:text-white transition-colors border border-rose-200"
+                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 text-xs font-medium hover:bg-rose-600 hover:text-white transition-colors border border-rose-200"
                             >
                               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
