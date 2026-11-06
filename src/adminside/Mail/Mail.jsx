@@ -45,6 +45,18 @@ function StatusBadge({ status, error }) {
   return <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-green-100 text-green-700">{status || "sent"}</span>;
 }
 
+// Page numbers to show: first, last and the current page ±1, with "…" for the gaps.
+function pageList(page, pages) {
+  const shown = [...new Set([1, page - 1, page, page + 1, pages])]
+    .filter((p) => p >= 1 && p <= pages)
+    .sort((a, b) => a - b);
+  const out = [];
+  shown.forEach((p, i) => {
+    if (i > 0 && p - shown[i - 1] > 1) out.push(p - shown[i - 1] === 2 ? p - 1 : "…");
+    out.push(p);
+  });
+  return out;
+}
 
 function Pagination({ page, pages, total, limit, count, onPage, loading }) {
   const from = total === 0 ? 0 : (page - 1) * limit + 1;
