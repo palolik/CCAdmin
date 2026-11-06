@@ -317,6 +317,11 @@ const Clientlist = () => {
                                         </p>
                                         <div style={{ display:"flex", gap:8, alignItems:"center" }}>
                                           <span style={{ color:"#2563eb", fontWeight:700 }}>৳{order.sellPrice}</span>
+                                          {order.currency === "USD" && (
+                                            <span style={{ fontSize:11, fontWeight:600, color:"#b45309" }}>
+                                              paid in USD (${order.quotedPrice})
+                                            </span>
+                                          )}
                                           {order.status && (
                                             <span style={{
                                               fontSize:11, fontWeight:600, padding:"1px 8px",

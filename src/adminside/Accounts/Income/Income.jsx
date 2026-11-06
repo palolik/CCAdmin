@@ -172,7 +172,9 @@ const Income = () => {
     const autoRows = incomeData.map(i => ({
       Type: "Auto (Order)", Title: i.packageName || "", Buyer: i.buyername || i.buyerid || "",
       Email: i.email || "", Project: i.projectTitle || "", Category: "Order",
-      Amount: Number(i.sellPrice || 0).toFixed(2), PaymentMethod: i.paymentMethod || "",
+      Amount: Number(i.sellPrice || 0).toFixed(2),
+      QuotedUSD: i.currency === "USD" ? i.quotedPrice : "",
+      PaymentMethod: i.paymentMethod || "",
       PaymentStatus: i.paymentStatus || "", TrxID: i.transactionId || "",
       Status: i.status || "", Date: i.createdAt ? new Date(i.createdAt).toLocaleString() : "", Note: "",
     }));
@@ -267,7 +269,13 @@ const Income = () => {
                       <td className="px-2 py-2">{income.buyername || income.buyerid}</td>
                       <td className="px-2 py-2 text-xs text-gray-500">{income.email}</td>
                       <td className="px-2 py-2 text-xs">{income.projectTitle}</td>
-                      <td className="px-2 py-2 font-medium">{Number(income.sellPrice).toFixed(2)} BDT</td>
+                      <td className="px-2 py-2 font-medium">
+                        {Number(income.sellPrice).toFixed(2)} BDT
+                        {/* Buyer was quoted in dollars at checkout (outside Bangladesh). */}
+                        {income.currency === "USD" && (
+                          <div className="text-[11px] font-semibold text-amber-700">paid in USD (${income.quotedPrice})</div>
+                        )}
+                      </td>
                       <td className="px-2 py-2 text-xs">{income.paymentMethod || "—"}</td>
                       <td className="px-2 py-2">
                         <span className={`text-xs px-2 py-0.5 rounded-full ${
