@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Swal from "sweetalert2";
 import { base_url } from "../../config/config";
+import ImageInput from "../common/ImageInput";
 import { ShimmerTable } from "../../userside/utils/Shimmer";
 const Teamadmin = () => {
   const [team, setTeam] = useState([]);
@@ -148,7 +149,7 @@ const Teamadmin = () => {
               Add New Team Member
             </h3>
             <form onSubmit={handleAddPost} className="flex flex-col gap-3">
-              <input name="piclink" type="text" placeholder="Picture URL" className="input input-bordered w-full" required />
+              <ImageInput name="piclink" placeholder="Picture URL or upload" required />
               <input name="name" type="text" placeholder="Full Name" className="input input-bordered w-full" required />
               <input name="rank" type="text" placeholder="Rank" className="input input-bordered w-full" required />
               <input name="designation" type="text" placeholder="Designation" className="input input-bordered w-full" required />

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { base_url } from "../../config/config";
+import ImageInput from "../common/ImageInput";
 import { ShimmerTable } from "../../userside/utils/Shimmer";
 const AddSocial = () => {
   const [ima, setIma] = useState([]);
@@ -132,11 +133,9 @@ const AddSocial = () => {
               Add New Social Media
             </h3>
             <form onSubmit={handleAddPost} className="flex flex-col gap-3">
-              <input
+              <ImageInput
                 name="certilink"
-                type="text"
-                placeholder="Image URL"
-                className="input input-bordered w-full"
+                placeholder="Image URL or upload"
                 required
               />
               <input

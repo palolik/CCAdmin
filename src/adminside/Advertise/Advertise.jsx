@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { base_url } from "../../config/config";
+import ImageInput from "../common/ImageInput";
+import { AD_SLOTS, slotFor, sizeText } from "./adSlots";
 import { ShimmerTable } from "../../userside/utils/Shimmer.jsx";
 const Advertise = () => {
   const [ima, setIma] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [formLocation, setFormLocation] = useState("");
+  const formSlot = slotFor(formLocation);
 
   // Load advertisements
   useEffect(() => {
@@ -67,6 +71,7 @@ const Advertise = () => {
         Swal.fire("Success!", "Advertisement added successfully.", "success");
         form.reset();
         setShowForm(false);
+        setFormLocation("");
         setIma([...ima, { ...postData, _id: data.insertedId }]);
       } else {
         Swal.fire("Error!", "Failed to add advertisement.", "error");
@@ -133,6 +138,7 @@ const handleStatusChange = (adId, newStatus) => {
               <tr className="text-center font-semibold">
                 <th>Image</th>
                 <th>Location</th>
+                <th>Size</th>
                 <th>Redirect Link</th>
                  <th>Start Date</th>
 
@@ -144,17 +150,27 @@ const handleStatusChange = (adId, newStatus) => {
               </tr>
             </thead>
             <tbody>
-              {loading && <ShimmerTable rows={5} cols={8} asRows />}
+              {loading && <ShimmerTable rows={5} cols={9} asRows />}
               {!loading && ima.map((ad) => (
                 <tr key={ad._id} className="text-center border-b">
                   <td className="flex justify-center">
                     <img
                       src={ad.imglink}
                       alt="Advert"
-                      className="w-12 h-12 object-cover rounded-full"
+                      className="h-12 max-w-[140px] object-contain rounded border bg-gray-50"
                     />
                   </td>
-                  <td>{ad.location}</td>
+                  <td>
+                    {slotFor(ad.location)?.label || ad.location}
+                    {ad.placeholder && (
+                      <span className="ml-1 px-1.5 py-0.5 rounded bg-gray-200 text-gray-600 text-[10px] align-middle">
+                        Placeholder
+                      </span>
+                    )}
+                  </td>
+                  <td className="text-sm text-gray-600 whitespace-nowrap">
+                    {sizeText(slotFor(ad.location))}
+                  </td>
                   <td className="truncate max-w-xs text-blue-600 underline">
                     <a href={ad.rdlink} target="_blank" rel="noopener noreferrer">
                       {ad.rdlink}
@@ -164,14 +180,14 @@ const handleStatusChange = (adId, newStatus) => {
 
                   <td>{ad.tilldate}</td>
                      <td>{ad.clicks}</td>
-                  <td>{ad.status}</td>   <td className="py-2 px-3">
+                  <td className="py-2 px-3">
               <select
                 value={ad.status || "pending"}
                 onChange={(e) =>
                   handleStatusChange(ad._id, e.target.value)
                 }
                 className={`border rounded px-2 py-1 text-sm cursor-pointer ${
-                  ad.status === "approved"
+                  ad.status === "active"
                     ? "bg-green-100 text-green-800"
                     : ad.status === "rejected"
                     ? "bg-red-100 text-red-800"
@@ -194,7 +210,7 @@ const handleStatusChange = (adId, newStatus) => {
               ))}
               {!loading && ima.length === 0 && (
                 <tr>
-                  <td colSpan="6" className="text-center py-4 text-gray-500">
+                  <td colSpan="9" className="text-center py-4 text-gray-500">
                     No advertisements found.
                   </td>
                 </tr>
@@ -216,30 +232,38 @@ const handleStatusChange = (adId, newStatus) => {
                 Add Advertisement
               </h3>
               <form onSubmit={handleAddPost} className="flex flex-col gap-3">
-                <input
+                <ImageInput
                   name="imglink"
-                  type="text"
-                  placeholder="Image URL"
-                  className="input input-bordered w-full"
+                  placeholder="Image URL or upload"
                   required
                 />
-           <select
-    name="location"
-    className="select select-bordered w-full"
-    required
-    defaultValue=""
-  >
-    <option value="" disabled>
-      Select Ad Location
-    </option>
-    <option value="Header">Header</option>
-    <option value="hls">home leftSidebar</option>
-        <option value="hrs">home right Sidebar</option>
-
-    <option value="Footer">Footer</option>
-    <option value="Homepage Banner">Homepage Banner</option>
-    <option value="Popup">Popup</option>
-  </select>
+                <select
+                  name="location"
+                  className="select select-bordered w-full"
+                  required
+                  value={formLocation}
+                  onChange={(e) => setFormLocation(e.target.value)}
+                >
+                  <option value="" disabled>
+                    Select ad location
+                  </option>
+                  {AD_SLOTS.map((slot) => (
+                    <option key={slot.key} value={slot.key}>
+                      {slot.label} — {sizeText(slot)}
+                    </option>
+                  ))}
+                </select>
+                {formSlot && (
+                  <div className="rounded-lg bg-gray-50 border px-3 py-2 text-sm">
+                    <p>
+                      <span className="font-medium">Image size:</span> {sizeText(formSlot)}{" "}
+                      <span className="text-gray-500">
+                        (ratio {formSlot.width}:{formSlot.height}, upload at 2× for sharp screens)
+                      </span>
+                    </p>
+                    <p className="text-gray-500">{formSlot.where}</p>
+                  </div>
+                )}
                 <input
                   name="rdlink"
                   type="text"
@@ -259,6 +283,9 @@ const handleStatusChange = (adId, newStatus) => {
                   className="input input-bordered w-full"
                   required
                 />
+                <p className="text-xs text-gray-500">
+                  New ads start as Pending. Set status to Active to show them on the site between the start and till dates.
+                </p>
                 <button type="submit" className="btn btn-primary w-full mt-3">
                   Add Advertisement
                 </button>

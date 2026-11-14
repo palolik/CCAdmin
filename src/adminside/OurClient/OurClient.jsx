@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { base_url } from '../../config/config';
+import ImageInput from "../common/ImageInput";
 import { ShimmerTable } from '../../userside/utils/Shimmer';
 const OurClient = () => {
   const [activeTab, setActiveTab] = useState('read'); // Manage active tab
@@ -191,14 +192,13 @@ const OurClient = () => {
             />
           </div>
           <div className="mb-4">
-            <label className="block mb-2">Logo URL</label>
-            <input
-              type="text"
+            <label className="block mb-2">Logo</label>
+            <ImageInput
               name="logo"
-              value={formData.logo}
-              onChange={handleInputChange}
+              value={formData.logo || ""}
+              onChange={(logo) => setFormData((prev) => ({ ...prev, logo }))}
               className="w-full p-2 border rounded"
-              placeholder="Enter logo URL"
+              placeholder="Enter logo URL or upload"
             />
           </div>
           <div className="flex space-x-2">

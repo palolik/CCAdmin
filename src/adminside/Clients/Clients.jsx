@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { base_url } from "../../config/config";
+import ImageInput from "../common/ImageInput";
 import { ShimmerTable } from "../../userside/utils/Shimmer.jsx";
 const AllHClient = () => {
   const [clients, setClients] = useState([]);
@@ -91,8 +92,8 @@ const AllHClient = () => {
         </label>
 
         <label className="form-control">
-          <span className="label-text">Logo URL</span>
-          <input name="logo" className="input input-bordered text-black" required />
+          <span className="label-text">Logo (URL or upload)</span>
+          <ImageInput name="logo" className="input input-bordered text-black" required />
         </label>
 
         <label className="form-control">

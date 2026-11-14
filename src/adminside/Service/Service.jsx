@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
 import { base_url } from "../../config/config";
+import ImageInput from "../common/ImageInput";
 import { ShimmerTable } from "../../userside/utils/Shimmer";
 const Service = () => {
     const [service, setService] = useState([]);
@@ -153,11 +154,9 @@ const Service = () => {
                                 className="input input-bordered w-full"
                                 required
                             />
-                            <input
+                            <ImageInput
                                 name="serviceBgImage"
-                                type="text"
-                                placeholder="Background Image URL"
-                                className="input input-bordered w-full"
+                                placeholder="Background Image URL or upload"
                                 required
                             />
                             <button type="submit" className="btn btn-primary w-full mt-3">
