@@ -9,6 +9,9 @@ export const AD_SLOTS = [
   { key: "hrs", label: "Home right sidebar", where: "Fixed on the right edge (wide screens only)", width: 160, height: 600 },
   { key: "Sidebar", label: "Both home sidebars", where: "Left and right edges (wide screens only)", width: 160, height: 600 },
   { key: "Popup", label: "Popup", where: "Home page popup, once per visit after 4s", width: 600, height: 600 },
+  { key: "bls", label: "Blog left sidebar", where: "Blog posts, fixed on the left edge (wide screens only)", width: 160, height: 600 },
+  { key: "brs", label: "Blog right sidebar", where: "Blog posts, fixed on the right edge (wide screens only)", width: 160, height: 600 },
+  { key: "Blog Sidebar", label: "Both blog sidebars", where: "Blog posts, left and right edges (wide screens only)", width: 160, height: 600 },
 ];
 
 export const slotFor = (location) =>
